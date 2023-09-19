@@ -23,43 +23,42 @@ public class LoginController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        boolean isValid = false;
         PrintWriter writer = resp.getWriter();
 
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
-        System.out.println("Username: " + username);
-        System.out.println("Password: " + password);
-
-//        String query = "select * from users";
+        String query = String.format("SELECT username, password FROM users WHERE username=\"%s\" AND password=\"%s\"", username, password);
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet result = null;
         try {
-            Connection connection = new DBConnection().getInstance();
-            isValid = authenticateUser(username, password, connection);
-//            Statement statement = connection.createStatement();
-//            ResultSet result = statement.executeQuery(query);
-//            while (result.next()) {
-//                System.out.println(result.getString("username"));
-//            }
+            connection = new DBConnection().getInstance();
+
+            statement = connection.createStatement();
+            result = statement.executeQuery(query);
+
+            resp.setContentType("text/plain");
+            if (result.next())
+                writer.write("Login Successful");
+            else
+                writer.write("Invalid username or password. Try again!");
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
-        resp.setContentType("text/plain");
-        if (isValid)
-            writer.write("Login Successful");
-        else 
-            writer.write("Invalid username or password. Try again!");
-            
-
-    }
-
-
-    private boolean authenticateUser(String input_username, String input_password, Connection connection) throws SQLException {
-        String query = String.format("SELECT username, password FROM users WHERE username=\"%s\" AND password=\"%s\"", input_username, input_password);
-        Statement statement = connection.createStatement();
-        ResultSet result = statement.executeQuery(query);
-
-         return result.next();
+        finally {
+            try {
+                if (result!=null)
+                    result.close();
+                if (statement!=null)
+                    statement.close();
+                if (connection!=null)
+                    connection.close();
+            } catch (SQLException e) {
+                System.out.println("Error when closing ResultSet");
+                System.out.println(e.getMessage());
+            }
+        }
     }
 }
