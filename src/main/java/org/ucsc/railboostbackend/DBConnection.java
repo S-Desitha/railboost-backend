@@ -15,8 +15,6 @@ public class DBConnection {
         Class.forName("com.mysql.cj.jdbc.Driver");
         String dbUrl = "jdbc:mysql://"+host+":"+port+"/"+db_name;
 
-        System.out.println(dbUrl);
-
         return DriverManager.getConnection(dbUrl, username, password);
     }
 }
