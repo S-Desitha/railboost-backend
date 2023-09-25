@@ -24,7 +24,8 @@ DROP TABLE IF EXISTS `users`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `username` varchar(20) NOT NULL,
-  `password` varchar(60) NOT NULL,
+  `password` varchar(256) DEFAULT NULL,
+  `salt` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -35,7 +36,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('dewmitha','abc123');
+INSERT INTO `users` VALUES ('dewmitha','G357cvwLtV4hag3cICQyp9FDpq1Hlpmo/iSbgGNpLy8=','akMZkmVMdcypvAPWoDU7cA=='),('kalindu','6qRRXvu3ovluXUz3H9IzGJjwgROWpu5Tabvwwn7kW08=','+ConUUnIf89OhNdzwcEWWw=='),('pehan','PfXX9OIppYf17//j45rFq6NcDFE0SVASt5q/wSm/wvI=','8750YpPmj0Lxr491ej7PYQ=='),('sathira','FgWGugVzqBWg7eXL1RUj6jS9v4pyOXCs2BnUDL3EBY0=','qSb0RbXjIKlyjU6YUeo5YQ==');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -48,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-09-21 22:17:16
+-- Dump completed on 2023-09-25 16:49:29
