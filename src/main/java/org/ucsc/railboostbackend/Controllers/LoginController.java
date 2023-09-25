@@ -1,6 +1,6 @@
 package org.ucsc.railboostbackend.Controllers;
 
-import org.ucsc.railboostbackend.DBConnection;
+import org.ucsc.railboostbackend.Utilities.DBConnection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -29,11 +29,10 @@ public class LoginController extends HttpServlet {
         String password = req.getParameter("password");
 
         String query = String.format("SELECT username, password FROM users WHERE username=\"%s\" AND password=\"%s\"", username, password);
-        Connection connection = null;
         Statement statement = null;
         ResultSet result = null;
         try {
-            connection = new DBConnection().getInstance();
+            Connection connection = DBConnection.getInstance().getConnection();
 
             statement = connection.createStatement();
             result = statement.executeQuery(query);
@@ -53,8 +52,6 @@ public class LoginController extends HttpServlet {
                     result.close();
                 if (statement!=null)
                     statement.close();
-                if (connection!=null)
-                    connection.close();
             } catch (SQLException e) {
                 System.out.println("Error when closing ResultSet");
                 System.out.println(e.getMessage());
