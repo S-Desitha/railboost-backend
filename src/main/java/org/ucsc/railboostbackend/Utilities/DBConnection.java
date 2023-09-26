@@ -5,30 +5,29 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    private final String host = "localhost";
-    private final String port = "3306";
-    private final String db_name = "RailBoost";
-    private final String username = "root";
-    private final String password = "";
+    private static final String host = "localhost";
+    private static final String port = "3306";
+    private static final String db_name = "RailBoost";
+    private static final String username = "root";
+    private static final String password = "";
 
-    private static DBConnection dbConnection;
-    private final Connection connection;
+    static String dbUrl = "jdbc:mysql://"+host+":"+port+"/"+db_name;
 
-    private DBConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        String dbUrl = "jdbc:mysql://"+host+":"+port+"/"+db_name;
+    private static Connection connection;
 
-        connection = DriverManager.getConnection(dbUrl, username, password);
+    static {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class Error: "+e.getMessage());
+        }
     }
 
-    public static DBConnection getInstance() throws SQLException, ClassNotFoundException {
-        if (dbConnection==null)
-            dbConnection = new DBConnection();
 
-        return dbConnection;
-    }
+    public static Connection getConnection() throws SQLException {
+        if (connection == null || connection.isClosed())
+            connection = DriverManager.getConnection(dbUrl, username, password);
 
-    public Connection getConnection() {
         return connection;
     }
 }

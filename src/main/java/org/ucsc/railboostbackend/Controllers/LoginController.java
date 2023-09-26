@@ -44,10 +44,12 @@ public class LoginController extends HttpServlet {
         HashPassword hashPassword = new HashPassword();
 
         String query = String.format("SELECT password, salt FROM users WHERE username=\"%s\"", username);
+        Connection connection = null;
         Statement statement = null;
         ResultSet result = null;
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
+            connection = DBConnection.getConnection();
+            System.out.println(connection);
 
             statement = connection.createStatement();
             result = statement.executeQuery(query);
@@ -71,6 +73,10 @@ public class LoginController extends HttpServlet {
                     result.close();
                 if (statement!=null)
                     statement.close();
+                if (connection!=null) {
+                    connection.close();
+                    System.out.println(connection);
+                }
             } catch (SQLException e) {
                 System.out.println("Error when closing ResultSet");
                 System.out.println(e.getMessage());
@@ -97,7 +103,7 @@ public class LoginController extends HttpServlet {
             PreparedStatement statement = null;
             ResultSet result = null;
             try {
-                Connection connection = DBConnection.getInstance().getConnection();
+                Connection connection = DBConnection.getConnection();
                 statement = connection.prepareStatement(sql);
                 statement.setString(1, username);
                 statement.setString(2, hash);
