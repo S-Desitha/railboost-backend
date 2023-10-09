@@ -1,9 +1,11 @@
-package org.ucsc.railboostbackend.Controllers;
+package org.ucsc.railboostbackend.controllers;
 
-import org.ucsc.railboostbackend.Utilities.DBConnection;
-import org.ucsc.railboostbackend.Utilities.HashPassword;
+import com.google.gson.Gson;
+import org.ucsc.railboostbackend.models.Login;
+import org.ucsc.railboostbackend.repositories.LoginRepo;
+import org.ucsc.railboostbackend.utilities.DBConnection;
+import org.ucsc.railboostbackend.utilities.HashPassword;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +17,7 @@ import java.util.Map;
 
 public class LoginController extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()));
         writer.write("This is the login page");
         writer.flush();
@@ -23,79 +25,37 @@ public class LoginController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PrintWriter writer = resp.getWriter();
+        HttpSession httpSession = req.getSession();
+        Gson gson = new Gson();
 
-        System.out.println("Role: " + req.getSession().getAttribute("Role"));
-        HttpSession session = req.getSession();
-        session.setAttribute("Role", "Passenger");
-        session.setMaxInactiveInterval(10);
-//        System.out.println(req.getHeader("Authorization"));
+        LoginRepo loginRepo = new LoginRepo();
+        Login loginReq = gson.fromJson(req.getReader(), Login.class);
+        Login loginResp = new Login(loginReq.getUsername());
 
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
-
-        if (validateUser(username, password))
-            writer.write("Login Successful");
-        else {
-            resp.setStatus(401);
-            writer.write("Invalid username or password.\nPlease try again!!");
+        try {
+            boolean loginStatus = loginRepo.verifyLogin(loginReq);
+            loginResp.setSuccessful(loginStatus);
+            if (loginStatus) {
+                httpSession.setAttribute("userId", loginRepo.getUserId());
+                httpSession.setAttribute("role", loginRepo.getRole());
+                loginResp.setRole(loginRepo.getRole());
+            }
+            else{
+                httpSession.invalidate();
+            }
+        } catch (SQLException e) {
+            System.out.println("Error executing SQL query!!\n" + e.getMessage());
         }
+
+        String respJson = gson.toJson(loginResp);
+        writer.write(respJson);
 
         writer.flush();
         writer.close();
 
-//        temp(username, password);
     }
-
-
-    private boolean validateUser(String username, String inputPassword) {
-        HashPassword hashPassword = new HashPassword();
-
-        String query = String.format("SELECT password, salt FROM users WHERE username=\"%s\"", username);
-        Connection connection = null;
-        Statement statement = null;
-        ResultSet result = null;
-        try {
-            connection = DBConnection.getConnection();
-            System.out.println(connection);
-
-            statement = connection.createStatement();
-            result = statement.executeQuery(query);
-
-            while (result.next()) {
-                String hash = result.getString("password");
-                String salt = result.getString("salt");
-
-                // entered password matches with the password stored with the given username.
-                if (hashPassword.hash(inputPassword, salt).equals(hash)) {
-                    return true;
-                }
-            }
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        finally {
-            try {
-                if (result!=null)
-                    result.close();
-                if (statement!=null)
-                    statement.close();
-                if (connection!=null) {
-                    connection.close();
-                    System.out.println(connection);
-                }
-            } catch (SQLException e) {
-                System.out.println("Error when closing ResultSet");
-                System.out.println(e.getMessage());
-            }
-        }
-
-
-        return false;
-    }
-
 
     private void temp(String username, String password) {
 
