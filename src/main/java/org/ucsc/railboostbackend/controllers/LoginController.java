@@ -56,37 +56,4 @@ public class LoginController extends HttpServlet {
         writer.close();
 
     }
-
-    private void temp(String username, String password) {
-
-        try {
-            Map<String, String> hashResult = new HashPassword().hash(password);
-
-            String hash = hashResult.get("hash");
-            String salt = hashResult.get("salt");
-
-            System.out.println("Hashed Password: "+ hash);
-            System.out.println("Salt: " + salt);
-
-            String sql = "INSERT INTO users VALUES(?, ?, ?)";
-            PreparedStatement statement = null;
-            ResultSet result = null;
-            try {
-                Connection connection = DBConnection.getConnection();
-                statement = connection.prepareStatement(sql);
-                statement.setString(1, username);
-                statement.setString(2, hash);
-                statement.setString(3, salt);
-
-                statement.executeUpdate();
-
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-
-        } catch (InvalidKeySpecException e) {
-            System.out.println("Error in hash function.\n"+e.getMessage());
-        }
-
-    }
 }
