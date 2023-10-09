@@ -1,4 +1,4 @@
-package org.ucsc.railboostbackend.Utilities;
+package org.ucsc.railboostbackend.utilities;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,9 +24,13 @@ public class DBConnection {
     }
 
 
-    public static Connection getConnection() throws SQLException {
-        if (connection == null || connection.isClosed())
-            connection = DriverManager.getConnection(dbUrl, username, password);
+    public static Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed())
+                connection = DriverManager.getConnection(dbUrl, username, password);
+        } catch (SQLException e) {
+            System.out.println("Error creating database connection!!\n" + e.getMessage());
+        }
 
         return connection;
     }
