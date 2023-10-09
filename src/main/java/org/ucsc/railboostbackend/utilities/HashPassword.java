@@ -1,4 +1,4 @@
-package org.ucsc.railboostbackend.Utilities;
+package org.ucsc.railboostbackend.utilities;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -15,7 +15,7 @@ public class HashPassword {
     private final int iterations = 65536;
     private final int desiredKeyLen = 256;
 
-    public  HashPassword() {
+    public HashPassword() {
         try {
             factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 
@@ -24,12 +24,19 @@ public class HashPassword {
         }
     }
 
-    public String hash(String password, String salt) throws InvalidKeySpecException {
+    public String hash(String password, String salt) {
         byte[] saltBytes = Base64.getDecoder().decode(salt);
+        String hashed = null;
 
-        return Base64.getEncoder().encodeToString(
-                factory.generateSecret(new PBEKeySpec(password.toCharArray(), saltBytes , iterations, desiredKeyLen)).getEncoded()
-        );
+        try {
+            hashed = Base64.getEncoder().encodeToString(
+                    factory.generateSecret(new PBEKeySpec(password.toCharArray(), saltBytes , iterations, desiredKeyLen)).getEncoded()
+            );
+        } catch (InvalidKeySpecException e) {
+            System.out.println("Error : Invalid key.\n" + e.getMessage());
+        }
+
+        return hashed;
     }
 
 
