@@ -14,7 +14,7 @@ public class LoginRepo {
     private String role;
 
     public boolean verifyLogin(Login login) throws SQLException {
-        boolean isSeccess = false;
+        boolean isSuccess = false;
         HashPassword hashPassword = new HashPassword();
         String username = login.getUsername();
         String inputPassword = login.getPassword();
@@ -33,7 +33,7 @@ public class LoginRepo {
             if (hashPassword.hash(inputPassword, salt).equals(storedPassword)) {
                 this.userId = resultSet.getInt("userId");
                 this.role = resultSet.getString("role");
-                isSeccess = true;
+                isSuccess = true;
             }
         }
 
@@ -41,12 +41,11 @@ public class LoginRepo {
             resultSet.close();
             pst.close();
             connection.close();
-            System.out.println(connection);
         } catch (SQLException e) {
             System.out.println("Error when closing DB connection!! \n" + e.getMessage());
         }
 
-        return isSeccess;
+        return isSuccess;
     }
 
     public int getUserId() {

@@ -15,7 +15,6 @@ public class HomeLandingController extends HttpServlet {
         HttpSession session = req.getSession();
 
         if (session.getAttribute("role")!=null){
-            System.out.println("role: " + session.getAttribute("role"));
             respWriter.write("You are signed in as " + session.getAttribute("role"));
         }
         else
