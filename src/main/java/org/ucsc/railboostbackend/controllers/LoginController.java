@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.*;
@@ -25,13 +26,21 @@ public class LoginController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
 
+        System.out.println("Role: " + req.getSession().getAttribute("Role"));
+        HttpSession session = req.getSession();
+        session.setAttribute("Role", "Passenger");
+        session.setMaxInactiveInterval(10);
+//        System.out.println(req.getHeader("Authorization"));
+
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
         if (validateUser(username, password))
             writer.write("Login Successful");
-        else
+        else {
+            resp.setStatus(401);
             writer.write("Invalid username or password.\nPlease try again!!");
+        }
 
         writer.flush();
         writer.close();
