@@ -1,8 +1,5 @@
 package org.ucsc.railboostbackend.controllers;
 
-import com.google.gson.Gson;
-import org.ucsc.railboostbackend.models.Train;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

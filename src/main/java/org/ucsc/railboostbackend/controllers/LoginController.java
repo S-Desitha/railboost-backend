@@ -3,17 +3,13 @@ package org.ucsc.railboostbackend.controllers;
 import com.google.gson.Gson;
 import org.ucsc.railboostbackend.models.Login;
 import org.ucsc.railboostbackend.repositories.LoginRepo;
-import org.ucsc.railboostbackend.utilities.DBConnection;
-import org.ucsc.railboostbackend.utilities.HashPassword;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.security.spec.InvalidKeySpecException;
 import java.sql.*;
-import java.util.Map;
 
 public class LoginController extends HttpServlet {
     @Override
