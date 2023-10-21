@@ -27,6 +27,15 @@
     <url-pattern>/home</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>Schedule</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.ScheduleController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Schedule</servlet-name>
+    <url-pattern>/trainSchedule</url-pattern>
+  </servlet-mapping>
+
 </web-app>
 
 
