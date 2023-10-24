@@ -6,6 +6,14 @@ public class ScheduleDay {
     private Short scheduleId;
     private Days day;
 
+    public ScheduleDay(Short scheduleId, Days day) {
+        this.scheduleId = scheduleId;
+        this.day = day;
+    }
+
+    public ScheduleDay() {
+    }
+
     public Short getScheduleId() {
         return scheduleId;
     }

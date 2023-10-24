@@ -2,6 +2,7 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.ucsc.railboostbackend.enums.Days;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 
@@ -15,22 +16,26 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.List;
 
 public class ScheduleController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // return a list of all the train schedules based on the filtering provided by the user.
-        BufferedWriter respWriter = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()));
+        ScheduleRepo scheduleRepo = new ScheduleRepo();
+        Gson gson = new Gson();
 
-        System.out.println(req.getQueryString());
-        System.out.println(req.getParameter("id"));
-        req.getParameterMap().forEach((key, value) -> {
-            System.out.println(key + " : "+ Arrays.toString(value));
-        });
+        Days day = Days.valueOf(req.getParameter("day"));
+        String startSt = req.getParameter("startSt");
+        String endSt = req.getParameter("endSt");
 
-        respWriter.write("This is the train schedule home page.");
-        respWriter.flush();
-        respWriter.close();
+        List<Schedule> schedules = scheduleRepo.getSchedules(day, startSt, endSt);
+//        schedules.forEach(System.out::println);
+
+        writer.write(gson.toJson(schedules));
+        writer.flush();
+        writer.close();
     }
 
 
@@ -58,6 +63,7 @@ public class ScheduleController extends HttpServlet {
         writer.flush();
         writer.close();
     }
+
 
     private boolean verifyAccess(HttpSession httpSession, String role) {
         if (httpSession.getAttribute("role")!=null)

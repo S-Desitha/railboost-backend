@@ -1,35 +1,56 @@
 package org.ucsc.railboostbackend.repositories;
 
+import org.ucsc.railboostbackend.enums.Days;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.models.ScheduleDay;
 import org.ucsc.railboostbackend.models.ScheduleStation;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class ScheduleRepo {
 
-
-    public Schedule getScheduleById(int scheduleId) {
+    public Schedule getScheduleById(Short scheduleId) {
         Schedule schedule = new Schedule();
-
-        String query = "SELECT * FROM schedule WHERE scheduleId=?";
+        List<ScheduleStation> stations = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
+        String query = "SELECT ts.scheduleId, ts.startStation, ts.endStation,ts.trainId, train.trainType, ss.station, ss.stIndex, ss.scheduledArrivalTime, ss.scheduledDepartureTime " +
+                "FROM schedule ts " +
+                "INNER JOIN schedule_stations ss ON ts.scheduleId = ss.scheduleId " +
+                "INNER JOIN train ON ts.trainId = train.trainId " +
+                "WHERE ts.scheduleId = ? " +
+                "ORDER BY ss.stIndex ASC;";
+
         PreparedStatement pst = null;
         ResultSet resultSet = null;
         try {
             pst = connection.prepareStatement(query);
-            pst.setInt(1, scheduleId);
+            pst.setShort(1, scheduleId);
 
             resultSet = pst.executeQuery();
-            if (resultSet.next()) {
-                schedule.setScheduleId(resultSet.getShort("scheduleId"));
-                schedule.setTrainId(resultSet.getString("trainId"));
-                schedule.setStartStation(resultSet.getString("startStation"));
-                schedule.setEndStation(resultSet.getString("endStation"));
+            for (int i=0; resultSet.next(); i++) {
+                if (i==0){
+                    schedule.setScheduleId(resultSet.getShort("scheduleId"));
+                    schedule.setTrainId(resultSet.getString("trainId"));
+                    schedule.setStartStation(resultSet.getString("startStation"));
+                    schedule.setEndStation(resultSet.getString("endStation"));
+                    schedule.setTrainType(resultSet.getString("trainType"));
+                }
+                stations.add(new ScheduleStation(
+                        resultSet.getShort("scheduleId"),
+                        resultSet.getString("station"),
+                        resultSet.getShort("stIndex"),
+                        resultSet.getTime("scheduledArrivalTime"),
+                        resultSet.getTime("scheduledDepartureTime")
+                    )
+                );
             }
+            schedule.setStations(stations);
+
         } catch (SQLException e) {
             System.out.println("Error executing SQL query!!\n" + e.getMessage());
         }
@@ -39,7 +60,6 @@ public class ScheduleRepo {
                 resultSet.close();
             if (pst != null)
                 pst.close();
-            connection.close();
         } catch (SQLException e) {
             System.out.println("Error when closing DB connection!! \n" + e.getMessage());
         }
@@ -114,11 +134,51 @@ public class ScheduleRepo {
     }
 
 
+    public List<Schedule> getSchedules(Days day, String startStation, String endStation){
+        List<Schedule> schedules = new ArrayList<>();
+        Connection connection = DBConnection.getConnection();
+        String query = "SELECT ts.scheduleId FROM schedule ts " +
+                "INNER JOIN schedule_stations ss1 ON ts.scheduleId = ss1.scheduleId " +
+                "INNER JOIN schedule_stations ss2 ON ts.scheduleId = ss2.scheduleId " +
+                "INNER JOIN schedule_days days ON ts.scheduleId = days.scheduleId " +
+                "WHERE days.day = ? " +
+                "AND ss1.station = ? " +
+                "AND ss2.station = ? " +
+                "AND ss1.stIndex < ss2.stIndex " +
+                "ORDER BY ss1.scheduledArrivalTime ASC";
+
+        PreparedStatement pst = null;
+        ResultSet resultSet = null;
+        try {
+            pst = connection.prepareStatement(query);
+            pst.setString(1, day.name());
+            pst.setString(2, startStation);
+            pst.setString(3, endStation);
+
+            resultSet = pst.executeQuery();
+            while (resultSet.next()) {
+                schedules.add(getScheduleById(resultSet.getShort("scheduleId")));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error when executing the sql query for retrieving schedules!!\n"+e.getMessage());
+        }
+
+        try {
+            if (resultSet != null)
+                resultSet.close();
+            if (pst != null)
+                pst.close();
+            connection.close();
+        } catch (SQLException e) {
+            System.out.println("Error when closing DB connection!! \n" + e.getMessage());
+        }
+
+        return schedules;
+    }
+
+
 //    public boolean updateSchedule(String scheduleId){}
-//
-//
-//    public List<Schedule> getSchedules(String date, String startStation, String endStation){}
-//
-//
+
 //    public boolean removeSchedule(String scheduleId) {}
 }

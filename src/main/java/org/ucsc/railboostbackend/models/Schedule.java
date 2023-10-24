@@ -10,6 +10,7 @@ public class Schedule {
     private String startStation;
     private String endStation;
     private String trainId;
+    private String trainType;
     private List<ScheduleStation> stations = new ArrayList<ScheduleStation>();
     private List<ScheduleDay> days = new ArrayList<ScheduleDay>();
 
@@ -61,15 +62,24 @@ public class Schedule {
         this.days = days;
     }
 
+    public String getTrainType() {
+        return trainType;
+    }
+
+    public void setTrainType(String trainType) {
+        this.trainType = trainType;
+    }
+
     @Override
     public String toString() {
-        return "TrainSchedule{" +
+        return "Schedule{" +
                 "scheduleId=" + scheduleId +
                 ", startStation='" + startStation + '\'' +
                 ", endStation='" + endStation + '\'' +
                 ", trainId='" + trainId + '\'' +
-                ", stations=" + Arrays.toString(stations.toArray()) +
-                ", days=" + Arrays.toString(days.toArray()) +
+                ", trainType='" + trainType + '\'' +
+                ", stations=" + stations +
+                ", days=" + days +
                 '}';
     }
 }

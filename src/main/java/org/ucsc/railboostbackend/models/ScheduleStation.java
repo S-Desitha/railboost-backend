@@ -9,6 +9,14 @@ public class ScheduleStation {
     private Date scheduledArrivalTime;
     private Date scheduledDepartureTime;
 
+    public ScheduleStation(Short scheduleId, String station, Short stIndex, Date scheduledArrivalTime, Date scheduledDepartureTime) {
+        this.scheduleId = scheduleId;
+        this.station = station;
+        this.stIndex = stIndex;
+        this.scheduledArrivalTime = scheduledArrivalTime;
+        this.scheduledDepartureTime = scheduledDepartureTime;
+    }
+
 
     public ScheduleStation() {}
 
