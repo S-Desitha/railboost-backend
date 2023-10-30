@@ -2,7 +2,6 @@ package org.ucsc.railboostbackend.models;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Schedule {
@@ -82,6 +81,7 @@ public class Schedule {
                 ", days=" + days +
                 '}';
     }
+
 }
 
 

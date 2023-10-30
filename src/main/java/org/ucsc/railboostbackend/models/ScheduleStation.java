@@ -2,7 +2,7 @@ package org.ucsc.railboostbackend.models;
 
 import java.util.Date;
 
-public class ScheduleStation {
+public class ScheduleStation extends BaseModel {
     private Short scheduleId;
     private String station;
     private Short stIndex;

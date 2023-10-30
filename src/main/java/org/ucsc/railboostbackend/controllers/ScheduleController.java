@@ -2,7 +2,7 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.ucsc.railboostbackend.enums.Days;
+import com.google.gson.reflect.TypeToken;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 
@@ -11,11 +11,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.beans.IntrospectionException;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduleController extends HttpServlet {
@@ -26,11 +28,14 @@ public class ScheduleController extends HttpServlet {
         ScheduleRepo scheduleRepo = new ScheduleRepo();
         Gson gson = new Gson();
 
-        Days day = Days.valueOf(req.getParameter("day"));
-        String startSt = req.getParameter("startSt");
-        String endSt = req.getParameter("endSt");
+//        Days day = Days.valueOf(req.getParameter("day"));
+//        String startSt = req.getParameter("startSt");
+//        String endSt = req.getParameter("endSt");
+//        List<Schedule> schedules = scheduleRepo.getSchedules(day, startSt, endSt);
 
-        List<Schedule> schedules = scheduleRepo.getSchedules(day, startSt, endSt);
+        Short scheduleId = Short.valueOf(req.getParameter("scheduleId"));
+        Schedule schedules = scheduleRepo.getScheduleById(scheduleId);
+
 //        schedules.forEach(System.out::println);
 
         writer.write(gson.toJson(schedules));
@@ -60,6 +65,46 @@ public class ScheduleController extends HttpServlet {
             writer.write("You dont' have permission for this operation!!");
         }
 
+        writer.flush();
+        writer.close();
+    }
+
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        PrintWriter writer = resp.getWriter();
+        ScheduleRepo repo = new ScheduleRepo();
+        Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
+        List<Schedule> schedules = gson.fromJson(req.getReader(), new TypeToken<ArrayList<Schedule>>(){});
+        try {
+//            Schedule sch = new Schedule();
+//            sch.setScheduleId((short) 1);
+//            sch.setStartStation("FOT");
+//            sch.setEndStation("GPH");
+//            sch.setTrainType("Express");
+
+            repo.updateSchedule(schedules.get(0), schedules.get(1));
+        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        writer.write("Schedule updated successfully");
+        writer.flush();
+        writer.close();
+    }
+
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        PrintWriter writer = resp.getWriter();
+        ScheduleRepo scheduleRepo = new ScheduleRepo();
+
+        short scheduleId = Short.parseShort(req.getParameter("scheduleId"));
+        Schedule schedule = scheduleRepo.getScheduleById(scheduleId);
+
+        scheduleRepo.deleteSchedule(schedule);
+
+        writer.write("Schedule deleted successfully");
         writer.flush();
         writer.close();
     }

@@ -6,6 +6,10 @@ import org.ucsc.railboostbackend.models.ScheduleDay;
 import org.ucsc.railboostbackend.models.ScheduleStation;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +21,7 @@ public class ScheduleRepo {
     public Schedule getScheduleById(Short scheduleId) {
         Schedule schedule = new Schedule();
         List<ScheduleStation> stations = new ArrayList<>();
+        List<ScheduleDay> days = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
         String query = "SELECT ts.scheduleId, ts.startStation, ts.endStation,ts.trainId, train.trainType, ss.station, ss.stIndex, ss.scheduledArrivalTime, ss.scheduledDepartureTime " +
                 "FROM schedule ts " +
@@ -24,6 +29,10 @@ public class ScheduleRepo {
                 "INNER JOIN train ON ts.trainId = train.trainId " +
                 "WHERE ts.scheduleId = ? " +
                 "ORDER BY ss.stIndex ASC;";
+
+        String days_query = "SELECT days.day, days.scheduleId " +
+                "FROM schedule_days days " +
+                "WHERE days.scheduleId = ? ";
 
         PreparedStatement pst = null;
         ResultSet resultSet = null;
@@ -51,6 +60,22 @@ public class ScheduleRepo {
             }
             schedule.setStations(stations);
 
+        } catch (SQLException e) {
+            System.out.println("Error executing SQL query!!\n" + e.getMessage());
+        }
+
+        try {
+            pst = connection.prepareStatement(days_query);
+            pst.setShort(1, scheduleId);
+
+            resultSet = pst.executeQuery();
+            while (resultSet.next()){
+                days.add(new ScheduleDay(
+                        resultSet.getShort("scheduleId"),
+                        Days.valueOf(resultSet.getString("day"))
+                ));
+            }
+            schedule.setDays(days);
         } catch (SQLException e) {
             System.out.println("Error executing SQL query!!\n" + e.getMessage());
         }
@@ -97,6 +122,8 @@ public class ScheduleRepo {
 
                 if (station.getScheduledDepartureTime() != null)
                     pst_stations.setTime(5, new Time(station.getScheduledDepartureTime().getTime()));
+                else
+                    pst_stations.setNull(5, Types.TIME);
 
                 pst_stations.addBatch();
             }
@@ -178,7 +205,68 @@ public class ScheduleRepo {
     }
 
 
-//    public boolean updateSchedule(String scheduleId){}
+    public void updateSchedule(Schedule original, Schedule updated) throws IntrospectionException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
+        boolean isSuccess = false;
+        Connection connection = DBConnection.getConnection();
+        StringBuilder sch_queryBuilder = new StringBuilder("UPDATE Schedule SET ");
 
-//    public boolean removeSchedule(String scheduleId) {}
+        for (PropertyDescriptor descriptor : Introspector.getBeanInfo(original.getClass()).getPropertyDescriptors()) {
+//            System.out.println(descriptor.getName() +" : " + descriptor.getPropertyType());
+            if(descriptor.getName().equals("scheduleId") || descriptor.getName().equals("class"))
+                continue;
+            if (descriptor.getPropertyType().equals(Class.forName("java.util.List"))) {
+//                System.out.println("List found");
+                if (descriptor.getName().equals("stations"))
+                    new ScheduleStationRepo().compAndUpdate(original.getStations(), updated.getStations());
+                else if (descriptor.getName().equals("days"))
+                    new ScheduleDaysRepo().compAndUpdate(original.getDays(), updated.getDays());
+            }
+            else if (descriptor.getReadMethod().invoke(updated)!=null && !descriptor.getReadMethod().invoke(original).equals(descriptor.getReadMethod().invoke(updated))) {
+                sch_queryBuilder
+                        .append(descriptor.getName())
+                        .append("=\"")
+                        .append(descriptor.getReadMethod().invoke(updated))
+                        .append("\"")
+                        .append(",");
+            }
+        }
+
+        sch_queryBuilder.delete(sch_queryBuilder.length()-1, sch_queryBuilder.length());
+        sch_queryBuilder.append(" WHERE scheduleId=").append(original.getScheduleId());
+        String sch_query = sch_queryBuilder.toString();
+
+        System.out.println(sch_query);
+
+
+    }
+
+
+    public void deleteSchedule(Schedule schedule) {
+        Connection connection = DBConnection.getConnection();
+        short id = schedule.getScheduleId();
+        String sch_query = "DELETE FROM schedule WHERE scheduleId=\""+id+"\"";
+//        String schStation_query = "DELETE FROM schedule_stations WHERE scheduleId=\""+id+"\"";
+//        String schDays_query= "DELETE FROM schedule_days WHERE scheduleId=\""+id+"\"";
+
+        ScheduleStationRepo scheduleStationRepo = new ScheduleStationRepo();
+        scheduleStationRepo.deleteSchStation(schedule.getStations());
+
+        ScheduleDaysRepo scheduleDaysRepo = new ScheduleDaysRepo();
+        scheduleDaysRepo.deleteSchDays(schedule.getDays());
+
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            statement.executeUpdate(sch_query);
+        } catch (SQLException e) {
+            System.out.println("Error executing SQL query for schedule delete!!\n" + e.getMessage());
+        }
+        if (statement!=null) {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                System.out.println("Error when closing DB connection!! \n" + e.getMessage());
+            }
+        }
+    }
 }
