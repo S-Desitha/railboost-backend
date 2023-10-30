@@ -73,22 +73,23 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        ScheduleRepo repo = new ScheduleRepo();
-        Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
-        List<Schedule> schedules = gson.fromJson(req.getReader(), new TypeToken<ArrayList<Schedule>>(){});
-        try {
-//            Schedule sch = new Schedule();
-//            sch.setScheduleId((short) 1);
-//            sch.setStartStation("FOT");
-//            sch.setEndStation("GPH");
-//            sch.setTrainType("Express");
+        HttpSession session = req.getSession();
 
-            repo.updateSchedule(schedules.get(0), schedules.get(1));
-        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        if (verifyAccess(session, "admin")){
+            ScheduleRepo repo = new ScheduleRepo();
+            Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
+            List<Schedule> schedules = gson.fromJson(req.getReader(), new TypeToken<ArrayList<Schedule>>(){});
+            try {
+                repo.updateSchedule(schedules.get(0), schedules.get(1));
+            } catch (IntrospectionException | InvocationTargetException | IllegalAccessException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+            writer.write("Schedule updated successfully");
         }
+        else
+            writer.write("You don't have permission for this operation");
 
-        writer.write("Schedule updated successfully");
         writer.flush();
         writer.close();
     }
@@ -97,14 +98,18 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        ScheduleRepo scheduleRepo = new ScheduleRepo();
+        HttpSession session = req.getSession();
 
-        short scheduleId = Short.parseShort(req.getParameter("scheduleId"));
-        Schedule schedule = scheduleRepo.getScheduleById(scheduleId);
+        if (verifyAccess(session, "admin")){
+            ScheduleRepo scheduleRepo = new ScheduleRepo();
+            short scheduleId = Short.parseShort(req.getParameter("scheduleId"));
+            Schedule schedule = scheduleRepo.getScheduleById(scheduleId);
+            scheduleRepo.deleteSchedule(schedule);
 
-        scheduleRepo.deleteSchedule(schedule);
-
-        writer.write("Schedule deleted successfully");
+            writer.write("Schedule deleted successfully");
+        }
+        else
+            writer.write("You don't have permission for this operation");
         writer.flush();
         writer.close();
     }
