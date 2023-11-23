@@ -1,19 +1,22 @@
 package org.ucsc.railboostbackend.models;
 
+import java.util.Date;
+
 public class User {
     private int userId;
     private String username;
     private String password;
     private String fName;
     private String lName;
-    private String dob;
+    private Date dob;
     private String gender;
     private String email;
     private String telNo;
+    private String role;
 
     public User(){}
 
-    public User(String username, String password, String fName, String lName, String dob, String gender, String email, String telNo) {
+    public User(String username, String password, String fName, String lName, Date dob, String gender, String email, String telNo) {
         this.username = username;
         this.password = password;
         this.fName = fName;
@@ -64,11 +67,11 @@ public class User {
         this.lName = lName;
     }
 
-    public String getDob() {
+    public Date getDob() {
         return dob;
     }
 
-    public void setDob(String dob) {
+    public void setDob(Date dob) {
         this.dob = dob;
     }
 
@@ -96,6 +99,14 @@ public class User {
         this.telNo = telNo;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -108,6 +119,7 @@ public class User {
                 ", gender='" + gender + '\'' +
                 ", email='" + email + '\'' +
                 ", telNo='" + telNo + '\'' +
+                ", role='" + role + '\'' +
                 '}';
     }
 }

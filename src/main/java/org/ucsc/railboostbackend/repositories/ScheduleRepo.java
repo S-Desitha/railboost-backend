@@ -208,7 +208,7 @@ public class ScheduleRepo {
     public void updateSchedule(Schedule original, Schedule updated) throws IntrospectionException, InvocationTargetException, IllegalAccessException, ClassNotFoundException {
         boolean isSuccess = false;
         Connection connection = DBConnection.getConnection();
-        StringBuilder sch_queryBuilder = new StringBuilder("UPDATE Schedule SET ");
+        StringBuilder sch_queryBuilder = new StringBuilder("UPDATE schedule SET ");
 
         for (PropertyDescriptor descriptor : Introspector.getBeanInfo(original.getClass()).getPropertyDescriptors()) {
 //            System.out.println(descriptor.getName() +" : " + descriptor.getPropertyType());
@@ -237,6 +237,12 @@ public class ScheduleRepo {
 
         System.out.println(sch_query);
 
+        try (PreparedStatement statement = connection.prepareStatement(sch_query)) {
+            int res = statement.executeUpdate();
+            System.out.println(res);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

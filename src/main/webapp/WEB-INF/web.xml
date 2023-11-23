@@ -36,6 +36,52 @@
     <url-pattern>/trainSchedule</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>Staff</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.StaffController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Staff</servlet-name>
+    <url-pattern>/staff</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>SignUp</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.SignUpController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SignUp</servlet-name>
+    <url-pattern>/signup</url-pattern>
+  </servlet-mapping>
+
+  <filter>
+    <filter-name>CorsFilter</filter-name>
+    <filter-class>org.ucsc.railboostbackend.services.CorsFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern> <!-- Specify the URL pattern to which the filter applies -->
+  </filter-mapping>
+
+
+  <servlet>
+    <servlet-name>Auth</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.AuthController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Auth</servlet-name>
+    <url-pattern>/auth</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Train</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.TrainController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Train</servlet-name>
+    <url-pattern>/train</url-pattern>
+  </servlet-mapping>
+
 </web-app>
 
 

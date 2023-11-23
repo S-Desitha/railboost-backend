@@ -10,6 +10,9 @@ public class Login {
         this.username = username;
     }
 
+    public Login() {
+    }
+
     public String getUsername() {
         return username;
     }
