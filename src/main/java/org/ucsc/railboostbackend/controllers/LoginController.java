@@ -15,6 +15,8 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()));
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Credentials", "true");
         writer.write("This is the login page");
         writer.flush();
         writer.close();
@@ -26,17 +28,24 @@ public class LoginController extends HttpServlet {
         HttpSession httpSession = req.getSession();
         Gson gson = new Gson();
 
+        httpSession.setMaxInactiveInterval(24*60*60);
+
         LoginRepo loginRepo = new LoginRepo();
         Login loginReq = gson.fromJson(req.getReader(), Login.class);
-        Login loginResp = new Login(loginReq.getUsername());
-
+//        Login loginResp = new Login(loginReq.getUsername());
+        Login loginResp = null;
         try {
-            boolean loginStatus = loginRepo.verifyLogin(loginReq);
-            loginResp.setSuccessful(loginStatus);
-            if (loginStatus) {
-                httpSession.setAttribute("userId", loginRepo.getUserId());
-                httpSession.setAttribute("role", loginRepo.getRole());
-                loginResp.setRole(loginRepo.getRole());
+            loginResp = loginRepo.verifyLogin(loginReq);
+//            boolean loginStatus = loginRepo.verifyLogin(loginReq);
+//            loginResp.setSuccessful(loginStatus);
+//            if (loginStatus) {
+//                httpSession.setAttribute("username", loginRepo.getUserId());
+//                httpSession.setAttribute("role", loginRepo.getRole());
+//                loginResp.setRole(loginRepo.getRole());
+//            }
+            if (loginResp.isSuccessful()){
+                httpSession.setAttribute("username", loginResp.getUsername());
+                httpSession.setAttribute("role", loginResp.getRole());
             }
             else{
                 httpSession.invalidate();
@@ -44,6 +53,8 @@ public class LoginController extends HttpServlet {
         } catch (SQLException e) {
             System.out.println("Error executing SQL query!!\n" + e.getMessage());
         }
+
+        resp.setContentType("application/json; charset=UTF-8");
 
         String respJson = gson.toJson(loginResp);
         writer.write(respJson);

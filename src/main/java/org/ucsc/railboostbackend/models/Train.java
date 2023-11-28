@@ -2,34 +2,47 @@ package org.ucsc.railboostbackend.models;
 
 public class Train {
     private String trainId;
-    private String type;
+    private String trainType;
+    private short nCompartments;
 
     public Train(String trainId, String type) {
         this.trainId = trainId;
-        this.type = type;
+        this.trainType = type;
+    }
+
+    public Train() {
     }
 
     public String getTrainId() {
         return this.trainId;
     }
 
-    public String getType() {
-        return this.type;
+    public String getTrainType() {
+        return this.trainType;
     }
 
     public void setTrainId(String trainId) {
         this.trainId = trainId;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTrainType(String trainType) {
+        this.trainType = trainType;
+    }
+
+    public short getnCompartments() {
+        return nCompartments;
+    }
+
+    public void setnCompartments(short nCompartments) {
+        this.nCompartments = nCompartments;
     }
 
     @Override
     public String toString() {
         return "Train{" +
                 "trainId='" + trainId + '\'' +
-                ", type='" + type + '\'' +
+                ", type='" + trainType + '\'' +
+                ", nCompartments=" + nCompartments +
                 '}';
     }
 }

@@ -13,14 +13,15 @@ public class LoginRepo {
     private int userId;
     private String role;
 
-    public boolean verifyLogin(Login login) throws SQLException {
+    public Login verifyLogin(Login login) throws SQLException {
+        Login response = new Login();
         boolean isSuccess = false;
         HashPassword hashPassword = new HashPassword();
         String username = login.getUsername();
         String inputPassword = login.getPassword();
 
 
-        String query = "SELECT userId, password, salt, role FROM users where username=?";
+        String query = "SELECT username, userId, password, salt, role FROM users where username=?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement pst = connection.prepareStatement(query);
         pst.setString(1, username);
@@ -31,10 +32,15 @@ public class LoginRepo {
             String salt = resultSet.getString("salt");
 
             if (hashPassword.hash(inputPassword, salt).equals(storedPassword)) {
-                this.userId = resultSet.getInt("userId");
-                this.role = resultSet.getString("role");
+//                this.userId = resultSet.getInt("userId");
+//                this.role = resultSet.getString("role");
+                response.setSuccessful(true);
+                response.setUsername(resultSet.getString("username"));
+                response.setRole(resultSet.getString("role"));
                 isSuccess = true;
             }
+            else
+                response.setSuccessful(false);
         }
 
         try {
@@ -45,7 +51,7 @@ public class LoginRepo {
             System.out.println("Error when closing DB connection!! \n" + e.getMessage());
         }
 
-        return isSuccess;
+        return response;
     }
 
     public int getUserId() {

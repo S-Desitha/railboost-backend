@@ -20,6 +20,8 @@ public class HomeLandingController extends HttpServlet {
         else
             respWriter.write("You are not signed in");
 
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Credentials", "true");
         respWriter.flush();
         respWriter.close();
     }
