@@ -11,9 +11,9 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class ScheduleRepo {
@@ -161,26 +161,32 @@ public class ScheduleRepo {
     }
 
 
-    public List<Schedule> getSchedules(Days day, String startStation, String endStation){
+    public List<Schedule> getSchedules(Schedule reqSchedule){
         List<Schedule> schedules = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
         String query = "SELECT ts.scheduleId FROM schedule ts " +
                 "INNER JOIN schedule_stations ss1 ON ts.scheduleId = ss1.scheduleId " +
                 "INNER JOIN schedule_stations ss2 ON ts.scheduleId = ss2.scheduleId " +
                 "INNER JOIN schedule_days days ON ts.scheduleId = days.scheduleId " +
-                "WHERE days.day = ? " +
+                "WHERE (days.day = ? OR ts.date = ?)" +
                 "AND ss1.station = ? " +
                 "AND ss2.station = ? " +
                 "AND ss1.stIndex < ss2.stIndex " +
                 "ORDER BY ss1.scheduledArrivalTime ASC";
+
+        String startStation = reqSchedule.getStartStation();
+        String endStation = reqSchedule.getEndStation();
+        LocalDate date = reqSchedule.getDate();
+        Days day = Days.valueOf(date.getDayOfWeek().toString());
 
         PreparedStatement pst = null;
         ResultSet resultSet = null;
         try {
             pst = connection.prepareStatement(query);
             pst.setString(1, day.name());
-            pst.setString(2, startStation);
-            pst.setString(3, endStation);
+            pst.setDate(2, Date.valueOf(date));
+            pst.setString(3, startStation);
+            pst.setString(4, endStation);
 
             resultSet = pst.executeQuery();
             while (resultSet.next()) {

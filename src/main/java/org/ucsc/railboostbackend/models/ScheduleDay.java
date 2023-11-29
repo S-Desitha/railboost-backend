@@ -2,6 +2,8 @@ package org.ucsc.railboostbackend.models;
 
 import org.ucsc.railboostbackend.enums.Days;
 
+import java.util.Date;
+
 public class ScheduleDay {
     private Short scheduleId;
     private Days day;
