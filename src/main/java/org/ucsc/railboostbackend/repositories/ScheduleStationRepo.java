@@ -45,9 +45,9 @@ public class ScheduleStationRepo {
                 statement.setShort(1, scheduleStation.getScheduleId());
                 statement.setString(2, scheduleStation.getStation());
                 statement.setShort(3, scheduleStation.getStIndex());
-                statement.setTime(4, new Time(scheduleStation.getScheduledArrivalTime().getTime()));
+                statement.setTime(4, Time.valueOf(scheduleStation.getScheduledArrivalTime()));
                 if (scheduleStation.getScheduledDepartureTime() != null) {
-                    statement.setTime(5, new Time(scheduleStation.getScheduledDepartureTime().getTime()));
+                    statement.setTime(5, Time.valueOf(scheduleStation.getScheduledDepartureTime()));
                 }
                 else
                     statement.setNull(5, Types.TIME);
@@ -102,8 +102,8 @@ public class ScheduleStationRepo {
             statement = connection.prepareStatement(query);
             for (ScheduleStation scheduleStation : scheduleStations){
                 statement.setShort(1, scheduleStation.getStIndex());
-                statement.setTime(2, new Time(scheduleStation.getScheduledArrivalTime().getTime()));
-                statement.setTime(3, new Time(scheduleStation.getScheduledDepartureTime().getTime()));
+                statement.setTime(2, Time.valueOf(scheduleStation.getScheduledArrivalTime()));
+                statement.setTime(3, Time.valueOf(scheduleStation.getScheduledDepartureTime()));
                 statement.setString(4, scheduleStation.getStation());
                 statement.setShort(5, scheduleStation.getScheduleId());
                 statement.addBatch();
