@@ -1,14 +1,12 @@
 package org.ucsc.railboostbackend.models;
 
-import org.ucsc.railboostbackend.enums.Days;
-
-import java.util.Date;
+import org.ucsc.railboostbackend.enums.Day;
 
 public class ScheduleDay {
     private Short scheduleId;
-    private Days day;
+    private Day day;
 
-    public ScheduleDay(Short scheduleId, Days day) {
+    public ScheduleDay(Short scheduleId, Day day) {
         this.scheduleId = scheduleId;
         this.day = day;
     }
@@ -24,11 +22,11 @@ public class ScheduleDay {
         this.scheduleId = scheduleId;
     }
 
-    public Days getDay() {
+    public Day getDay() {
         return day;
     }
 
-    public void setDay(Days day) {
+    public void setDay(Day day) {
         this.day = day;
     }
 

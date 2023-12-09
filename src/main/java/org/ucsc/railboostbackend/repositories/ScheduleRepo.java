@@ -1,6 +1,6 @@
 package org.ucsc.railboostbackend.repositories;
 
-import org.ucsc.railboostbackend.enums.Days;
+import org.ucsc.railboostbackend.enums.Day;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.models.ScheduleDay;
 import org.ucsc.railboostbackend.models.ScheduleStation;
@@ -15,6 +15,8 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.IntStream;
+
+import static org.quartz.JobBuilder.newJob;
 
 public class ScheduleRepo {
 
@@ -72,7 +74,7 @@ public class ScheduleRepo {
             while (resultSet.next()){
                 days.add(new ScheduleDay(
                         resultSet.getShort("scheduleId"),
-                        Days.valueOf(resultSet.getString("day"))
+                        Day.valueOf(resultSet.getString("day"))
                 ));
             }
             schedule.setDays(days);
@@ -110,7 +112,7 @@ public class ScheduleRepo {
         String startStation = reqSchedule.getStartStation();
         String endStation = reqSchedule.getEndStation();
         LocalDate date = reqSchedule.getDate();
-        Days day = Days.valueOf(date.getDayOfWeek().toString());
+        Day day = Day.valueOf(date.getDayOfWeek().toString());
 
         PreparedStatement pst = null;
         ResultSet resultSet = null;

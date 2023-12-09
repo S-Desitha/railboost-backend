@@ -1,14 +1,11 @@
 package org.ucsc.railboostbackend.repositories;
 
-import org.ucsc.railboostbackend.enums.Days;
 import org.ucsc.railboostbackend.models.ScheduleDay;
-import org.ucsc.railboostbackend.models.ScheduleStation;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
