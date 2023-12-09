@@ -2,7 +2,7 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import org.ucsc.railboostbackend.enums.Days;
+import org.ucsc.railboostbackend.enums.Day;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 
@@ -22,7 +22,6 @@ import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class ScheduleController extends HttpServlet {
@@ -50,7 +49,7 @@ public class ScheduleController extends HttpServlet {
 
         Schedule reqSchedule = gson.fromJson(jsonQuery, Schedule.class);
 
-        System.out.println(Arrays.toString(Days.values()));
+        System.out.println(Arrays.toString(Day.values()));
 
         scheduleList = scheduleRepo.getSchedules(reqSchedule);
 
