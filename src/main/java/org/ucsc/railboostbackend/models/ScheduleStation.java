@@ -1,15 +1,15 @@
 package org.ucsc.railboostbackend.models;
 
-import java.util.Date;
+import java.time.LocalTime;
 
 public class ScheduleStation extends BaseModel {
     private Short scheduleId;
     private String station;
     private Short stIndex;
-    private Date scheduledArrivalTime;
-    private Date scheduledDepartureTime;
+    private LocalTime scheduledArrivalTime;
+    private LocalTime scheduledDepartureTime;
 
-    public ScheduleStation(Short scheduleId, String station, Short stIndex, Date scheduledArrivalTime, Date scheduledDepartureTime) {
+    public ScheduleStation(Short scheduleId, String station, Short stIndex, LocalTime scheduledArrivalTime, LocalTime scheduledDepartureTime) {
         this.scheduleId = scheduleId;
         this.station = station;
         this.stIndex = stIndex;
@@ -44,19 +44,19 @@ public class ScheduleStation extends BaseModel {
         this.stIndex = stIndex;
     }
 
-    public Date getScheduledArrivalTime() {
+    public LocalTime getScheduledArrivalTime() {
         return scheduledArrivalTime;
     }
 
-    public void setScheduledArrivalTime(Date scheduledArrivalTime) {
+    public void setScheduledArrivalTime(LocalTime scheduledArrivalTime) {
         this.scheduledArrivalTime = scheduledArrivalTime;
     }
 
-    public Date getScheduledDepartureTime() {
+    public LocalTime getScheduledDepartureTime() {
         return scheduledDepartureTime;
     }
 
-    public void setScheduledDepartureTime(Date scheduledDepartureTime) {
+    public void setScheduledDepartureTime(LocalTime scheduledDepartureTime) {
         this.scheduledDepartureTime = scheduledDepartureTime;
     }
 

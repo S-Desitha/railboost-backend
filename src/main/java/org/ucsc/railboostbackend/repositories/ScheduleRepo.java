@@ -55,8 +55,8 @@ public class ScheduleRepo {
                         resultSet.getShort("scheduleId"),
                         resultSet.getString("station"),
                         resultSet.getShort("stIndex"),
-                        resultSet.getTime("scheduledArrivalTime"),
-                        resultSet.getTime("scheduledDepartureTime")
+                        resultSet.getTime("scheduledArrivalTime").toLocalTime(),
+                        resultSet.getTime("scheduledDepartureTime").toLocalTime()
                     )
                 );
             }
@@ -209,10 +209,10 @@ public class ScheduleRepo {
                 pst_stations.setShort(1, scheduleId);
                 pst_stations.setString(2, station.getStation());
                 pst_stations.setShort(3, station.getStIndex());
-                pst_stations.setTime(4, new Time(station.getScheduledArrivalTime().getTime()));
+                pst_stations.setTime(4, Time.valueOf(station.getScheduledArrivalTime()));
 
                 if (station.getScheduledDepartureTime() != null)
-                    pst_stations.setTime(5, new Time(station.getScheduledDepartureTime().getTime()));
+                    pst_stations.setTime(5, Time.valueOf(station.getScheduledDepartureTime()));
                 else
                     pst_stations.setNull(5, Types.TIME);
 
