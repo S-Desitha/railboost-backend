@@ -82,6 +82,11 @@
     <url-pattern>/train</url-pattern>
   </servlet-mapping>
 
+
+  <listener>
+    <listener-class>org.ucsc.railboostbackend.services.CronScheduler</listener-class>
+  </listener>
+
 </web-app>
 
 
