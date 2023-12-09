@@ -1,8 +1,8 @@
 package org.ucsc.railboostbackend.controllers;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import org.ucsc.railboostbackend.enums.Days;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 
@@ -17,7 +17,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
+import java.net.URLDecoder;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class ScheduleController extends HttpServlet {
@@ -26,19 +31,32 @@ public class ScheduleController extends HttpServlet {
         // return a list of all the train schedules based on the filtering provided by the user.
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()));
         ScheduleRepo scheduleRepo = new ScheduleRepo();
-        Gson gson = new Gson();
+        List<Schedule> scheduleList;
 
-//        Days day = Days.valueOf(req.getParameter("day"));
-//        String startSt = req.getParameter("startSt");
-//        String endSt = req.getParameter("endSt");
-//        List<Schedule> schedules = scheduleRepo.getSchedules(day, startSt, endSt);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
+                    @Override
+                    public LocalDate deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+                        return LocalDate.parse(json.getAsJsonPrimitive().getAsString());
+                    }
+                })
+                .setDateFormat("yyyy-MM-dd")
+                .create();
 
-        Short scheduleId = Short.valueOf(req.getParameter("scheduleId"));
-        Schedule schedules = scheduleRepo.getScheduleById(scheduleId);
 
-//        schedules.forEach(System.out::println);
+        String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
 
-        writer.write(gson.toJson(schedules));
+        System.out.println(jsonQuery);
+
+        Schedule reqSchedule = gson.fromJson(jsonQuery, Schedule.class);
+
+        System.out.println(Arrays.toString(Days.values()));
+
+        scheduleList = scheduleRepo.getSchedules(reqSchedule);
+
+//        scheduleList.forEach(System.out::println);
+
+        writer.write(gson.toJson(scheduleList));
         writer.flush();
         writer.close();
     }

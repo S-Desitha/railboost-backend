@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.models;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ public class Schedule {
     private String endStation;
     private String trainId;
     private String trainType;
+    private LocalDate date;
     private List<ScheduleStation> stations = new ArrayList<ScheduleStation>();
     private List<ScheduleDay> days = new ArrayList<ScheduleDay>();
 
@@ -69,6 +71,14 @@ public class Schedule {
         this.trainType = trainType;
     }
 
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
     @Override
     public String toString() {
         return "Schedule{" +
@@ -77,6 +87,7 @@ public class Schedule {
                 ", endStation='" + endStation + '\'' +
                 ", trainId='" + trainId + '\'' +
                 ", trainType='" + trainType + '\'' +
+                ", date=" + date +
                 ", stations=" + stations +
                 ", days=" + days +
                 '}';
