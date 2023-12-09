@@ -8,8 +8,8 @@ public class DBConnection {
     private static final String host = "localhost";
     private static final String port = "3306";
     private static final String db_name = "RailBoost";
-    private static final String username = "root";
-    private static final String password = "";
+    private static final String username = "railboost";
+    private static final String password = "railboost@ucsc";
 
     static String dbUrl = "jdbc:mysql://"+host+":"+port+"/"+db_name;
 
