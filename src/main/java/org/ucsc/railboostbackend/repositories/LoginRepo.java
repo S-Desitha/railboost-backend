@@ -2,7 +2,7 @@ package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.Login;
 import org.ucsc.railboostbackend.utilities.DBConnection;
-import org.ucsc.railboostbackend.utilities.HashPassword;
+import org.ucsc.railboostbackend.utilities.Security;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,7 +16,7 @@ public class LoginRepo {
     public Login verifyLogin(Login login) throws SQLException {
         Login response = new Login();
         boolean isSuccess = false;
-        HashPassword hashPassword = new HashPassword();
+        Security security = new Security();
         String username = login.getUsername();
         String inputPassword = login.getPassword();
 
@@ -31,7 +31,7 @@ public class LoginRepo {
             String storedPassword = resultSet.getString("password");
             String salt = resultSet.getString("salt");
 
-            if (hashPassword.hash(inputPassword, salt).equals(storedPassword)) {
+            if (security.hash(inputPassword, salt).equals(storedPassword)) {
 //                this.userId = resultSet.getInt("userId");
 //                this.role = resultSet.getString("role");
                 response.setSuccessful(true);

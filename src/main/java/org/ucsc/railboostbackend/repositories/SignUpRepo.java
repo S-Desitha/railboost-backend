@@ -2,9 +2,8 @@ package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.User;
 import org.ucsc.railboostbackend.utilities.DBConnection;
-import org.ucsc.railboostbackend.utilities.HashPassword;
+import org.ucsc.railboostbackend.utilities.Security;
 
-import java.lang.reflect.Type;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.*;
 import java.util.Map;
@@ -20,7 +19,7 @@ public class SignUpRepo {
         String password = user.getPassword();
 
         try {
-            Map<String, String> hashResult = new HashPassword().hash(password);
+            Map<String, String> hashResult = new Security().hash(password);
 
             String hash = hashResult.get("hash");
             String salt = hashResult.get("salt");
