@@ -83,6 +83,16 @@
   </servlet-mapping>
 
 
+  <servlet>
+    <servlet-name>Journey</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.JourneyController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Journey</servlet-name>
+    <url-pattern>/journey</url-pattern>
+  </servlet-mapping>
+
+
   <listener>
     <listener-class>org.ucsc.railboostbackend.services.CronScheduler</listener-class>
   </listener>

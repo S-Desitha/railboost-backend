@@ -1,12 +1,14 @@
 package org.ucsc.railboostbackend.repositories;
 
 
+import org.ucsc.railboostbackend.models.JourneyStation;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.models.ScheduleStation;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class JourneyRepo {
 
@@ -46,5 +48,64 @@ public class JourneyRepo {
             System.out.println("Error when closing DB connection : " + e.getMessage());
         }
 
+    }
+
+
+    public void updateJourney(JourneyStation journeyStation) {
+        Connection connection = DBConnection.getConnection();
+
+        LocalTime time;
+        StringBuilder builder = new StringBuilder("UPDATE journey_stations SET ");
+        if ((time=journeyStation.getArrivalTime())!=null)
+            builder.append("arrivalTime = ? ");
+        else if ((time=journeyStation.getDepartureTime())!=null)
+            builder.append("departureTime = ?");
+
+        builder.append("WHERE date = ? " +
+                "AND scheduleId = ? " +
+                "AND station = ? ");
+
+        String query = builder.toString();
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            assert time != null;
+            statement.setTime(1, Time.valueOf(time));
+            statement.setDate(2, Date.valueOf(journeyStation.getDate()));
+            statement.setShort(3, journeyStation.getScheduleId());
+            statement.setString(4, journeyStation.getStation());
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error when update arrival/departure time for journey: ");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private boolean checkExists(JourneyStation journeyStation) {
+        // checks whether the relevant field (arrivalTime or departureTime) was updated already.
+        // If so, it shouldn't be updated again.
+
+        Connection connection = DBConnection.getConnection();
+        String query = "SELECT ? FROM journey_stations " +
+                "WHERE date = DATE(date) = ? " +
+                "AND scheduleId = ? " +
+                "AND station = ? ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)){
+            if (journeyStation.getArrivalTime()!=null)
+                statement.setString(1, "arrivalTime");
+            else if (journeyStation.getDepartureTime()!=null)
+                statement.setString(1, "departureTime");
+            statement.setDate(2, Date.valueOf(journeyStation.getDate()));
+            statement.setShort(3, journeyStation.getScheduleId());
+            statement.setString(4, journeyStation.getStation());
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.getTime(1)==null)
+                return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return true;
     }
 }

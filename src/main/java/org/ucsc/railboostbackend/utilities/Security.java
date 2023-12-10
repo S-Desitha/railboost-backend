@@ -2,20 +2,22 @@ package org.ucsc.railboostbackend.utilities;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.servlet.http.HttpSession;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public class HashPassword {
+public class Security {
 
     private SecretKeyFactory factory;
     private final int iterations = 65536;
     private final int desiredKeyLen = 256;
 
-    public HashPassword() {
+    public Security() {
         try {
             factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 
@@ -55,5 +57,18 @@ public class HashPassword {
         );
 
         return results;
+    }
+
+
+    public static boolean verifyAccess(HttpSession httpSession, String role) {
+        if (httpSession.getAttribute("role")!=null)
+            return httpSession.getAttribute("role").equals(role);
+
+        return false;
+    }
+
+    public static boolean verifyAccess(HttpSession httpSession, String role, String station) {
+//        return httpSession.getAttribute("role") == role && httpSession.getAttribute("station") == "FOT";
+        return httpSession.getAttribute("role").equals(role) && station.equals("FOT");
     }
 }
