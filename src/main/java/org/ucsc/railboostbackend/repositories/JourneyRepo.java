@@ -84,7 +84,7 @@ public class JourneyRepo {
     }
 
 
-    public Journey getJourney(Journey reqJourney) {
+    public Journey getJourney(LocalDate date, short scheduleId) {
         Connection connection = DBConnection.getConnection();
         Journey journey = new Journey();
         List<JourneyStation> stations = new ArrayList<>();
@@ -97,8 +97,8 @@ public class JourneyRepo {
         ResultSet resultSet;
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setDate(1, Date.valueOf(reqJourney.getDate()));
-            statement.setShort(2, reqJourney.getScheduleId());
+            statement.setDate(1, Date.valueOf(date));
+            statement.setShort(2, scheduleId);
 
             resultSet = statement.executeQuery();
             for (int i=0; resultSet.next(); i++) {
@@ -123,7 +123,33 @@ public class JourneyRepo {
     }
 
 
-        private boolean checkExists(JourneyStation journeyStation) {
+    public List<Journey> getJourneysByStation(LocalDate date, String stationCode) {
+        Connection connection = DBConnection.getConnection();
+        List<Journey> journeyList = new ArrayList<>();
+        short scheduleId;
+        String query = "SELECT ts.scheduleId FROM schedule ts " +
+                "INNER JOIN schedule_stations ss ON ts.scheduleId = ss.scheduleId " +
+                "WHERE ss.station = ?";
+        ResultSet resultSet;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, stationCode);
+
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                scheduleId = resultSet.getShort(1);
+                journeyList.add(getJourney(date, scheduleId));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return journeyList;
+    }
+
+
+    private boolean checkExists(JourneyStation journeyStation) {
         // checks whether the relevant field (arrivalTime or departureTime) was updated already.
         // If so, it shouldn't be updated again.
 
