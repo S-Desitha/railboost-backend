@@ -4,6 +4,7 @@ import com.google.gson.*;
 import org.ucsc.railboostbackend.models.Journey;
 import org.ucsc.railboostbackend.models.JourneyStation;
 import org.ucsc.railboostbackend.repositories.JourneyRepo;
+import org.ucsc.railboostbackend.repositories.StaffRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 import org.ucsc.railboostbackend.services.LocalTimeDeserializer;
 import org.ucsc.railboostbackend.utilities.Security;
@@ -51,6 +52,7 @@ public class JourneyController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
+        HttpSession session = req.getSession();
         JourneyRepo journeyRepo = new JourneyRepo();
         List<Journey> journeyList;
         Journey journey;
@@ -69,7 +71,10 @@ public class JourneyController extends HttpServlet {
             writer.write(gson.toJson(journey));
         }
 
-        else if ((stationCode=(String) req.getSession().getAttribute("stationCode"))!=null) {
+        else if (session.getAttribute("role").equals("sm")) {
+            stationCode = new StaffRepo()
+                    .getStaffByUserId((Integer) session.getAttribute("userId"))
+                    .getStation();
             journeyList = journeyRepo.getJourneysByStation(reqJourney.getDate(), stationCode);
             writer.write(gson.toJson(journeyList));
         }
