@@ -46,6 +46,7 @@ public class LoginController extends HttpServlet {
             if (loginResp.isSuccessful()){
                 httpSession.setAttribute("username", loginResp.getUsername());
                 httpSession.setAttribute("role", loginResp.getRole());
+                httpSession.setAttribute("userId", loginRepo.getUserId());
             }
             else{
                 httpSession.invalidate();
