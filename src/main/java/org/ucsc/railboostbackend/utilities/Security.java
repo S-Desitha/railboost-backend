@@ -1,5 +1,7 @@
 package org.ucsc.railboostbackend.utilities;
 
+import org.ucsc.railboostbackend.repositories.StaffRepo;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.servlet.http.HttpSession;
@@ -68,7 +70,10 @@ public class Security {
     }
 
     public static boolean verifyAccess(HttpSession httpSession, String role, String station) {
-//        return httpSession.getAttribute("role") == role && httpSession.getAttribute("station") == "FOT";
-        return httpSession.getAttribute("role").equals(role) && station.equals("FOT");
+        return httpSession.getAttribute("role").equals(role) &&
+                new StaffRepo()
+                        .getStaffByUserId((Integer) httpSession.getAttribute("userId"))
+                        .getStation()
+                        .equals(station);
     }
 }
