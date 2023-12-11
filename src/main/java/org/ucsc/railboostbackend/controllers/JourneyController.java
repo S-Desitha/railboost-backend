@@ -1,12 +1,9 @@
 package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.*;
-import org.ucsc.railboostbackend.enums.Day;
 import org.ucsc.railboostbackend.models.Journey;
 import org.ucsc.railboostbackend.models.JourneyStation;
-import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.JourneyRepo;
-import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 import org.ucsc.railboostbackend.services.LocalTimeDeserializer;
 import org.ucsc.railboostbackend.utilities.Security;
@@ -18,11 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Type;
 import java.net.URLDecoder;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 
 public class JourneyController extends HttpServlet {
@@ -58,7 +52,9 @@ public class JourneyController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
         JourneyRepo journeyRepo = new JourneyRepo();
+        List<Journey> journeyList;
         Journey journey;
+        String stationCode;
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
@@ -67,11 +63,17 @@ public class JourneyController extends HttpServlet {
 
         String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
         Journey reqJourney = gson.fromJson(jsonQuery, Journey.class);
-        journey = journeyRepo.getJourney(reqJourney);
 
-//        journey.forEach(System.out::println);
+        if (reqJourney.getScheduleId()>0){
+            journey = journeyRepo.getJourney(reqJourney.getDate(), reqJourney.getScheduleId());
+            writer.write(gson.toJson(journey));
+        }
 
-        writer.write(gson.toJson(journey));
+        else if ((stationCode=(String) req.getSession().getAttribute("stationCode"))!=null) {
+            journeyList = journeyRepo.getJourneysByStation(reqJourney.getDate(), stationCode);
+            writer.write(gson.toJson(journeyList));
+        }
+
         writer.flush();
         writer.close();
     }
