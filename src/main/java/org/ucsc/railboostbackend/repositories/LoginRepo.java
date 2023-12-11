@@ -32,8 +32,8 @@ public class LoginRepo {
             String salt = resultSet.getString("salt");
 
             if (security.hash(inputPassword, salt).equals(storedPassword)) {
-//                this.userId = resultSet.getInt("userId");
-//                this.role = resultSet.getString("role");
+                this.userId = resultSet.getInt("userId");
+                this.role = resultSet.getString("role");
                 response.setSuccessful(true);
                 response.setUsername(resultSet.getString("username"));
                 response.setRole(resultSet.getString("role"));
