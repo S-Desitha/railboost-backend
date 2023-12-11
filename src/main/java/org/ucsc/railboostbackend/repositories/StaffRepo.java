@@ -41,6 +41,27 @@ public class StaffRepo {
     }
 
 
+    public Staff getStaffByUserId(int userId) {
+        Connection connection = DBConnection.getConnection();
+        String query = "SELECT staffId FROM staff " +
+                "INNER JOIN users ON staff.userId = users.userId " +
+                "WHERE users.userId = ? ";
+
+        ResultSet resultSet;
+        try (PreparedStatement statement = connection.prepareStatement(query)){
+            statement.setInt(1, userId);
+            resultSet = statement.executeQuery();
+            if (resultSet.next())
+                return getStaffById(resultSet.getString(1));
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
+
+
     public boolean addStaffMember(Staff staff) {
         boolean isSuccess = false;
         User user = staff.getUser();
