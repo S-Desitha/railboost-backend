@@ -18,6 +18,13 @@ public class JourneyStation {
         date = LocalDate.of(2023, 12, 9);
     }
 
+    public JourneyStation(String station, short stIndex, LocalTime arrivalTime, LocalTime departureTime) {
+        this.station = station;
+        this.stIndex = stIndex;
+        this.arrivalTime = arrivalTime;
+        this.departureTime = departureTime;
+    }
+
     public LocalDate getDate() {
         return date;
     }
