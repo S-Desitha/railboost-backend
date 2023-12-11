@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.repositories;
 
 
+import org.ucsc.railboostbackend.models.Journey;
 import org.ucsc.railboostbackend.models.JourneyStation;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.models.ScheduleStation;
@@ -9,6 +10,8 @@ import org.ucsc.railboostbackend.utilities.DBConnection;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JourneyRepo {
 
@@ -80,7 +83,47 @@ public class JourneyRepo {
         }
     }
 
-    private boolean checkExists(JourneyStation journeyStation) {
+
+    public Journey getJourney(Journey reqJourney) {
+        Connection connection = DBConnection.getConnection();
+        Journey journey = new Journey();
+        List<JourneyStation> stations = new ArrayList<>();
+        String query ="SELECT jour.date, jour.scheduleId, js.station, js.stIndex, js.arrivalTime, js.departureTime " +
+                "FROM journey jour " +
+                "INNER JOIN journey_stations js ON jour.date = js.date and jour.scheduleId = js.scheduleId " +
+                "WHERE jour.date = ? " +
+                "AND jour.scheduleId = ? " +
+                "ORDER BY  js.stIndex ";
+        ResultSet resultSet;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setDate(1, Date.valueOf(reqJourney.getDate()));
+            statement.setShort(2, reqJourney.getScheduleId());
+
+            resultSet = statement.executeQuery();
+            for (int i=0; resultSet.next(); i++) {
+                if (i==0){
+                    journey.setDate(resultSet.getDate("date").toLocalDate());
+                    journey.setScheduleId(resultSet.getShort("scheduleId"));
+                }
+                stations.add(new JourneyStation(
+                        resultSet.getString("station"),
+                        resultSet.getShort("stIndex"),
+                        resultSet.getTime("arrivalTime") != null ? resultSet.getTime("arrivalTime").toLocalTime() : null,
+                        resultSet.getTime("departureTime") != null ? resultSet.getTime("departureTime").toLocalTime() : null
+                ));
+            }
+            journey.setStations(stations);
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return journey;
+    }
+
+
+        private boolean checkExists(JourneyStation journeyStation) {
         // checks whether the relevant field (arrivalTime or departureTime) was updated already.
         // If so, it shouldn't be updated again.
 
