@@ -8,6 +8,7 @@ public class Journey {
     private LocalDate date;
     private short scheduleId;
     private List<JourneyStation> stations = new ArrayList<>();
+    private Schedule schedule;
 
     public LocalDate getDate() {
         return date;
@@ -31,6 +32,14 @@ public class Journey {
 
     public void setStations(List<JourneyStation> stations) {
         this.stations = stations;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
     }
 
     @Override

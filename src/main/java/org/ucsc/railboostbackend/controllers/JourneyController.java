@@ -3,6 +3,7 @@ package org.ucsc.railboostbackend.controllers;
 import com.google.gson.*;
 import org.ucsc.railboostbackend.models.Journey;
 import org.ucsc.railboostbackend.models.JourneyStation;
+import org.ucsc.railboostbackend.models.Staff;
 import org.ucsc.railboostbackend.repositories.JourneyRepo;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
@@ -71,13 +72,22 @@ public class JourneyController extends HttpServlet {
             writer.write(gson.toJson(journey));
         }
 
-        else if (session.getAttribute("role").equals("sm")) {
-            stationCode = new StaffRepo()
-                    .getStaffByUserId((Integer) session.getAttribute("userId"))
-                    .getStation();
-            journeyList = journeyRepo.getJourneysByStation(reqJourney.getDate(), stationCode);
-            writer.write(gson.toJson(journeyList));
+        else if (session.getAttribute("role")!=null && session.getAttribute("role").equals("sm")) {
+            Staff staff = new StaffRepo()
+                    .getStaffByUserId((Integer) session.getAttribute("userId"));
+            if (staff!=null){
+                stationCode = staff.getStation();
+                journeyList = journeyRepo.getJourneysByStation(reqJourney.getDate(), stationCode);
+                writer.write(gson.toJson(journeyList));
+            }
+            else{
+                writer.write("{}");
+            }
         }
+//        else {
+//            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+//            writer.write("You are not authorized to do this operations");
+//        }
 
         writer.flush();
         writer.close();
