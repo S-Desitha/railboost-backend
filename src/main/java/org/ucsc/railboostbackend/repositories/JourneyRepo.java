@@ -95,6 +95,7 @@ public class JourneyRepo {
                 "AND jour.scheduleId = ? " +
                 "ORDER BY  js.stIndex ";
         ResultSet resultSet;
+        Schedule schedule = new ScheduleRepo().getScheduleById(scheduleId);
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setDate(1, Date.valueOf(date));
@@ -114,6 +115,7 @@ public class JourneyRepo {
                 ));
             }
             journey.setStations(stations);
+            journey.setSchedule(schedule);
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
