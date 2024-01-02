@@ -85,17 +85,14 @@ public class StaffRepo {
     }
 
 
-    public List<Staff> getNStaff(short count) {
+    public List<Staff> getAllStaff() {
         Connection connection = DBConnection.getConnection();
         List<Staff> staffList = new ArrayList<>();
         String query = "SELECT s.staffId, u.role, u.fName, u.lName, u.username, u.telNo, u.role, s.stationCode, u.email " +
                 "FROM staff s " +
-                "INNER JOIN users u ON s.userId = u.userId " +
-                "LIMIT ? ";
+                "INNER JOIN users u ON s.userId = u.userId ";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setShort(1, count);
-
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Staff staff = new Staff();
