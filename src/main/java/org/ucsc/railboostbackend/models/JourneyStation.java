@@ -13,16 +13,21 @@ public class JourneyStation {
     private short stIndex;
     private LocalTime arrivalTime;
     private LocalTime departureTime;
+    private LocalTime scheduledArrivalTime;
+    private LocalTime scheduledDepartureTime;
 
     public JourneyStation() {
-        date = LocalDate.of(2023, 12, 9);
+        date = LocalDate.now();
     }
 
-    public JourneyStation(String station, short stIndex, LocalTime arrivalTime, LocalTime departureTime) {
+    public JourneyStation(short scheduleId, String station, short stIndex, LocalTime arrivalTime, LocalTime departureTime, LocalTime scheduledArrivalTime, LocalTime scheduledDepartureTime) {
+        this.scheduleId = scheduleId;
         this.station = station;
         this.stIndex = stIndex;
         this.arrivalTime = arrivalTime;
         this.departureTime = departureTime;
+        this.scheduledArrivalTime = scheduledArrivalTime;
+        this.scheduledDepartureTime = scheduledDepartureTime;
     }
 
     public LocalDate getDate() {
@@ -71,6 +76,22 @@ public class JourneyStation {
 
     public void setDepartureTime(LocalTime departureTime) {
         this.departureTime = departureTime;
+    }
+
+    public LocalTime getScheduledArrivalTime() {
+        return scheduledArrivalTime;
+    }
+
+    public void setScheduledArrivalTime(LocalTime scheduledArrivalTime) {
+        this.scheduledArrivalTime = scheduledArrivalTime;
+    }
+
+    public LocalTime getScheduledDepartureTime() {
+        return scheduledDepartureTime;
+    }
+
+    public void setScheduledDepartureTime(LocalTime scheduledDepartureTime) {
+        this.scheduledDepartureTime = scheduledDepartureTime;
     }
 
     @Override
