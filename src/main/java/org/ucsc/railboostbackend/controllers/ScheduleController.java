@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import org.ucsc.railboostbackend.enums.Day;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
+import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,13 +34,8 @@ public class ScheduleController extends HttpServlet {
         List<Schedule> scheduleList;
 
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, new JsonDeserializer<LocalDate>() {
-                    @Override
-                    public LocalDate deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                        return LocalDate.parse(json.getAsJsonPrimitive().getAsString());
-                    }
-                })
-                .setDateFormat("yyyy-MM-dd")
+                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
+                .setDateFormat("MM/dd/yyyy")
                 .create();
 
 
