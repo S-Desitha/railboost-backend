@@ -61,7 +61,7 @@ public class JourneyController extends HttpServlet {
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
-                .setDateFormat("yyyy-MM-dd")
+                .setDateFormat("MM/dd/yyyy")
                 .create();
 
         String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
