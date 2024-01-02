@@ -32,15 +32,14 @@ public class StaffController extends HttpServlet {
         Staff staff;
 
         String staffId = req.getParameter("staffId");
-        short count = Short.parseShort(req.getParameter("count"));
 
-        if (count!=0){
-            staffList = staffRepo.getNStaff(count);
-            writer.write(gson.toJson(staffList));
-        }
         if (staffId!=null){
             staff = staffRepo.getStaffById(staffId);
             writer.write(gson.toJson(staff));
+        }
+        else {
+            staffList = staffRepo.getAllStaff();
+            writer.write(gson.toJson(staffList));
         }
 
         writer.flush();
