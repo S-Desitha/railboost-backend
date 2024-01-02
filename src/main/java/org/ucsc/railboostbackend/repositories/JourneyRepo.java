@@ -103,19 +103,24 @@ public class JourneyRepo {
 
             resultSet = statement.executeQuery();
             for (int i=0; resultSet.next(); i++) {
+                String station = resultSet.getString("station");
                 if (i==0){
                     journey.setDate(resultSet.getDate("date").toLocalDate());
                     journey.setScheduleId(resultSet.getShort("scheduleId"));
+                    journey.setSchedule(schedule);
                 }
                 stations.add(new JourneyStation(
-                        resultSet.getString("station"),
+                        scheduleId,
+                        station,
                         resultSet.getShort("stIndex"),
                         resultSet.getTime("arrivalTime") != null ? resultSet.getTime("arrivalTime").toLocalTime() : null,
-                        resultSet.getTime("departureTime") != null ? resultSet.getTime("departureTime").toLocalTime() : null
+                        resultSet.getTime("departureTime") != null ? resultSet.getTime("departureTime").toLocalTime() : null,
+                        schedule.getStations().stream().filter(st -> st.getStation().equals(station)).toArray(ScheduleStation[]::new)[0].getScheduledArrivalTime(),
+                        schedule.getStations().stream().filter(st -> st.getStation().equals(station)).toArray(ScheduleStation[]::new)[0].getScheduledDepartureTime()
                 ));
             }
             journey.setStations(stations);
-            journey.setSchedule(schedule);
+//            journey.setSchedule(schedule);
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
