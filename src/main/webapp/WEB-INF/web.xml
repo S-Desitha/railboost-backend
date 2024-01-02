@@ -103,6 +103,16 @@
   </servlet-mapping>
 
 
+  <servlet>
+    <servlet-name>Stations</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.StationController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Stations</servlet-name>
+    <url-pattern>/stations</url-pattern>
+  </servlet-mapping>
+
+
   <listener>
     <listener-class>org.ucsc.railboostbackend.services.CronScheduler</listener-class>
   </listener>
