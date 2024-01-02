@@ -24,14 +24,16 @@ public class StaffRepo {
             ResultSet resultSet = statement.executeQuery();
 
             User user = staff.getUser();
-            staff.setStaffId(resultSet.getString("staffId"));
-            staff.setStation(resultSet.getString("station"));
-            user.setfName(resultSet.getString("fName"));
-            user.setlName(resultSet.getString("lName"));
-            user.setEmail(resultSet.getString("email"));
-            user.setTelNo(resultSet.getString("telNo"));
-            user.setRole(resultSet.getString("role"));
-            staff.setUser(user);
+            if (resultSet.next()) {
+                staff.setStaffId(resultSet.getString("staffId"));
+                staff.setStation(resultSet.getString("stationCode"));
+                user.setfName(resultSet.getString("fName"));
+                user.setlName(resultSet.getString("lName"));
+                user.setEmail(resultSet.getString("email"));
+                user.setTelNo(resultSet.getString("telNo"));
+                user.setRole(resultSet.getString("role"));
+                staff.setUser(user);
+            }
 
         } catch (SQLException e) {
             System.out.println("Error occurred when executing select query to get staff member details:\n"+e.getMessage());
