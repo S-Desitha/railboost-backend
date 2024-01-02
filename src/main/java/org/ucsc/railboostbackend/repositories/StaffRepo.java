@@ -98,7 +98,7 @@ public class StaffRepo {
                 Staff staff = new Staff();
                 User user = staff.getUser();
                 staff.setStaffId(resultSet.getString("staffId"));
-                staff.setStation(resultSet.getString("station"));
+                staff.setStation(resultSet.getString("stationCode"));
                 user.setfName(resultSet.getString("fName"));
                 user.setlName(resultSet.getString("lName"));
                 user.setEmail(resultSet.getString("email"));
