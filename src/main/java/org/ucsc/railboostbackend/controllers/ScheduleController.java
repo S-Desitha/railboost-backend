@@ -32,6 +32,7 @@ public class ScheduleController extends HttpServlet {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()));
         ScheduleRepo scheduleRepo = new ScheduleRepo();
         List<Schedule> scheduleList;
+        Schedule schedule;
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
@@ -40,19 +41,20 @@ public class ScheduleController extends HttpServlet {
 
 
         String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
-
-        System.out.println(jsonQuery);
-
         Schedule reqSchedule = gson.fromJson(jsonQuery, Schedule.class);
 
-        System.out.println(Arrays.toString(Day.values()));
-
-        scheduleList = scheduleRepo.getSchedules(reqSchedule);
-
+        if(reqSchedule.getScheduleId()>0) {
+            schedule = scheduleRepo.getScheduleById(reqSchedule.getScheduleId());
+            writer.write(gson.toJson(schedule));
+            writer.flush();
+        }
+        else {
+            scheduleList = scheduleRepo.getSchedules(reqSchedule);
+            writer.write(gson.toJson(scheduleList));
+            writer.flush();
+        }
 //        scheduleList.forEach(System.out::println);
 
-        writer.write(gson.toJson(scheduleList));
-        writer.flush();
         writer.close();
     }
 
