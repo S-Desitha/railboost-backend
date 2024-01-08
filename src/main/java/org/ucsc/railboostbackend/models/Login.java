@@ -6,12 +6,6 @@ public class Login {
     private boolean isSuccessful;
     private String role;
 
-    public Login(String username) {
-        this.username = username;
-    }
-
-    public Login() {
-    }
 
     public String getUsername() {
         return username;
@@ -44,6 +38,8 @@ public class Login {
     public void setRole(String role) {
         this.role = role;
     }
+
+
 
     @Override
     public String toString() {
