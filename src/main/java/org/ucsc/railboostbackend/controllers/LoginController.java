@@ -1,13 +1,14 @@
 package org.ucsc.railboostbackend.controllers;
 
+import com.auth0.jwt.JWTCreator;
 import com.google.gson.Gson;
 import org.ucsc.railboostbackend.models.Login;
 import org.ucsc.railboostbackend.repositories.LoginRepo;
+import org.ucsc.railboostbackend.services.AuthorizationService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.sql.*;
 
@@ -24,44 +25,34 @@ public class LoginController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        PrintWriter writer = resp.getWriter();
-        HttpSession httpSession = req.getSession();
-        Gson gson = new Gson();
+        AuthorizationService authorizationService = new AuthorizationService();
+        JWTCreator.Builder jwtBuilder = authorizationService.getJWTBuilder();
+        String jwt;
 
-        httpSession.setMaxInactiveInterval(24*60*60);
+        PrintWriter writer = resp.getWriter();
+        Gson gson = new Gson();
 
         LoginRepo loginRepo = new LoginRepo();
         Login loginReq = gson.fromJson(req.getReader(), Login.class);
-//        Login loginResp = new Login(loginReq.getUsername());
         Login loginResp = null;
         try {
             loginResp = loginRepo.verifyLogin(loginReq);
-//            boolean loginStatus = loginRepo.verifyLogin(loginReq);
-//            loginResp.setSuccessful(loginStatus);
-//            if (loginStatus) {
-//                httpSession.setAttribute("username", loginRepo.getUserId());
-//                httpSession.setAttribute("role", loginRepo.getRole());
-//                loginResp.setRole(loginRepo.getRole());
-//            }
             if (loginResp.isSuccessful()){
-                httpSession.setAttribute("username", loginResp.getUsername());
-                httpSession.setAttribute("role", loginResp.getRole());
-                httpSession.setAttribute("userId", loginRepo.getUserId());
+                jwtBuilder = jwtBuilder.withClaim("username", loginResp.getUsername());
+                jwtBuilder = jwtBuilder.withClaim("role", loginResp.getRole());
+                jwtBuilder = jwtBuilder.withClaim("userId", loginRepo.getUserId());
+
+                jwt = jwtBuilder.sign(authorizationService.getAlgorithm());
+                writer.write(jwt);
+                writer.flush();
+                writer.close();
             }
-            else{
-                httpSession.invalidate();
+            else {
+                resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             }
+
         } catch (SQLException e) {
             System.out.println("Error executing SQL query!!\n" + e.getMessage());
         }
-
-        resp.setContentType("application/json; charset=UTF-8");
-
-        String respJson = gson.toJson(loginResp);
-        writer.write(respJson);
-
-        writer.flush();
-        writer.close();
-
     }
 }

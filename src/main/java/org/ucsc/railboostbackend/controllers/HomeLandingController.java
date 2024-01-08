@@ -1,5 +1,7 @@
 package org.ucsc.railboostbackend.controllers;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,10 +14,10 @@ public class HomeLandingController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter respWriter = resp.getWriter();
-        HttpSession session = req.getSession();
+        DecodedJWT jwt = (DecodedJWT) req.getAttribute("jwt");
 
-        if (session.getAttribute("role")!=null){
-            respWriter.write("You are signed in as " + session.getAttribute("role"));
+        if (jwt.getClaim("role")!=null){
+            respWriter.write("You are signed in as " + jwt.getClaim("role"));
         }
         else
             respWriter.write("You are not signed in");
