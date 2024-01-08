@@ -1,29 +1,29 @@
 package org.ucsc.railboostbackend.controllers;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import org.ucsc.railboostbackend.enums.Day;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
+import org.ucsc.railboostbackend.utilities.Security;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.beans.IntrospectionException;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static org.ucsc.railboostbackend.utilities.Security.verifyAccess;
 
 public class ScheduleController extends HttpServlet {
     @Override
@@ -62,9 +62,9 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        HttpSession httpSession = req.getSession();
+        DecodedJWT jwt = (DecodedJWT) req.getAttribute("jwt");
 
-        if (verifyAccess(httpSession, "admin")) {
+        if (verifyAccess(jwt, "admin")) {
             Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
             Schedule schedule = gson.fromJson(req.getReader(), Schedule.class);
 
@@ -88,9 +88,9 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        HttpSession session = req.getSession();
+        DecodedJWT jwt = (DecodedJWT) req.getAttribute("jwt");
 
-        if (verifyAccess(session, "admin")){
+        if (Security.verifyAccess(jwt, "admin")){
             ScheduleRepo repo = new ScheduleRepo();
             Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
             List<Schedule> schedules = gson.fromJson(req.getReader(), new TypeToken<ArrayList<Schedule>>(){});
@@ -113,9 +113,9 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        HttpSession session = req.getSession();
+        DecodedJWT jwt = (DecodedJWT) req.getAttribute("jwt");
 
-        if (verifyAccess(session, "admin")){
+        if (Security.verifyAccess(jwt, "admin")){
             ScheduleRepo scheduleRepo = new ScheduleRepo();
             short scheduleId = Short.parseShort(req.getParameter("scheduleId"));
             Schedule schedule = scheduleRepo.getScheduleById(scheduleId);
@@ -129,11 +129,4 @@ public class ScheduleController extends HttpServlet {
         writer.close();
     }
 
-
-    private boolean verifyAccess(HttpSession httpSession, String role) {
-        if (httpSession.getAttribute("role")!=null)
-            return httpSession.getAttribute("role").equals(role);
-
-        return false;
-    }
 }
