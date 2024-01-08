@@ -9,8 +9,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.*;
 
 public class AuthorizationService {
-    private static byte[] secret = new byte[32];
-    private static Algorithm algorithm;
+    private static final byte[] secret = new byte[32];
+    private static final Algorithm algorithm;
     private static final List<String> revokedTokenIDs = new ArrayList<>();
 
     static {
