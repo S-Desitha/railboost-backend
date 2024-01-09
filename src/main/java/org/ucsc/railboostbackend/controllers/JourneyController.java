@@ -1,7 +1,7 @@
 package org.ucsc.railboostbackend.controllers;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.*;
+import io.jsonwebtoken.Claims;
 import org.ucsc.railboostbackend.models.Journey;
 import org.ucsc.railboostbackend.models.JourneyStation;
 import org.ucsc.railboostbackend.models.Staff;
@@ -25,7 +25,7 @@ public class JourneyController extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        DecodedJWT jwt = (DecodedJWT) req.getAttribute("jwt");
+        Claims jwt = (Claims) req.getAttribute("jwt");
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalTime.class, LocalTimeDeserializer.INSTANCE)
                 .setDateFormat("HH:mm:ss")
@@ -51,7 +51,7 @@ public class JourneyController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        DecodedJWT jwt = (DecodedJWT) req.getAttribute("jwt");
+        Claims jwt = (Claims) req.getAttribute("jwt");
         JourneyRepo journeyRepo = new JourneyRepo();
         List<Journey> journeyList;
         Journey journey;
@@ -70,9 +70,9 @@ public class JourneyController extends HttpServlet {
             writer.write(gson.toJson(journey));
         }
 
-        else if (jwt.getClaim("role")!=null && jwt.getClaim("role").asString().equals("sm")) {
+        else if (jwt.get("role")!=null && jwt.get("role", String.class).equals("sm")) {
             Staff staff = new StaffRepo()
-                    .getStaffByUserId((Integer) jwt.getClaim("userId").asInt());
+                    .getStaffByUserId((Integer) jwt.get("userId", Integer.class));
             if (staff!=null){
                 stationCode = staff.getStation();
                 journeyList = journeyRepo.getJourneysByStation(reqJourney.getDate(), stationCode);

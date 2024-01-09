@@ -1,6 +1,6 @@
 package org.ucsc.railboostbackend.utilities;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
+import io.jsonwebtoken.Claims;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 
 import javax.crypto.SecretKeyFactory;
@@ -61,17 +61,17 @@ public class Security {
     }
 
 
-    public static boolean verifyAccess(DecodedJWT jwt, String role) {
-        if (jwt.getClaim("role")!=null)
-            return jwt.getClaim("role").asString().equals(role);
+    public static boolean verifyAccess(Claims jwt, String role) {
+        if (jwt.get("role")!=null)
+            return jwt.get("role", String.class).equals(role);
 
         return false;
     }
 
-    public static boolean verifyAccess(DecodedJWT jwt, String role, String station) {
-        return jwt.getClaim("role").asString().equals(role) &&
+    public static boolean verifyAccess(Claims jwt, String role, String station) {
+        return jwt.get("role", String.class).equals(role) &&
                 new StaffRepo()
-                        .getStaffByUserId(jwt.getClaim("userId").asInt())
+                        .getStaffByUserId(jwt.get("userId", Integer.class))
                         .getStation()
                         .equals(station);
     }

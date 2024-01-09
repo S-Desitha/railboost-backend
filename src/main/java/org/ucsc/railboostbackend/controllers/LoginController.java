@@ -1,7 +1,7 @@
 package org.ucsc.railboostbackend.controllers;
 
-import com.auth0.jwt.JWTCreator;
 import com.google.gson.Gson;
+import io.jsonwebtoken.JwtBuilder;
 import org.ucsc.railboostbackend.models.Login;
 import org.ucsc.railboostbackend.repositories.LoginRepo;
 import org.ucsc.railboostbackend.services.AuthorizationService;
@@ -26,7 +26,7 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         AuthorizationService authorizationService = new AuthorizationService();
-        JWTCreator.Builder jwtBuilder = authorizationService.getJWTBuilder();
+        JwtBuilder jwtBuilder = authorizationService.getJWTBuilder();
         String jwt;
 
         PrintWriter writer = resp.getWriter();
@@ -38,11 +38,11 @@ public class LoginController extends HttpServlet {
         try {
             loginResp = loginRepo.verifyLogin(loginReq);
             if (loginResp.isSuccessful()){
-                jwtBuilder = jwtBuilder.withClaim("username", loginResp.getUsername());
-                jwtBuilder = jwtBuilder.withClaim("role", loginResp.getRole());
-                jwtBuilder = jwtBuilder.withClaim("userId", loginRepo.getUserId());
+                jwtBuilder = jwtBuilder.claim("username", loginResp.getUsername());
+                jwtBuilder = jwtBuilder.claim("role", loginResp.getRole());
+                jwtBuilder = jwtBuilder.claim("userId", loginRepo.getUserId());
 
-                jwt = jwtBuilder.sign(authorizationService.getAlgorithm());
+                jwt = jwtBuilder.signWith(authorizationService.getKey()).compact();
                 writer.write(jwt);
                 writer.flush();
                 writer.close();

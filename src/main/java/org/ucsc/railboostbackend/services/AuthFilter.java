@@ -1,7 +1,8 @@
 package org.ucsc.railboostbackend.services;
 
 
-import com.auth0.jwt.interfaces.DecodedJWT;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -20,15 +21,19 @@ public class AuthFilter implements Filter {
         String authHeader = req.getHeader("Authorization");
         if (authHeader != null && authHeader.matches("Bearer .+")) {
             String token = authHeader.replaceAll("(Bearer)", "").trim();
-            DecodedJWT decodedJWT = authService.verifyToken(token);
-            if (authService.isRevoked(decodedJWT))
+            Claims jwt = authService.verifyToken(token);
+            if (authService.isRevoked(jwt))
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            else
-                req.setAttribute("jwt", decodedJWT);
+            else{
+                req.setAttribute("jwt", jwt);
+                filterChain.doFilter(req, resp);
+            }
 
         }
+        else
+            filterChain.doFilter(req, resp);
 
-        filterChain.doFilter(req, resp);
+
 
         // post-processing goes here
     }

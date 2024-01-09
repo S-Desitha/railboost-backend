@@ -1,8 +1,8 @@
 package org.ucsc.railboostbackend.controllers;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import io.jsonwebtoken.Claims;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
@@ -62,7 +62,7 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        DecodedJWT jwt = (DecodedJWT) req.getAttribute("jwt");
+        Claims jwt = (Claims) req.getAttribute("jwt");
 
         if (verifyAccess(jwt, "admin")) {
             Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
@@ -88,7 +88,7 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        DecodedJWT jwt = (DecodedJWT) req.getAttribute("jwt");
+        Claims jwt = (Claims) req.getAttribute("jwt");
 
         if (Security.verifyAccess(jwt, "admin")){
             ScheduleRepo repo = new ScheduleRepo();
@@ -113,7 +113,7 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        DecodedJWT jwt = (DecodedJWT) req.getAttribute("jwt");
+        Claims jwt = (Claims) req.getAttribute("jwt");
 
         if (Security.verifyAccess(jwt, "admin")){
             ScheduleRepo scheduleRepo = new ScheduleRepo();
