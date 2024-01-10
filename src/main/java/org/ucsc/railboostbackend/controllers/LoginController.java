@@ -43,7 +43,9 @@ public class LoginController extends HttpServlet {
                 jwtBuilder = jwtBuilder.claim("userId", loginRepo.getUserId());
 
                 jwt = jwtBuilder.signWith(authorizationService.getKey()).compact();
-                writer.write(jwt);
+                loginResp.setJwt(jwt);
+
+                writer.write(gson.toJson(loginResp));
                 writer.flush();
                 writer.close();
             }
