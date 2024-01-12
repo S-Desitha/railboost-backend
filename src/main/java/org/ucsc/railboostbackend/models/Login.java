@@ -5,6 +5,7 @@ public class Login {
     private String password;
     private boolean isSuccessful;
     private String role;
+    private String jwt;
 
 
     public String getUsername() {
@@ -39,7 +40,13 @@ public class Login {
         this.role = role;
     }
 
+    public String getJwt() {
+        return jwt;
+    }
 
+    public void setJwt(String jwt) {
+        this.jwt = jwt;
+    }
 
     @Override
     public String toString() {
