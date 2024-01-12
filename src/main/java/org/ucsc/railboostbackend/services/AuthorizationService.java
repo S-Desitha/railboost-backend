@@ -1,10 +1,7 @@
 package org.ucsc.railboostbackend.services;
 
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -31,19 +28,12 @@ public class AuthorizationService {
     }
     
     
-    public Claims verifyToken(String token) {
+    public Claims verifyToken(String token) throws JwtException {
         return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-
-//        try {
-//            jwt = verifier.verify(token);
-//        } catch (JWTVerificationException e) {
-//            System.out.println(jwt);
-//            return null;
-//        }
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
     }
 
 
