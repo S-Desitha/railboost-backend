@@ -54,23 +54,14 @@
     <url-pattern>/signup</url-pattern>
   </servlet-mapping>
 
-  <filter>
-    <filter-name>CorsFilter</filter-name>
-    <filter-class>org.ucsc.railboostbackend.services.CorsFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>CorsFilter</filter-name>
-    <url-pattern>/*</url-pattern> <!-- Specify the URL pattern to which the filter applies -->
-  </filter-mapping>
-
 
   <servlet>
-    <servlet-name>Auth</servlet-name>
-    <servlet-class>org.ucsc.railboostbackend.controllers.AuthController</servlet-class>
+    <servlet-name>UserCredentials</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.UserCredentialsController</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>Auth</servlet-name>
-    <url-pattern>/auth</url-pattern>
+    <servlet-name>UserCredentials</servlet-name>
+    <url-pattern>/userCredentials</url-pattern>
   </servlet-mapping>
 
   <servlet>
@@ -111,6 +102,27 @@
     <servlet-name>Stations</servlet-name>
     <url-pattern>/stations</url-pattern>
   </servlet-mapping>
+
+
+
+  <filter>
+    <filter-name>CorsFilter</filter-name>
+    <filter-class>org.ucsc.railboostbackend.services.CorsFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern> <!-- Specify the URL pattern to which the filter applies -->
+  </filter-mapping>
+
+
+  <filter>
+    <filter-name>AuthFilter</filter-name>
+    <filter-class>org.ucsc.railboostbackend.services.AuthFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>AuthFilter</filter-name>
+    <url-pattern>/*</url-pattern> <!-- Specify the URL pattern to which the filter applies -->
+  </filter-mapping>
 
 
   <listener>

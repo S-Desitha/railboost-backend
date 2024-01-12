@@ -15,7 +15,6 @@ public class LoginRepo {
 
     public Login verifyLogin(Login login) throws SQLException {
         Login response = new Login();
-        boolean isSuccess = false;
         Security security = new Security();
         String username = login.getUsername();
         String inputPassword = login.getPassword();
@@ -37,7 +36,6 @@ public class LoginRepo {
                 response.setSuccessful(true);
                 response.setUsername(resultSet.getString("username"));
                 response.setRole(resultSet.getString("role"));
-                isSuccess = true;
             }
             else
                 response.setSuccessful(false);

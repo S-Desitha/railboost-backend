@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.*;
+import io.jsonwebtoken.Claims;
 import org.ucsc.railboostbackend.models.Journey;
 import org.ucsc.railboostbackend.models.JourneyStation;
 import org.ucsc.railboostbackend.models.Staff;
@@ -14,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
@@ -25,8 +25,7 @@ public class JourneyController extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        HttpSession session = req.getSession();
-//        Gson gson = new GsonBuilder().setDateFormat("HH:mm:ss").create();
+        Claims jwt = (Claims) req.getAttribute("jwt");
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalTime.class, LocalTimeDeserializer.INSTANCE)
                 .setDateFormat("HH:mm:ss")
@@ -34,8 +33,7 @@ public class JourneyController extends HttpServlet {
 
         JourneyStation journeyStation = gson.fromJson(req.getReader(), JourneyStation.class);
 
-        if (Security.verifyAccess(session, "sm", journeyStation.getStation())) {
-//        if (Security.verifyAccess(session, "sm", "FOT")) {
+        if (Security.verifyAccess(jwt, "sm", journeyStation.getStation())) {
             JourneyRepo journeyRepo = new JourneyRepo();
             journeyRepo.updateJourney(journeyStation);
             writer.write("Journey updated successfully");
@@ -53,7 +51,7 @@ public class JourneyController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        HttpSession session = req.getSession();
+        Claims jwt = (Claims) req.getAttribute("jwt");
         JourneyRepo journeyRepo = new JourneyRepo();
         List<Journey> journeyList;
         Journey journey;
@@ -72,9 +70,9 @@ public class JourneyController extends HttpServlet {
             writer.write(gson.toJson(journey));
         }
 
-        else if (session.getAttribute("role")!=null && session.getAttribute("role").equals("sm")) {
+        else if (jwt.get("role")!=null && jwt.get("role", String.class).equals("sm")) {
             Staff staff = new StaffRepo()
-                    .getStaffByUserId((Integer) session.getAttribute("userId"));
+                    .getStaffByUserId((Integer) jwt.get("userId", Integer.class));
             if (staff!=null){
                 stationCode = staff.getStation();
                 journeyList = journeyRepo.getJourneysByStation(reqJourney.getDate(), stationCode);
@@ -86,7 +84,7 @@ public class JourneyController extends HttpServlet {
         }
 //        else {
 //            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//            writer.write("You are not authorized to do this operations");
+//            writer.write("You are not authorized to do this operation");
 //        }
 
         writer.flush();
