@@ -56,12 +56,12 @@
 
 
   <servlet>
-    <servlet-name>Auth</servlet-name>
-    <servlet-class>org.ucsc.railboostbackend.controllers.AuthController</servlet-class>
+    <servlet-name>UserCredentials</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.UserCredentialsController</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>Auth</servlet-name>
-    <url-pattern>/auth</url-pattern>
+    <servlet-name>UserCredentials</servlet-name>
+    <url-pattern>/userCredentials</url-pattern>
   </servlet-mapping>
 
   <servlet>
