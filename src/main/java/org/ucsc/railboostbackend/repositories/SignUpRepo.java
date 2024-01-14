@@ -60,7 +60,7 @@ public class SignUpRepo {
     public int addStaffUser(User user) {
         int userId = -1;
         Connection connection = DBConnection.getConnection();
-        String query = "INSERT INTO users (fName, lName, dob, gender, email, telNo, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO users (fName, lName, dob, gender, email, telNo, role, username) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)){
             statement.setString(1, user.getfName());
@@ -73,6 +73,7 @@ public class SignUpRepo {
             statement.setString(5, user.getEmail());
             statement.setString(6, user.getTelNo());
             statement.setString(7, user.getRole());
+            statement.setString(8, user.getUsername());
 
             if (statement.executeUpdate()>0) {
                 ResultSet resultSet = statement.getGeneratedKeys();

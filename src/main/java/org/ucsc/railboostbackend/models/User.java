@@ -13,19 +13,8 @@ public class User {
     private String email;
     private String telNo;
     private String role;
+    private boolean isStaff;
 
-    public User(){}
-
-    public User(String username, String password, String fName, String lName, Date dob, String gender, String email, String telNo) {
-        this.username = username;
-        this.password = password;
-        this.fName = fName;
-        this.lName = lName;
-        this.dob = dob;
-        this.gender = gender;
-        this.email = email;
-        this.telNo = telNo;
-    }
 
     public int getUserId() {
         return userId;
@@ -105,6 +94,14 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public boolean isStaff() {
+        return isStaff;
+    }
+
+    public void setStaff(boolean staff) {
+        isStaff = staff;
     }
 
     @Override

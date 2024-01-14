@@ -10,6 +10,7 @@ import org.ucsc.railboostbackend.models.User;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 import org.ucsc.railboostbackend.repositories.TrainRepo;
 import org.ucsc.railboostbackend.services.CustomRequest;
+import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 import org.ucsc.railboostbackend.services.MyCache;
 
 import javax.servlet.RequestDispatcher;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
 import java.util.List;
 
 public class StaffController extends HttpServlet {
@@ -55,7 +57,10 @@ public class StaffController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpServletRequest wrappedReq = new CustomRequest(req);
         PrintWriter writer = resp.getWriter();
-        Gson gson = new GsonBuilder().setDateFormat("dd:MM:yyyy").create();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
+                .setDateFormat("MM/dd/yyyy")
+                .create();
         boolean isSuccessful = false;
         String tempUid = null;
 
