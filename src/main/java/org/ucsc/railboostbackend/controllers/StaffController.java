@@ -7,6 +7,7 @@ import org.ucsc.railboostbackend.models.TempUID;
 import org.ucsc.railboostbackend.models.User;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 import org.ucsc.railboostbackend.services.CustomRequest;
+import org.ucsc.railboostbackend.services.EmailService;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 import org.ucsc.railboostbackend.services.MyCache;
 
@@ -51,7 +52,7 @@ public class StaffController extends HttpServlet {
         HttpServletRequest wrappedReq = new CustomRequest(req);
         PrintWriter writer = resp.getWriter();
         boolean isSuccessful = false;
-        String tempUid = null;
+        String tempUID = null;
         MyCache myCache = new MyCache();
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
@@ -68,19 +69,21 @@ public class StaffController extends HttpServlet {
 
             isSuccessful = new StaffRepo().addStaffMember(staff);
             
-            tempUid = myCache.createTempUID(staff.toString());
-            myCache.add(staff.getStaffId(), tempUid);
+            tempUID = myCache.createTempUID(staff.toString());
+            myCache.add(staff.getStaffId(), tempUID);
+
+            if (isSuccessful){
+                EmailService emailService = new EmailService();
+                String body = emailService.createStaffSignupHTML(tempUID);
+                emailService.sendEmail(staff.getUser().getEmail(), "Staff Signup", body);
+
+                TempUID temp = new TempUID();
+                temp.setUid(tempUID);
+                writer.write(gson.toJson(temp));
+            }
+            else
+                writer.write("There was an error adding the staff member.");
         }
-
-
-
-        if (isSuccessful){
-            TempUID temp = new TempUID();
-            temp.setUid(tempUid);
-            writer.write(gson.toJson(temp));
-        }
-        else
-            writer.write("There was an error adding the staff member.");
 
         writer.flush();
         writer.close();

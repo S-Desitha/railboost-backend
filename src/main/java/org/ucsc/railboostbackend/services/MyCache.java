@@ -38,7 +38,7 @@ public class MyCache implements Job {
 
         Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity("delete-staff")
-                .startAt(DateBuilder.futureDate(2, DateBuilder.IntervalUnit.MINUTE))
+                .startAt(DateBuilder.futureDate(1, DateBuilder.IntervalUnit.HOUR))
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule().withRepeatCount(0))
                 .build();
 
