@@ -16,22 +16,27 @@ public class StaffRepo {
     public Staff getStaffById(String staffId) {
         Connection connection = DBConnection.getConnection();
         Staff staff = new Staff();
-        String query = "SELECT s.staffId, u.role, u.fName, u.lName, u.username, u.telNo, u.role, s.stationCode, u.email " +
+        String query = "SELECT s.staffId, u.userId, u.role, u.fName, u.lName, u.username, u.telNo, u.role, s.stationCode, u.email, u.dob, u.gender " +
                 "FROM staff s " +
-                "INNER JOIN users u ON s.userId = u.userId ";
+                "INNER JOIN users u ON s.userId = u.userId " +
+                "WHERE s.staffId = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, staffId);
             ResultSet resultSet = statement.executeQuery();
 
             User user = staff.getUser();
             if (resultSet.next()) {
                 staff.setStaffId(resultSet.getString("staffId"));
                 staff.setStation(resultSet.getString("stationCode"));
+                staff.setUserId(resultSet.getInt("userId"));
                 user.setfName(resultSet.getString("fName"));
                 user.setlName(resultSet.getString("lName"));
                 user.setEmail(resultSet.getString("email"));
                 user.setTelNo(resultSet.getString("telNo"));
                 user.setRole(resultSet.getString("role"));
+                user.setDob(resultSet.getDate("dob").toLocalDate());
+                user.setGender(resultSet.getString("gender"));
                 staff.setUser(user);
             }
 
@@ -152,5 +157,11 @@ public class StaffRepo {
         } catch (SQLException e) {
             System.out.println("Error occurred while executing delete query for staff table");
         }
+    }
+
+
+    public void deleteMember(String staffId) {
+        Staff staff = getStaffById(staffId);
+        deleteMember(staff);
     }
 }

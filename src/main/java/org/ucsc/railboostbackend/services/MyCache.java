@@ -1,52 +1,93 @@
 package org.ucsc.railboostbackend.services;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
+import org.ucsc.railboostbackend.repositories.StaffRepo;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
 
-public class MyCache {
+public class MyCache implements Job {
 
-    private static Cache<String, String> cache;
+    private static final Map<String, String> staffCache;
 
-    static  {
-        cache = Caffeine.newBuilder()
-                .expireAfterWrite(1, TimeUnit.MINUTES)
-                .maximumSize(100)
+    static {
+        staffCache = new HashMap<>();
+    }
+
+
+    @Override
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        JobDataMap dataMap = jobExecutionContext.getMergedJobDataMap();
+        String tempUID = dataMap.getString("tempUID");
+        
+        clearCache(tempUID, true);
+    }
+
+
+    public void add(String staffId, String tempUID) {
+        staffCache.put(tempUID, staffId);
+
+        // add automatic delete trigger to cron scheduler.
+        JobDetail job = JobBuilder.newJob(MyCache.class)
+                .withIdentity(tempUID, "staff-cache")
+                .usingJobData("tempUID", tempUID)
                 .build();
-    }
 
-    public static Cache<String, String> cache() {
-        if (cache == null){
-            cache = Caffeine.newBuilder()
-                    .expireAfterWrite(1, TimeUnit.MINUTES)
-                    .maximumSize(100)
-                    .build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity("delete-staff")
+                .startAt(DateBuilder.futureDate(2, DateBuilder.IntervalUnit.MINUTE))
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withRepeatCount(0))
+                .build();
+
+        try {
+            Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+            scheduler.start();
+
+            scheduler.scheduleJob(job, trigger);
+        } catch (SchedulerException e) {
+            System.out.println("Error: Couldn't create Scheduler to delete staff cache");
+            System.out.println(e.getMessage());
         }
-        return cache;
     }
 
-    public static String createTempStr(String guide) {
+
+    public void clearCache(String tempUID, boolean isExpired) {
+        String staffId = staffCache.get(tempUID);
+        staffCache.remove(tempUID);
+
+        if (isExpired) {
+            // remove entry from DB
+            if (staffId!=null){
+                StaffRepo staffRepo = new StaffRepo();
+                staffRepo.deleteMember(staffId);
+            }
+            System.out.println("Staff cache cleared from expiration: " + staffId);
+        }
+        else
+            System.out.println("Staff signup completed and cache cleared: " + staffId);
+
+    }
+
+
+    public String createTempUID(String staffDetails) {
         MessageDigest instance = null;
+        StringBuilder hexString = new StringBuilder();
         try {
             instance = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = instance.digest((String.valueOf(System.nanoTime())+staffDetails).getBytes());
+            for (byte b : messageDigest) {
+                String hex = Integer.toHexString(0xFF & b);
+                if (hex.length() == 1)
+                    hexString.append('0');
+                hexString.append(hex);
+            }
         } catch (NoSuchAlgorithmException e) {
             System.out.println("Error in MessageDigest in MyCache class:\n"+e.getMessage());
         }
-        byte[] messageDigest = instance.digest((String.valueOf(System.nanoTime())+guide).getBytes());
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : messageDigest) {
-            String hex = Integer.toHexString(0xFF & b);
-            if (hex.length() == 1) {
-                // could use a for loop, but we're only dealing with a single
-                // byte
-                hexString.append('0');
-            }
-            hexString.append(hex);
-        }
+        
         return hexString.toString();
     }
-
 }

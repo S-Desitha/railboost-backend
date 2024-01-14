@@ -2,13 +2,10 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import org.ucsc.railboostbackend.models.Staff;
 import org.ucsc.railboostbackend.models.TempUID;
-import org.ucsc.railboostbackend.models.Train;
 import org.ucsc.railboostbackend.models.User;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
-import org.ucsc.railboostbackend.repositories.TrainRepo;
 import org.ucsc.railboostbackend.services.CustomRequest;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 import org.ucsc.railboostbackend.services.MyCache;
@@ -46,10 +43,6 @@ public class StaffController extends HttpServlet {
 
         writer.flush();
         writer.close();
-
-        if(MyCache.cache().getIfPresent("sm6565")==null)
-            MyCache.cache().put("sm6565", MyCache.createTempStr("dewmitha"));
-        System.out.println(MyCache.cache().getIfPresent("sm6565"));
     }
 
 
@@ -57,12 +50,13 @@ public class StaffController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpServletRequest wrappedReq = new CustomRequest(req);
         PrintWriter writer = resp.getWriter();
+        boolean isSuccessful = false;
+        String tempUid = null;
+        MyCache myCache = new MyCache();
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
                 .setDateFormat("MM/dd/yyyy")
                 .create();
-        boolean isSuccessful = false;
-        String tempUid = null;
 
         if (wrappedReq.getAttribute("userId")==null){
             RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/signup");
@@ -74,9 +68,8 @@ public class StaffController extends HttpServlet {
 
             isSuccessful = new StaffRepo().addStaffMember(staff);
             
-            User user = staff.getUser();
-            tempUid = MyCache.createTempStr(user.getfName()+user.getlName()+user.getEmail()+user.getTelNo());
-            MyCache.cache().put(staff.getStaffId(), tempUid);
+            tempUid = myCache.createTempUID(staff.toString());
+            myCache.add(staff.getStaffId(), tempUid);
         }
 
 

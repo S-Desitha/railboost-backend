@@ -34,7 +34,7 @@ public class SignUpRepo {
                 statement.setString(4, user.getfName());
                 statement.setString(5, user.getlName());
                 if (user.getDob()!=null)
-                    statement.setDate(6, new Date(user.getDob().getTime()));
+                    statement.setDate(6, Date.valueOf(user.getDob()));
                 else
                     statement.setNull(6, Types.DATE);
                 statement.setString(7, user.getGender());
@@ -66,7 +66,7 @@ public class SignUpRepo {
             statement.setString(1, user.getfName());
             statement.setString(2, user.getlName());
             if (user.getDob()!=null)
-                statement.setDate(3, new Date(user.getDob().getTime()));
+                statement.setDate(3, Date.valueOf(user.getDob()));
             else
                 statement.setNull(3, Types.DATE);
             statement.setString(4, user.getGender());

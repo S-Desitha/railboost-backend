@@ -1,6 +1,6 @@
 package org.ucsc.railboostbackend.models;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class User {
     private int userId;
@@ -8,7 +8,7 @@ public class User {
     private String password;
     private String fName;
     private String lName;
-    private Date dob;
+    private LocalDate dob;
     private String gender;
     private String email;
     private String telNo;
@@ -56,11 +56,11 @@ public class User {
         this.lName = lName;
     }
 
-    public Date getDob() {
+    public LocalDate getDob() {
         return dob;
     }
 
-    public void setDob(Date dob) {
+    public void setDob(LocalDate dob) {
         this.dob = dob;
     }
 
@@ -112,11 +112,12 @@ public class User {
                 ", password='" + password + '\'' +
                 ", fName='" + fName + '\'' +
                 ", lName='" + lName + '\'' +
-                ", dob='" + dob + '\'' +
+                ", dob=" + dob +
                 ", gender='" + gender + '\'' +
                 ", email='" + email + '\'' +
                 ", telNo='" + telNo + '\'' +
                 ", role='" + role + '\'' +
+                ", isStaff=" + isStaff +
                 '}';
     }
 }
