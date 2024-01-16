@@ -3,8 +3,7 @@ package org.ucsc.railboostbackend.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.ucsc.railboostbackend.models.Staff;
-import org.ucsc.railboostbackend.models.TempUID;
-import org.ucsc.railboostbackend.models.User;
+import org.ucsc.railboostbackend.models.StaffSignup;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 import org.ucsc.railboostbackend.services.CustomRequest;
 import org.ucsc.railboostbackend.services.EmailService;
@@ -60,6 +59,7 @@ public class StaffController extends HttpServlet {
                 .create();
 
         if (wrappedReq.getAttribute("userId")==null){
+            req.setAttribute("isForward", true);
             RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/signup");
             dispatcher.forward(wrappedReq, resp);
         }
@@ -77,7 +77,7 @@ public class StaffController extends HttpServlet {
                 String body = emailService.createStaffSignupHTML(tempUID);
                 emailService.sendEmail(staff.getUser().getEmail(), "Staff Signup", body);
 
-                TempUID temp = new TempUID();
+                StaffSignup temp = new StaffSignup();
                 temp.setUid(tempUID);
                 writer.write(gson.toJson(temp));
             }

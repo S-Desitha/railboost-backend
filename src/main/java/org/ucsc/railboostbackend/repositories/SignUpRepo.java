@@ -1,5 +1,7 @@
 package org.ucsc.railboostbackend.repositories;
 
+import org.ucsc.railboostbackend.models.Staff;
+import org.ucsc.railboostbackend.models.StaffSignup;
 import org.ucsc.railboostbackend.models.User;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 import org.ucsc.railboostbackend.utilities.Security;
@@ -85,5 +87,39 @@ public class SignUpRepo {
         }
 
         return userId;
+    }
+
+
+    public boolean finishStaffSignup(String password, String staffId) {
+        boolean isSuccess = false;
+        Connection connection = DBConnection.getConnection();
+        String query = "UPDATE users " +
+                "INNER JOIN staff ON users.userId = staff.userId " +
+                "SET password = ? , salt = ? " +
+                "WHERE staffId = ? ";
+
+
+        try {
+            Map<String, String> hashResult = new Security().hash(password);
+
+            String hash = hashResult.get("hash");
+            String salt = hashResult.get("salt");
+
+            try (PreparedStatement statement = connection.prepareStatement(query)){
+                statement.setString(1, hash);
+                statement.setString(2, salt);
+                statement.setString(3, staffId);
+
+                isSuccess = statement.executeUpdate() > 0;
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+        } catch (InvalidKeySpecException e) {
+            System.out.println("Error in hash function.\n"+e.getMessage());
+        }
+
+        return isSuccess;
     }
 }

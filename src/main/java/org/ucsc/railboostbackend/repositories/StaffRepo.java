@@ -30,6 +30,7 @@ public class StaffRepo {
                 staff.setStaffId(resultSet.getString("staffId"));
                 staff.setStation(resultSet.getString("stationCode"));
                 staff.setUserId(resultSet.getInt("userId"));
+                user.setUsername(resultSet.getString("username"));
                 user.setfName(resultSet.getString("fName"));
                 user.setlName(resultSet.getString("lName"));
                 user.setEmail(resultSet.getString("email"));

@@ -37,8 +37,7 @@ public class MyCache implements Job {
                 .build();
 
         Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity("delete-staff")
-                .startAt(DateBuilder.futureDate(1, DateBuilder.IntervalUnit.HOUR))
+                .startAt(DateBuilder.futureDate(5, DateBuilder.IntervalUnit.HOUR))
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule().withRepeatCount(0))
                 .build();
 
@@ -51,6 +50,11 @@ public class MyCache implements Job {
             System.out.println("Error: Couldn't create Scheduler to delete staff cache");
             System.out.println(e.getMessage());
         }
+    }
+
+
+    public String get(String tempUID) {
+        return staffCache.get(tempUID);
     }
 
 
