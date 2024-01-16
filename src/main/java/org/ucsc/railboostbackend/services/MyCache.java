@@ -6,6 +6,7 @@ import org.ucsc.railboostbackend.repositories.StaffRepo;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,8 @@ public class MyCache implements Job {
                 .build();
 
         Trigger trigger = TriggerBuilder.newTrigger()
-                .startAt(DateBuilder.futureDate(5, DateBuilder.IntervalUnit.HOUR))
+                .withIdentity(tempUID)
+                .startAt(DateBuilder.futureDate(1, DateBuilder.IntervalUnit.HOUR))
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule().withRepeatCount(0))
                 .build();
 
@@ -53,8 +55,10 @@ public class MyCache implements Job {
     }
 
 
-    public String get(String tempUID) {
-        return staffCache.get(tempUID);
+    public String get(String tempUID) throws Exception {
+        if (staffCache.containsKey(tempUID))
+            return staffCache.get(tempUID);
+        else throw new RuntimeException("signup-expired");
     }
 
 
@@ -68,11 +72,19 @@ public class MyCache implements Job {
                 StaffRepo staffRepo = new StaffRepo();
                 staffRepo.deleteMember(staffId);
             }
-            System.out.println("Staff cache cleared from expiration: " + staffId);
+            System.out.println(new Date() +"Staff cache cleared from expiration: " + staffId);
         }
-        else
-            System.out.println("Staff signup completed and cache cleared: " + staffId);
-
+        else {
+            try {
+                Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+                JobKey jobKey = new JobKey(tempUID, "staff-cache");
+                scheduler.deleteJob(jobKey);
+            } catch (SchedulerException e) {
+                System.out.println("Cannot get scheduler: clearCache() : MyCache.java");
+                System.out.println(e.getMessage());
+            }
+            System.out.println(new Date() +"Staff signup completed and cache cleared: " + staffId);
+        }
     }
 
 

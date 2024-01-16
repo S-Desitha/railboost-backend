@@ -2,6 +2,11 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.impl.StdSchedulerFactory;
 import org.ucsc.railboostbackend.models.Login;
 import org.ucsc.railboostbackend.models.Staff;
 import org.ucsc.railboostbackend.models.StaffSignup;
@@ -32,10 +37,14 @@ public class SignUpController extends HttpServlet {
         MyCache cache = new MyCache();
         String tempUID = req.getParameter("tempUID");
 
-        staffId = cache.get(tempUID);
-        staff = staffRepo.getStaffById(staffId);
-
-        writer.write(gson.toJson(staff));
+        try {
+            staffId = cache.get(tempUID);
+            staff = staffRepo.getStaffById(staffId);
+            writer.write(gson.toJson(staff));
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            writer.write(gson.toJson(e));
+        }
         writer.flush();
         writer.close();
 
@@ -69,8 +78,24 @@ public class SignUpController extends HttpServlet {
             }
         }
         else {
-            String staffId = cache.get(staff.getTempUID());
-            isSuccess = signupRepo.finishStaffSignup(staff.getUser().getPassword(), staffId);
+            String staffId = null;
+            try {
+                String tempUID = staff.getTempUID();
+                Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+                TriggerKey triggerKey = new TriggerKey(tempUID);
+
+                staffId = cache.get(tempUID);
+                scheduler.pauseTrigger(triggerKey);
+
+                isSuccess = signupRepo.finishStaffSignup(staff.getUser().getPassword(), staffId);
+                if (isSuccess)
+                    cache.clearCache(tempUID, false);
+                else
+                    scheduler.resumeTrigger(triggerKey);
+            } catch (Exception e) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                writer.write(gson.toJson(e));
+            }
         }
 
         if (isSuccess){
