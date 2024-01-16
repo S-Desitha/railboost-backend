@@ -2,14 +2,12 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import org.ucsc.railboostbackend.models.Staff;
-import org.ucsc.railboostbackend.models.TempUID;
-import org.ucsc.railboostbackend.models.Train;
-import org.ucsc.railboostbackend.models.User;
+import org.ucsc.railboostbackend.models.StaffSignup;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
-import org.ucsc.railboostbackend.repositories.TrainRepo;
 import org.ucsc.railboostbackend.services.CustomRequest;
+import org.ucsc.railboostbackend.services.EmailService;
+import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 import org.ucsc.railboostbackend.services.MyCache;
 
 import javax.servlet.RequestDispatcher;
@@ -19,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
 import java.util.List;
 
 public class StaffController extends HttpServlet {
@@ -44,10 +43,6 @@ public class StaffController extends HttpServlet {
 
         writer.flush();
         writer.close();
-
-        if(MyCache.cache().getIfPresent("sm6565")==null)
-            MyCache.cache().put("sm6565", MyCache.createTempStr("dewmitha"));
-        System.out.println(MyCache.cache().getIfPresent("sm6565"));
     }
 
 
@@ -55,11 +50,16 @@ public class StaffController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpServletRequest wrappedReq = new CustomRequest(req);
         PrintWriter writer = resp.getWriter();
-        Gson gson = new GsonBuilder().setDateFormat("dd:MM:yyyy").create();
         boolean isSuccessful = false;
-        String tempUid = null;
+        String tempUID = null;
+        MyCache myCache = new MyCache();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
+                .setDateFormat("MM/dd/yyyy")
+                .create();
 
         if (wrappedReq.getAttribute("userId")==null){
+            req.setAttribute("isForward", true);
             RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/signup");
             dispatcher.forward(wrappedReq, resp);
         }
@@ -69,20 +69,21 @@ public class StaffController extends HttpServlet {
 
             isSuccessful = new StaffRepo().addStaffMember(staff);
             
-            User user = staff.getUser();
-            tempUid = MyCache.createTempStr(user.getfName()+user.getlName()+user.getEmail()+user.getTelNo());
-            MyCache.cache().put(staff.getStaffId(), tempUid);
+            tempUID = myCache.createTempUID(staff.toString());
+            myCache.add(staff.getStaffId(), tempUID);
+
+            if (isSuccessful){
+                EmailService emailService = new EmailService();
+                String body = emailService.createStaffSignupHTML(tempUID);
+                emailService.sendEmail(staff.getUser().getEmail(), "Staff Signup", body);
+
+                StaffSignup temp = new StaffSignup();
+                temp.setUid(tempUID);
+                writer.write(gson.toJson(temp));
+            }
+            else
+                writer.write("There was an error adding the staff member.");
         }
-
-
-
-        if (isSuccessful){
-            TempUID temp = new TempUID();
-            temp.setUid(tempUid);
-            writer.write(gson.toJson(temp));
-        }
-        else
-            writer.write("There was an error adding the staff member.");
 
         writer.flush();
         writer.close();

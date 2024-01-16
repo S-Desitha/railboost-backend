@@ -1,6 +1,6 @@
 package org.ucsc.railboostbackend.models;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class User {
     private int userId;
@@ -8,24 +8,13 @@ public class User {
     private String password;
     private String fName;
     private String lName;
-    private Date dob;
+    private LocalDate dob;
     private String gender;
     private String email;
     private String telNo;
     private String role;
+    private boolean isStaff;
 
-    public User(){}
-
-    public User(String username, String password, String fName, String lName, Date dob, String gender, String email, String telNo) {
-        this.username = username;
-        this.password = password;
-        this.fName = fName;
-        this.lName = lName;
-        this.dob = dob;
-        this.gender = gender;
-        this.email = email;
-        this.telNo = telNo;
-    }
 
     public int getUserId() {
         return userId;
@@ -67,11 +56,11 @@ public class User {
         this.lName = lName;
     }
 
-    public Date getDob() {
+    public LocalDate getDob() {
         return dob;
     }
 
-    public void setDob(Date dob) {
+    public void setDob(LocalDate dob) {
         this.dob = dob;
     }
 
@@ -107,6 +96,14 @@ public class User {
         this.role = role;
     }
 
+    public boolean isStaff() {
+        return isStaff;
+    }
+
+    public void setStaff(boolean staff) {
+        isStaff = staff;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -115,11 +112,12 @@ public class User {
                 ", password='" + password + '\'' +
                 ", fName='" + fName + '\'' +
                 ", lName='" + lName + '\'' +
-                ", dob='" + dob + '\'' +
+                ", dob=" + dob +
                 ", gender='" + gender + '\'' +
                 ", email='" + email + '\'' +
                 ", telNo='" + telNo + '\'' +
                 ", role='" + role + '\'' +
+                ", isStaff=" + isStaff +
                 '}';
     }
 }
