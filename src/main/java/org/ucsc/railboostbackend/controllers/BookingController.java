@@ -2,6 +2,7 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.jsonwebtoken.Claims;
 import org.ucsc.railboostbackend.models.Booking;
 import org.ucsc.railboostbackend.repositories.BookingRepo;
 import org.ucsc.railboostbackend.services.CustomRequest;
@@ -21,6 +22,8 @@ public class BookingController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpServletRequest wrappedReq = new CustomRequest(req);
         PrintWriter writer = resp.getWriter();
+        Claims jwt = (Claims) req.getAttribute("jwt");
+        Object id = jwt.get("userId");
         BookingRepo bookingRepo = new BookingRepo();
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
@@ -30,7 +33,7 @@ public class BookingController extends HttpServlet {
 
         Booking booking;
         booking = gson.fromJson(req.getReader(), Booking.class);
-        bookingRepo.bookTicketAndSendEmail(booking);
+        bookingRepo.bookTicketAndSendEmail(booking,id);
 
         writer.flush();
         writer.close();
