@@ -1,10 +1,9 @@
 package org.ucsc.railboostbackend.services;
 
-
+import javax.activation.DataHandler;
 import javax.mail.*;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.AddressException;
+import javax.mail.internet.*;
+import javax.mail.util.ByteArrayDataSource;
 import java.util.Date;
 import java.util.Properties;
 
@@ -49,6 +48,35 @@ public class EmailService {
         } catch (MessagingException e) {
             System.out.println("Messaging exception in EmailService: ");
             System.out.println(e.getMessage());
+        }
+    }
+
+    public void sendEmailWithQRCode(String toEmail, String subject, String body, byte[] qrCodePath){
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(fromEmail));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+            message.setSubject(subject);
+
+            MimeBodyPart textPart = new MimeBodyPart();
+            textPart.setContent(body,"text/html");
+
+            MimeBodyPart attachmentPart = new MimeBodyPart();
+            attachmentPart.setDataHandler(new DataHandler(new ByteArrayDataSource(qrCodePath, "image/png")));
+            attachmentPart.setFileName("qrcode.png");
+            attachmentPart.setHeader("Content-Type", "image/png");
+
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(textPart);
+            multipart.addBodyPart(attachmentPart);
+
+            message.setContent(multipart);
+            session.setDebug(true);
+            Transport.send(message);
+            System.out.println("Email sent successfully!");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            System.out.println("Error sending email: " + e.getMessage());
         }
     }
 

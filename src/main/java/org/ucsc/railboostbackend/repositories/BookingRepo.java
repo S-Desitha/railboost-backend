@@ -1,27 +1,20 @@
 package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.Booking;
+import org.ucsc.railboostbackend.services.EmailService;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 import org.ucsc.railboostbackend.utilities.QRCodeGenerator;
 
-import javax.activation.DataHandler;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
 import java.sql.*;
-import java.util.Properties;
 
 public class BookingRepo {
-    public void bookTicketAndSendEmail(Booking booking){
+    public void bookTicketAndSendEmail(Booking booking,Object id){
         Connection connection = DBConnection.getConnection();
 
         try{
             String query = "INSERT INTO booking (userId, startStation, endStation, date, trainClass, numberOfTickets, totalPrice) VALUES (?, ?, ?, ?, ?, ?, ?)";
             try(PreparedStatement statement = connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS)) {
-                statement.setInt(1, booking.getUserId());
+                statement.setObject(1, id);
                 statement.setString(2, booking.getStartStation());
                 statement.setString(3, booking.getEndStation());
                 statement.setObject(4,  booking.getDate());
@@ -41,7 +34,20 @@ public class BookingRepo {
                 }
 
                 byte[] qrCodePath = generateAndSaveQRCode(bookingId);
-                sendEmailWithQRCode(booking.getUserId(), qrCodePath, booking);
+                String toEmail = EmailById(id);
+                String subject = "RailBoost E-Ticket";
+                String body = "<html><body>" +
+                        "<h2>RailBoost E-Ticket</h2>" +
+                        "<p><strong>Start Station:</strong> " + booking.getStartStation() + "</p>" +
+                        "<p><strong>End Station:</strong> " + booking.getEndStation() + "</p>" +
+                        "<p><strong>Date:</strong> " + booking.getDate() + "</p>" +
+                        "<p><strong>Train Class:</strong> " + booking.getTrainClass() + "</p>" +
+                        "<p><strong>Number of Tickets:</strong> " + booking.getNumberOfTickets() + "</p>" +
+                        "<p><strong>Total Price:</strong> " + booking.getTotalPrice() + "</p>" +
+                        "</body></html>";
+
+                EmailService emailService = new EmailService();
+                emailService.sendEmailWithQRCode(toEmail, subject, body, qrCodePath);
             }
 
         }catch (SQLException e){
@@ -52,70 +58,86 @@ public class BookingRepo {
         String data = "Booking ID: " + bookingId;
         return QRCodeGenerator.generateQRCode(data);
     }
+//
+//    private void sendEmailWithQRCode(Object userId, byte[] qrCodePath,Booking booking){
+//        String host = "smtp.gmail.com";
+//        String username = "kalindusankalpa5285@gmail.com";
+//        String password = "cmgpxcupqzsmmvpr";
+//        String from = "kalindusankalpa5285@gmail.com";
+//
+//        String to = EmailById(userId);
+//        String subject = "RailBoost E-Ticket";
+//        String body = "<html><body>" +
+//                "<h2>RailBoost E-Ticket</h2>" +
+//                "<p><strong>Start Station:</strong> " + booking.getStartStation() + "</p>" +
+//                "<p><strong>End Station:</strong> " + booking.getEndStation() + "</p>" +
+//                "<p><strong>Date:</strong> " + booking.getDate() + "</p>" +
+//                "<p><strong>Train Class:</strong> " + booking.getTrainClass() + "</p>" +
+//                "<p><strong>Number of Tickets:</strong> " + booking.getNumberOfTickets() + "</p>" +
+//                "<p><strong>Total Price:</strong> " + booking.getTotalPrice() + "</p>" +
+//                "</body></html>";
+//
+//
+//
+//
+//        Properties properties = System.getProperties();
+//        properties.setProperty("mail.smtp.host", host);
+//        properties.setProperty("mail.smtp.port", "587");
+//        properties.setProperty("mail.smtp.starttls.enable", "true");
+//        properties.setProperty("mail.smtp.auth", "true");
+//
+//        Session session = Session.getDefaultInstance(properties, new Authenticator() {
+//            protected PasswordAuthentication getPasswordAuthentication() {
+//                return new PasswordAuthentication(username, password);
+//            }
+//        });
+//
+//        try {
+//            MimeMessage message = new MimeMessage(session);
+//            message.setFrom(new InternetAddress(from));
+//            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+//            message.setSubject(subject);
+//
+//            MimeBodyPart textPart = new MimeBodyPart();
+//            textPart.setContent(body,"text/html");
+//
+//            MimeBodyPart attachmentPart = new MimeBodyPart();
+//            attachmentPart.setDataHandler(new DataHandler(new ByteArrayDataSource(qrCodePath, "image/png")));
+//            attachmentPart.setFileName("qrcode.png");
+//            attachmentPart.setHeader("Content-Type", "image/png");
+//
+//            Multipart multipart = new MimeMultipart();
+//            multipart.addBodyPart(textPart);
+//            multipart.addBodyPart(attachmentPart);
+//
+//            message.setContent(multipart);
+//            session.setDebug(true);
+//            Transport.send(message);
+//            System.out.println("Email sent successfully!");
+//        } catch (MessagingException e) {
+//            e.printStackTrace();
+//            System.out.println("Error sending email: " + e.getMessage());
+//        }
+//    }
 
-    private void sendEmailWithQRCode(int userId, byte[] qrCodePath,Booking booking){
-        String host = "smtp.gmail.com";
-        String username = "kalindusankalpa5285@gmail.com";
-        String password = "cmgpxcupqzsmmvpr";
-        String from = "kalindusankalpa5285@gmail.com";
+    private static String EmailById(Object userId) {
+        String mail = null;
+        Connection  connection = DBConnection.getConnection();
 
-        String to = "sankalpa5285@gmail.com";
-        String subject = "RailBoost E-Ticket";
-        String body = "<html><body>" +
-                "<h2>RailBoost E-Ticket</h2>" +
-                "<p><strong>Start Station:</strong> " + booking.getStartStation() + "</p>" +
-                "<p><strong>End Station:</strong> " + booking.getEndStation() + "</p>" +
-                "<p><strong>Date:</strong> " + booking.getDate() + "</p>" +
-                "<p><strong>Train Class:</strong> " + booking.getTrainClass() + "</p>" +
-                "<p><strong>Number of Tickets:</strong> " + booking.getNumberOfTickets() + "</p>" +
-                "<p><strong>Total Price:</strong> " + booking.getTotalPrice() + "</p>" +
-                "</body></html>";
+        String query = "SELECT email FROM users WHERE userId=?";
 
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setObject(1, userId);
 
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                mail = resultSet.getString("email");
 
-
-        Properties properties = System.getProperties();
-        properties.setProperty("mail.smtp.host", host);
-        properties.setProperty("mail.smtp.port", "587");
-        properties.setProperty("mail.smtp.starttls.enable", "true");
-        properties.setProperty("mail.smtp.auth", "true");
-
-        Session session = Session.getDefaultInstance(properties, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
             }
-        });
-
-        try {
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-            message.setSubject(subject);
-
-            MimeBodyPart textPart = new MimeBodyPart();
-            textPart.setContent(body,"text/html");
-
-            MimeBodyPart attachmentPart = new MimeBodyPart();
-            attachmentPart.setDataHandler(new DataHandler(new ByteArrayDataSource(qrCodePath, "image/png")));
-            attachmentPart.setFileName("qrcode.png");
-            attachmentPart.setHeader("Content-Type", "image/png");
-
-            Multipart multipart = new MimeMultipart();
-            multipart.addBodyPart(textPart);
-            multipart.addBodyPart(attachmentPart);
-
-            message.setContent(multipart);
-            session.setDebug(true);
-            Transport.send(message);
-            System.out.println("Email sent successfully!");
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            System.out.println("Error sending email: " + e.getMessage());
+        } catch (SQLException e){
+            System.out.println("Error in select query for users table: \n" + e.getMessage());
         }
-    }
-
-    private static String EmailById(int userId) {
-        return "";
+        return mail;
     }
 
 }
