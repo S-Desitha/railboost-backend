@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LineRepo {
 
@@ -50,7 +52,29 @@ public class LineRepo {
 
         return line;
         }
+        public List<Line> getAllLine(){
+        Connection connection = DBConnection.getConnection();
+        List<Line> lineList = new ArrayList<>();
 
+        String query = "SELECT * FROM `line` ";
+
+        try(PreparedStatement statement = connection.prepareStatement(query)){
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()){
+                Line line = new Line();
+                line.setLineId(resultSet.getString("line_id"));
+                line.setLineName(resultSet.getString("line_name"));
+
+                lineList.add(line);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return lineList;
+
+    }
         public void updateLine(Line line) throws SQLException {
         Connection connection = DBConnection.getConnection();
         String query ="UPDATE `line` SET `line_name`=? WHERE line_id=?;";
