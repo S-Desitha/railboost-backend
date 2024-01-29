@@ -112,6 +112,24 @@
     <url-pattern>/stations</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ParcelBooking</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.ParcelController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ParcelBooking</servlet-name>
+    <url-pattern>/parcelbooking</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Line</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.LineController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Line</servlet-name>
+    <url-pattern>/line</url-pattern>
+  </servlet-mapping>
+
 
   <listener>
     <listener-class>org.ucsc.railboostbackend.services.CronScheduler</listener-class>
