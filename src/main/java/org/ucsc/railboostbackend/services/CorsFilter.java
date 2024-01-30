@@ -11,7 +11,7 @@ public class CorsFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
         // Allow requests from any origin - you might want to restrict this to specific origins in a production environment
-        httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost");
+        httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:5500");
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
         httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");

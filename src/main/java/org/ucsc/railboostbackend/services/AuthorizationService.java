@@ -24,7 +24,7 @@ public class AuthorizationService {
                 .subject("User Details")
                 .id(UUID.randomUUID().toString())
                 .issuedAt(new Date())
-                .expiration(new Date(new Date().getTime()+1000*60));
+                .expiration(new Date(new Date().getTime()+1000*60*60*24));
     }
     
     
