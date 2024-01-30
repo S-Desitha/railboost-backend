@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class LoginRepo {
     private int userId;
-    private String role;
+    private int role;
 
     public Login verifyLogin(Login login) throws SQLException {
         Login response = new Login();
@@ -20,7 +20,7 @@ public class LoginRepo {
         String inputPassword = login.getPassword();
 
 
-        String query = "SELECT username, userId, password, salt, role FROM users where username=?";
+        String query = "SELECT username, userId, password, salt, roleId FROM users where username=?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement pst = connection.prepareStatement(query);
         pst.setString(1, username);
@@ -32,10 +32,10 @@ public class LoginRepo {
 
             if (security.hash(inputPassword, salt).equals(storedPassword)) {
                 this.userId = resultSet.getInt("userId");
-                this.role = resultSet.getString("role");
+                this.role = resultSet.getInt("roleId");
                 response.setSuccessful(true);
                 response.setUsername(resultSet.getString("username"));
-                response.setRole(resultSet.getString("role"));
+                response.setRole(resultSet.getInt("roleId"));
             }
             else
                 response.setSuccessful(false);
@@ -56,7 +56,7 @@ public class LoginRepo {
         return userId;
     }
 
-    public String getRole() {
+    public int getRole() {
         return role;
     }
 }

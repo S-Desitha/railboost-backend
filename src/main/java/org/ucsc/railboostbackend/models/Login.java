@@ -4,7 +4,7 @@ public class Login {
     private String username;
     private String password;
     private boolean isSuccessful;
-    private String role;
+    private int role;
     private String jwt;
 
 
@@ -32,11 +32,11 @@ public class Login {
         isSuccessful = successful;
     }
 
-    public String getRole() {
+    public int getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(int role) {
         this.role = role;
     }
 

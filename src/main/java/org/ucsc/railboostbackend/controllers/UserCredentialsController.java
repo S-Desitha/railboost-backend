@@ -2,6 +2,7 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
+import org.ucsc.railboostbackend.models.Role;
 import org.ucsc.railboostbackend.models.User;
 
 import javax.servlet.ServletException;
@@ -20,7 +21,7 @@ public class UserCredentialsController extends HttpServlet {
         Gson gson = new Gson();
 
         user.setUsername(jwt.get("username", String.class));
-        user.setRole(jwt.get("role", String.class));
+        user.setRole(new Role(jwt.get("role", Integer.class)));
 
         writer.write(gson.toJson(user));
         writer.flush();
