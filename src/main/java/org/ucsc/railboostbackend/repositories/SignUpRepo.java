@@ -15,7 +15,7 @@ public class SignUpRepo {
     public boolean addGeneralUser(User user){
         boolean isSuccess = false;
         Connection connection = DBConnection.getConnection();
-        String query = "INSERT INTO users (username, password, salt, fName, lName, dob, gender, email, telNo, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO users (username, password, salt, fName, lName, dob, gender, email, telNo, roleId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         String username = user.getUsername();
         String password = user.getPassword();
@@ -42,7 +42,7 @@ public class SignUpRepo {
                 statement.setString(7, user.getGender());
                 statement.setString(8, user.getEmail());
                 statement.setString(9, user.getTelNo());
-                statement.setString(10, user.getRole());
+                statement.setInt(10, user.getRole().getRoleId());
 
                 isSuccess = statement.executeUpdate() > 0;
 
@@ -62,7 +62,7 @@ public class SignUpRepo {
     public int addStaffUser(User user) {
         int userId = -1;
         Connection connection = DBConnection.getConnection();
-        String query = "INSERT INTO users (fName, lName, dob, gender, email, telNo, role, username) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO users (fName, lName, dob, gender, email, telNo, roleId, username) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)){
             statement.setString(1, user.getfName());
@@ -74,7 +74,7 @@ public class SignUpRepo {
             statement.setString(4, user.getGender());
             statement.setString(5, user.getEmail());
             statement.setString(6, user.getTelNo());
-            statement.setString(7, user.getRole());
+            statement.setInt(7, user.getRole().getRoleId());
             statement.setString(8, user.getUsername());
 
             if (statement.executeUpdate()>0) {

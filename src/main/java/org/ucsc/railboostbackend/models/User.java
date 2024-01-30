@@ -12,7 +12,7 @@ public class User {
     private String gender;
     private String email;
     private String telNo;
-    private String role;
+    private Role role;
     private boolean isStaff;
 
 
@@ -88,11 +88,11 @@ public class User {
         this.telNo = telNo;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

@@ -1,5 +1,6 @@
 package org.ucsc.railboostbackend.repositories;
 
+import org.ucsc.railboostbackend.models.Role;
 import org.ucsc.railboostbackend.models.Staff;
 import org.ucsc.railboostbackend.models.User;
 import org.ucsc.railboostbackend.utilities.DBConnection;
@@ -16,9 +17,10 @@ public class StaffRepo {
     public Staff getStaffById(String staffId) {
         Connection connection = DBConnection.getConnection();
         Staff staff = new Staff();
-        String query = "SELECT s.staffId, u.userId, u.role, u.fName, u.lName, u.username, u.telNo, u.role, s.stationCode, u.email, u.dob, u.gender " +
+        String query = "SELECT s.staffId, u.userId, u.fName, u.lName, u.username, u.telNo, u.roleId, s.stationCode, u.email, u.dob, u.gender, r.role " +
                 "FROM staff s " +
                 "INNER JOIN users u ON s.userId = u.userId " +
+                "INNER JOIN roles r ON u.roleId = r.roleId " +
                 "WHERE s.staffId = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -35,7 +37,7 @@ public class StaffRepo {
                 user.setlName(resultSet.getString("lName"));
                 user.setEmail(resultSet.getString("email"));
                 user.setTelNo(resultSet.getString("telNo"));
-                user.setRole(resultSet.getString("role"));
+                user.setRole(new Role(resultSet.getShort("roleId"), resultSet.getString("role")));
                 user.setDob(resultSet.getDate("dob").toLocalDate());
                 user.setGender(resultSet.getString("gender"));
                 staff.setUser(user);
@@ -94,9 +96,10 @@ public class StaffRepo {
     public List<Staff> getAllStaff() {
         Connection connection = DBConnection.getConnection();
         List<Staff> staffList = new ArrayList<>();
-        String query = "SELECT s.staffId, u.userId, u.role, u.fName, u.lName, u.username, u.telNo, u.role, s.stationCode, u.email " +
+        String query = "SELECT s.staffId, u.userId, u.roleId, u.fName, u.lName, u.username, u.telNo, u.roleId, r.role ,s.stationCode, u.email " +
                 "FROM staff s " +
-                "INNER JOIN users u ON s.userId = u.userId ";
+                "INNER JOIN users u ON s.userId = u.userId " +
+                "INNER JOIN roles r ON u.roleId = r.roleId ";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
@@ -111,7 +114,7 @@ public class StaffRepo {
                 user.setlName(resultSet.getString("lName"));
                 user.setEmail(resultSet.getString("email"));
                 user.setTelNo(resultSet.getString("telNo"));
-                user.setRole(resultSet.getString("role"));
+                user.setRole(new Role(resultSet.getShort("roleId"), resultSet.getString("role")));
 
                 staff.setUser(user);
                 staffList.add(staff);
