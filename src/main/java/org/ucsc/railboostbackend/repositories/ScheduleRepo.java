@@ -98,19 +98,22 @@ public class ScheduleRepo {
     public List<Schedule> getSchedules(Schedule reqSchedule){
         List<Schedule> schedules = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
-        String query = "SELECT ts.scheduleId FROM schedule ts " +
-                "INNER JOIN schedule_stations ss1 ON ts.scheduleId = ss1.scheduleId " +
-                "INNER JOIN schedule_stations ss2 ON ts.scheduleId = ss2.scheduleId " +
-                "INNER JOIN schedule_days days ON ts.scheduleId = days.scheduleId " +
-                "LEFT JOIN schedule_dates dates ON ts.scheduleId = dates.scheduleId " +
-                "WHERE (days.day = ? OR DATE(dates.date) = ?) " +
-                "AND ss1.station = ? " +
-                "AND ss2.station = ? " +
-                "AND ss1.stIndex < ss2.stIndex " +
-                "ORDER BY ss1.scheduledArrivalTime ASC";
 
         String startStation = reqSchedule.getStartStation();
         String endStation = reqSchedule.getEndStation();
+
+        String query = "SELECT ts.scheduleId FROM schedule ts " +
+                (startStation!=null? "INNER JOIN schedule_stations ss1 ON ts.scheduleId = ss1.scheduleId " : "") +
+                (endStation!=null? "INNER JOIN schedule_stations ss2 ON ts.scheduleId = ss2.scheduleId " : "") +
+                "INNER JOIN schedule_days days ON ts.scheduleId = days.scheduleId " +
+                "LEFT JOIN schedule_dates dates ON ts.scheduleId = dates.scheduleId " +
+                "WHERE (days.day = ? OR DATE(dates.date) = ?) " +
+                (startStation!=null? "AND ss1.station = ? " : "") +
+                (endStation!=null? "AND ss2.station = ? " : "") +
+                (startStation!=null && endStation!=null ? "AND ss1.stIndex < ss2.stIndex " : "") +
+                (startStation!=null? "ORDER BY ss1.scheduledArrivalTime ASC" : "");
+
+
         LocalDate date = reqSchedule.getDate();
         Day day = Day.valueOf(date.getDayOfWeek().toString());
 
@@ -120,8 +123,10 @@ public class ScheduleRepo {
             pst = connection.prepareStatement(query);
             pst.setString(1, day.name());
             pst.setDate(2, Date.valueOf(date));
-            pst.setString(3, startStation);
-            pst.setString(4, endStation);
+            if (startStation!=null)
+                pst.setString(3, startStation);
+            if (endStation!=null)
+                pst.setString(4, endStation);
 
             resultSet = pst.executeQuery();
             while (resultSet.next()) {
