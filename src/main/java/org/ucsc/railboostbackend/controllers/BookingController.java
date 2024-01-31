@@ -7,6 +7,7 @@ import org.ucsc.railboostbackend.models.Booking;
 import org.ucsc.railboostbackend.repositories.BookingRepo;
 import org.ucsc.railboostbackend.services.CustomRequest;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
+import org.ucsc.railboostbackend.services.LocalDateSerializer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,6 +36,32 @@ public class BookingController extends HttpServlet {
         booking = gson.fromJson(req.getReader(), Booking.class);
         bookingRepo.bookTicketAndSendEmail(booking,id);
 
+        writer.flush();
+        writer.close();
+    }
+
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+        PrintWriter writer = resp.getWriter();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
+                .registerTypeAdapter(LocalDate.class, LocalDateSerializer.INSTANCE)
+                .setDateFormat("MM/dd/yyyy")
+                .create();
+        BookingRepo bookingRepo = new BookingRepo();
+
+        String sid = req.getParameter("id");
+
+        if (sid != null){
+//            int id = Integer.parseInt(sid);
+            Booking booking = bookingRepo.getTicketDetails(sid);
+            if (booking != null){
+                writer.write(gson.toJson(booking));
+            } else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } else {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
         writer.flush();
         writer.close();
     }

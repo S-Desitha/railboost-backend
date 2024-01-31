@@ -59,6 +59,7 @@ public class JourneyController extends HttpServlet {
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
+                .registerTypeAdapter(LocalTime.class, LocalTimeDeserializer.INSTANCE)
                 .setDateFormat("MM/dd/yyyy")
                 .create();
 

@@ -140,4 +140,31 @@ public class BookingRepo {
         return mail;
     }
 
+    public Booking getTicketDetails(String id){
+        Booking booking = new Booking();
+        Connection  connection = DBConnection.getConnection();
+
+        String query = "SELECT * FROM booking WHERE id=?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                booking.setId(resultSet.getInt("id"));
+                booking.setUserId(resultSet.getInt("userId"));
+                booking.setStartStation(resultSet.getString("startStation"));
+                booking.setEndStation(resultSet.getString("endStation"));
+                booking.setDate(resultSet.getDate("date").toLocalDate());
+                booking.setTrainClass(resultSet.getString("trainClass"));
+                booking.setNumberOfTickets(resultSet.getInt("numberOfTickets"));
+                booking.setTotalPrice(resultSet.getInt("totalPrice"));
+
+            }
+        } catch (SQLException e){
+            System.out.println("Error in select query for booking table: \n" + e.getMessage());
+        }
+        return booking;
+    }
+
 }
