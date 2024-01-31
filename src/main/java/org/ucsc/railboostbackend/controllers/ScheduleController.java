@@ -3,6 +3,7 @@ package org.ucsc.railboostbackend.controllers;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import io.jsonwebtoken.Claims;
+import org.ucsc.railboostbackend.enums.Roles;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
@@ -64,7 +65,7 @@ public class ScheduleController extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         Claims jwt = (Claims) req.getAttribute("jwt");
 
-        if (verifyAccess(jwt, "admin")) {
+        if (verifyAccess(jwt, Roles.ADMINISTRATOR)) {
             Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
             Schedule schedule = gson.fromJson(req.getReader(), Schedule.class);
 
@@ -90,7 +91,7 @@ public class ScheduleController extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         Claims jwt = (Claims) req.getAttribute("jwt");
 
-        if (Security.verifyAccess(jwt, "admin")){
+        if (Security.verifyAccess(jwt, Roles.ADMINISTRATOR)){
             ScheduleRepo repo = new ScheduleRepo();
             Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
             List<Schedule> schedules = gson.fromJson(req.getReader(), new TypeToken<ArrayList<Schedule>>(){});
@@ -115,7 +116,7 @@ public class ScheduleController extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         Claims jwt = (Claims) req.getAttribute("jwt");
 
-        if (Security.verifyAccess(jwt, "admin")){
+        if (Security.verifyAccess(jwt, Roles.ADMINISTRATOR)){
             ScheduleRepo scheduleRepo = new ScheduleRepo();
             short scheduleId = Short.parseShort(req.getParameter("scheduleId"));
             Schedule schedule = scheduleRepo.getScheduleById(scheduleId);

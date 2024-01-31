@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.utilities;
 
 import io.jsonwebtoken.Claims;
+import org.ucsc.railboostbackend.enums.Roles;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 
 import javax.crypto.SecretKeyFactory;
@@ -11,6 +12,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Security {
 
@@ -61,15 +63,17 @@ public class Security {
     }
 
 
-    public static boolean verifyAccess(Claims jwt, String role) {
+    public static boolean verifyAccess(Claims jwt, Roles role) {
         if (jwt.get("role")!=null)
-            return jwt.get("role", String.class).equals(role);
+            return Objects.equals(Roles.valueOfRoleId(jwt.get("role", Integer.class)), role);
 
         return false;
     }
 
-    public static boolean verifyAccess(Claims jwt, String role, String station) {
-        return jwt.get("role", String.class).equals(role) &&
+    public static boolean verifyAccess(Claims jwt, Roles role, String station) {
+        if (jwt.get("role")==null)
+            return false;
+        return Objects.equals(Roles.valueOfRoleId(jwt.get("role", Integer.class)), role) &&
                 new StaffRepo()
                         .getStaffByUserId(jwt.get("userId", Integer.class))
                         .getStation()

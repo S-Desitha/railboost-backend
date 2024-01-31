@@ -3,6 +3,7 @@ package org.ucsc.railboostbackend.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.jsonwebtoken.Claims;
+import org.ucsc.railboostbackend.models.Role;
 import org.ucsc.railboostbackend.models.User;
 import org.ucsc.railboostbackend.services.LocalDateSerializer;
 
@@ -26,7 +27,7 @@ public class UserCredentialsController extends HttpServlet {
                 .create();
 
         user.setUsername(jwt.get("username", String.class));
-        user.setRole(jwt.get("role", String.class));
+        user.setRole(new Role(jwt.get("role", Integer.class)));
 
         writer.write(gson.toJson(user));
         writer.flush();
