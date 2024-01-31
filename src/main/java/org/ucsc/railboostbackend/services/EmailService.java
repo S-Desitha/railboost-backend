@@ -1,5 +1,7 @@
 package org.ucsc.railboostbackend.services;
 
+import org.ucsc.railboostbackend.models.Staff;
+
 import javax.activation.DataHandler;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -81,16 +83,20 @@ public class EmailService {
     }
 
 
-    public String createStaffSignupHTML(String tempUID) {
-        return "<table style=\"width: auto; margin-top: 20px; text-align: center;\">\n" +
-                "  <tr>\n" +
-                "    <td style=\"background-color: #007bff; padding: 15px 30px; border-radius: 5px; color: #fff; font-weight: bold; text-decoration: none; white-space: normal;\">\n" +
-                "      <a href=\"http://localhost/html/signup.html?tempUID="+tempUID+"\" style=\"color: #fff; text-decoration: none; display: inline-block; text-align: left;\">\n" +
-                "        Complete Your Profile" +
-                "      </a>\n" +
-                "    </td>\n" +
-                "  </tr>\n" +
-                "</table>\n";
+    public String createStaffSignupText(String tempUID, Staff staff, String railBoostLogoURL) {
+        String username = staff.getUser().getUsername();
+        String firstName = staff.getUser().getfName();
+
+        return "Dear **" + firstName + "**,\n\n" +
+                "Welcome to RailBoost!\n" +
+                "Your username is: **" + username + "**\n\n" +
+                "We're thrilled to have you as part of RailBoost. To get started, please click the link below to complete your profile:\n" +
+                "http://localhost:5500/html/signup.html?tempUID=" + tempUID + "\n\n" +
+                "RailBoost Team Logo: " + "https://drive.google.com/file/d/159SpP2HSHQ-V5J9wYAcLVnooZSVRH6pv/view?usp=sharing" + "\n\n" +
+                "Thank you for choosing RailBoost!\n\n" +
+                "Thanks,\n" +
+                "RailBoost Team";
     }
+
 
 }

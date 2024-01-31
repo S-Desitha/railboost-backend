@@ -74,7 +74,7 @@ public class StaffController extends HttpServlet {
 
             if (isSuccessful){
                 EmailService emailService = new EmailService();
-                String body = emailService.createStaffSignupHTML(tempUID);
+                String body = emailService.createStaffSignupHTML(tempUID,staff);
                 emailService.sendEmail(staff.getUser().getEmail(), "Staff Signup", body);
 
                 StaffSignup temp = new StaffSignup();
