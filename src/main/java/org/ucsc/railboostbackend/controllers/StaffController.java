@@ -54,8 +54,7 @@ public class StaffController extends HttpServlet {
         String tempUID = null;
         MyCache myCache = new MyCache();
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
-                .setDateFormat("MM/dd/yyyy")
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
                 .create();
 
         if (wrappedReq.getAttribute("userId")==null){
