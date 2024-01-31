@@ -83,20 +83,21 @@ public class EmailService {
     }
 
 
-    public String createStaffSignupText(String tempUID, Staff staff, String railBoostLogoURL) {
+    public String createStaffSignupHTML(String tempUID, Staff staff) {
         String username = staff.getUser().getUsername();
         String firstName = staff.getUser().getfName();
+        String railBoostLogoURL ="https://drive.google.com/file/d/159SpP2HSHQ-V5J9wYAcLVnooZSVRH6pv/view?usp=sharing";
 
-        return "Dear **" + firstName + "**,\n\n" +
-                "Welcome to RailBoost!\n" +
-                "Your username is: **" + username + "**\n\n" +
-                "We're thrilled to have you as part of RailBoost. To get started, please click the link below to complete your profile:\n" +
-                "http://localhost:5500/html/signup.html?tempUID=" + tempUID + "\n\n" +
-                "RailBoost Team Logo: " + "https://drive.google.com/file/d/159SpP2HSHQ-V5J9wYAcLVnooZSVRH6pv/view?usp=sharing" + "\n\n" +
-                "Thank you for choosing RailBoost!\n\n" +
-                "Thanks,\n" +
-                "RailBoost Team";
+        return "<div style=\"text-align: center;\">\n" +
+                "  <img src=\"" + railBoostLogoURL + "\" alt=\"RailBoost Logo\" style=\"width: 100px; height: auto; margin-bottom: 10px;\">\n" +
+                "  <p style=\"font-size: 18px; margin-bottom: 10px;\">Dear " + firstName + ",</p>\n" +
+                "  <p style=\"font-size: 16px; margin-bottom: 10px;\">Welcome to RailBoost! Your username is: " + username + "</p>\n" +
+                "  <p style=\"font-size: 16px; margin-bottom: 10px;\">We're thrilled to have you as part of RailBoost. To get started, please click the link below to complete your profile:</p>\n" +
+                "  <a href=\"http://localhost:5500/html/signup.html?tempUID=" + tempUID + "\" style=\"color: #007bff; text-decoration: none; font-weight: bold; display: inline-block; text-align: left;\">Complete Your Profile</a>\n" +
+                "  <p style=\"font-size: 14px; margin-top: 10px;\">Thank you for choosing RailBoost!</p>\n" +
+                "</div>";
     }
+
 
 
 }
