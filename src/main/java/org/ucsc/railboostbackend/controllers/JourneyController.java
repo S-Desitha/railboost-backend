@@ -10,6 +10,7 @@ import org.ucsc.railboostbackend.repositories.JourneyRepo;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 import org.ucsc.railboostbackend.services.LocalTimeDeserializer;
+import org.ucsc.railboostbackend.services.LocalTimeSerializer;
 import org.ucsc.railboostbackend.utilities.Security;
 
 import javax.servlet.ServletException;
@@ -29,8 +30,7 @@ public class JourneyController extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         Claims jwt = (Claims) req.getAttribute("jwt");
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalTime.class, LocalTimeDeserializer.INSTANCE)
-                .setDateFormat("HH:mm:ss")
+                .registerTypeAdapter(LocalTime.class, new LocalTimeDeserializer())
                 .create();
 
         JourneyStation journeyStation = gson.fromJson(req.getReader(), JourneyStation.class);
@@ -60,8 +60,8 @@ public class JourneyController extends HttpServlet {
         String stationCode;
 
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
-                .setDateFormat("MM/dd/yyyy")
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
                 .create();
 
         String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
