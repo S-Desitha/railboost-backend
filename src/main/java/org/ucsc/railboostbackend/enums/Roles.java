@@ -15,4 +15,8 @@ public enum Roles {
         }
         return null;
     }
+
+    public int getRoleId(){
+        return roleId;
+    }
 }

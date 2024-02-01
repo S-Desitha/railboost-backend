@@ -72,7 +72,7 @@ public class JourneyController extends HttpServlet {
             writer.write(gson.toJson(journey));
         }
 
-        else if (jwt.get("role")!=null && Objects.equals(jwt.get("role"), Roles.STATION_MASTER)) {
+        else if (jwt.get("role")!=null && Objects.equals(jwt.get("role"), Roles.STATION_MASTER.getRoleId())) {
             Staff staff = new StaffRepo()
                     .getStaffByUserId((Integer) jwt.get("userId", Integer.class));
             if (staff!=null){
