@@ -1,10 +1,11 @@
 package org.ucsc.railboostbackend.utilities;
 
+import io.jsonwebtoken.Claims;
+import org.ucsc.railboostbackend.enums.Roles;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.servlet.http.HttpSession;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -62,17 +63,19 @@ public class Security {
     }
 
 
-    public static boolean verifyAccess(HttpSession httpSession, String role) {
-        if (httpSession.getAttribute("role")!=null)
-            return httpSession.getAttribute("role").equals(role);
+    public static boolean verifyAccess(Claims jwt, Roles role) {
+        if (jwt.get("role")!=null)
+            return Objects.equals(Roles.valueOfRoleId(jwt.get("role", Integer.class)), role);
 
         return false;
     }
 
-    public static boolean verifyAccess(HttpSession httpSession, String role, String station) {
-        return httpSession.getAttribute("role").equals(role) &&
+    public static boolean verifyAccess(Claims jwt, Roles role, String station) {
+        if (jwt.get("role")==null)
+            return false;
+        return Objects.equals(Roles.valueOfRoleId(jwt.get("role", Integer.class)), role) &&
                 new StaffRepo()
-                        .getStaffByUserId((Integer) httpSession.getAttribute("userId"))
+                        .getStaffByUserId(jwt.get("userId", Integer.class))
                         .getStation()
                         .equals(station);
     }
