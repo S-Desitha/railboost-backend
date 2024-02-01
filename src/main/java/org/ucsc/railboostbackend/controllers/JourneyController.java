@@ -38,7 +38,6 @@ public class JourneyController extends HttpServlet {
         if (Security.verifyAccess(jwt, Roles.STATION_MASTER, journeyStation.getStation())) {
             JourneyRepo journeyRepo = new JourneyRepo();
             journeyRepo.updateJourney(journeyStation);
-            writer.write("Journey updated successfully");
         }
         else {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
