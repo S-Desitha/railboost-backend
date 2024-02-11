@@ -7,6 +7,9 @@ import org.ucsc.railboostbackend.enums.Roles;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
+import org.ucsc.railboostbackend.services.LocalDateSerializer;
+import org.ucsc.railboostbackend.services.LocalTimeDeserializer;
+import org.ucsc.railboostbackend.services.LocalTimeSerializer;
 import org.ucsc.railboostbackend.utilities.Security;
 
 import javax.servlet.ServletException;
@@ -20,7 +23,10 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
+import java.text.DateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +42,9 @@ public class ScheduleController extends HttpServlet {
         Schedule schedule;
 
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
-                .setDateFormat("MM/dd/yyyy")
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
                 .create();
 
 
@@ -64,10 +71,13 @@ public class ScheduleController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
         Claims jwt = (Claims) req.getAttribute("jwt");
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalTime.class, new LocalTimeDeserializer())
+                .create();
 
         if (verifyAccess(jwt, Roles.ADMINISTRATOR)) {
-            Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
             Schedule schedule = gson.fromJson(req.getReader(), Schedule.class);
+//            Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
 
             ScheduleRepo scheduleRepo = new ScheduleRepo();
             boolean result = scheduleRepo.addSchedule(schedule);
@@ -90,10 +100,13 @@ public class ScheduleController extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
         Claims jwt = (Claims) req.getAttribute("jwt");
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalTime.class, new LocalTimeDeserializer())
+                .create();
 
         if (Security.verifyAccess(jwt, Roles.ADMINISTRATOR)){
             ScheduleRepo repo = new ScheduleRepo();
-            Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
+//            Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
             List<Schedule> schedules = gson.fromJson(req.getReader(), new TypeToken<ArrayList<Schedule>>(){});
             try {
                 repo.updateSchedule(schedules.get(0), schedules.get(1));

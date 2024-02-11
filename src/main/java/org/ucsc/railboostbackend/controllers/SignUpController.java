@@ -59,8 +59,7 @@ public class SignUpController extends HttpServlet {
         SignUpRepo signupRepo = new SignUpRepo();
         MyCache cache = new MyCache();
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
-                .setDateFormat("MM/dd/yyyy")
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
                 .create();
 
         Staff staff = gson.fromJson(wrappedReq.getReader(), Staff.class);

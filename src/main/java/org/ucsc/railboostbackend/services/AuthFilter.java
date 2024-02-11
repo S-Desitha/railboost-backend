@@ -35,15 +35,19 @@ public class AuthFilter implements Filter {
                     filterChain.doFilter(req, resp);
                 }
             } catch ( IllegalArgumentException e) {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 writer.write("empty");
             } catch (ExpiredJwtException e) {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 writer.write("expired");
             } catch (SecurityException e) {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 writer.write("invalid");
             } catch (JwtException e){
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 writer.write("error");
             } finally {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 writer.flush();
                 writer.close();
             }
