@@ -29,6 +29,7 @@ public class StaffController extends HttpServlet {
         StaffRepo staffRepo = new StaffRepo();
         List<Staff> staffList;
         Staff staff;
+//        System.out.println(req.getHeader("origin"));
 
         String staffId = req.getParameter("staffId");
 
@@ -73,7 +74,7 @@ public class StaffController extends HttpServlet {
             myCache.add(staff.getStaffId(), tempUID);
 
             if (isSuccessful){
-                EmailService emailService = new EmailService();
+                EmailService emailService = new EmailService(req.getHeader("Origin"));
                 String body = emailService.createStaffSignupHTML(tempUID,staff);
                 emailService.sendEmail(staff.getUser().getEmail(), "Staff Signup", body);
 

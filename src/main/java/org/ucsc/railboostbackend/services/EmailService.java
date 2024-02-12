@@ -15,13 +15,32 @@ public class EmailService {
     private final String password = "oaqt gsqt jhpj tudc ";
     Session session;
     private Properties props = new Properties();
+    private String origin;
 
 
-    public EmailService() {
+    public EmailService(String origin) {
+        this.origin=origin;
         props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
         props.put("mail.smtp.port", "587"); //TLS Port
         props.put("mail.smtp.auth", "true"); //enable authentication
         props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
+
+
+        session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(fromEmail, password);
+            }
+        });
+    }
+
+    public EmailService() {
+        this.origin=origin;
+        props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
+        props.put("mail.smtp.port", "587"); //TLS Port
+        props.put("mail.smtp.auth", "true"); //enable authentication
+        props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
+
 
         session = Session.getInstance(props, new Authenticator() {
             @Override
@@ -86,16 +105,17 @@ public class EmailService {
     public String createStaffSignupHTML(String tempUID, Staff staff) {
         String username = staff.getUser().getUsername();
         String firstName = staff.getUser().getfName();
-        String railBoostLogoURL ="https://drive.google.com/file/d/159SpP2HSHQ-V5J9wYAcLVnooZSVRH6pv/view?usp=sharing";
+
+        String railBoostLogoURL ="https://postimg.cc/QVgT87ys";
 
         return "<div style=\"text-align: center;\">\n" +
-                "  <img src=\"" + railBoostLogoURL + "\" alt=\"RailBoost Logo\" style=\"width: 100px; height: auto; margin-bottom: 10px;\">\n" +
-                "  <p style=\"font-size: 18px; margin-bottom: 10px;\">Dear " + firstName + ",</p>\n" +
-                "  <p style=\"font-size: 16px; margin-bottom: 10px;\">Welcome to RailBoost! Your username is: " + username + "</p>\n" +
-                "  <p style=\"font-size: 16px; margin-bottom: 10px;\">We're thrilled to have you as part of RailBoost. To get started, please click the link below to complete your profile:</p>\n" +
-                "  <a href=\"http://localhost:5500/html/signup.html?tempUID=" + tempUID + "\" style=\"color: #007bff; text-decoration: none; font-weight: bold; display: inline-block; text-align: left;\">Complete Your Profile</a>\n" +
-                "  <p style=\"font-size: 14px; margin-top: 10px;\">Thank you for choosing RailBoost!</p>\n" +
-                "</div>";
+                "<p style=\"font-size: 18px; margin-bottom: 10px;\">Dear " + firstName + ",</p>" +
+                "<p style=\"font-size: 16px; margin-bottom: 10px;\">Welcome to RailBoost! Your username is: " + username + "</p>\n" +
+                "<p style=\"font-size: 16px; margin-bottom: 10px;\">We're thrilled to have you as part of RailBoost. To get started, please click the link below to complete your profile:</p>\n" +
+                "<a href=\""+ origin+ "/html/signup.html?tempUID=" + tempUID + "\" style=\"color: #007bff; text-decoration: none; font-weight: bold; display: inline-block; text-align: left;\">Complete Your Profile</a>\n" +
+                "<p style=\"font-size: 14px; margin-top: 10px;\">Thank you for choosing RailBoost!</p>\n" +
+                "</div>\n";
+                  // Add a clear separation line
     }
 
 

@@ -25,7 +25,7 @@ public class ScheduleRepo {
         List<ScheduleStation> stations = new ArrayList<>();
         List<ScheduleDay> days = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
-        String query = "SELECT ts.scheduleId, ts.startStation, ts.endStation,ts.trainId, train.trainType, ss.station, ss.stIndex, ss.scheduledArrivalTime, ss.scheduledDepartureTime " +
+        String query = "SELECT ts.scheduleId, ts.startStation, ts.endStation,ts.trainId, ts.speed, ss.station, ss.stIndex, ss.scheduledArrivalTime, ss.scheduledDepartureTime " +
                 "FROM schedule ts " +
                 "INNER JOIN schedule_stations ss ON ts.scheduleId = ss.scheduleId " +
                 "INNER JOIN train ON ts.trainId = train.trainId " +
@@ -49,7 +49,7 @@ public class ScheduleRepo {
                     schedule.setTrainId(resultSet.getString("trainId"));
                     schedule.setStartStation(resultSet.getString("startStation"));
                     schedule.setEndStation(resultSet.getString("endStation"));
-                    schedule.setTrainType(resultSet.getString("trainType"));
+                    schedule.setSpeed(resultSet.getString("speed"));
                 }
                 stations.add(new ScheduleStation(
                         resultSet.getShort("scheduleId"),

@@ -13,7 +13,7 @@ public class TicketPriceRepo {
         TicketPrice ticketPrice = new TicketPrice();
         Connection  connection = DBConnection.getConnection();
 
-        String query = "SELECT * FROM ticketprice WHERE startStation=? AND endStation=?";
+        String query = "SELECT * FROM ticketprice WHERE startCode=? AND endCode=?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, startStation);
@@ -22,8 +22,8 @@ public class TicketPriceRepo {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 ticketPrice.setId(resultSet.getInt("id"));
-                ticketPrice.setStartStation(resultSet.getString("startStation"));
-                ticketPrice.setEndStation(resultSet.getString("endStation"));
+                ticketPrice.setStartStation(resultSet.getString("startCode"));
+                ticketPrice.setEndStation(resultSet.getString("endCode"));
                 ticketPrice.setFirstClass(resultSet.getDouble("1st Class"));
                 ticketPrice.setSecondClass(resultSet.getDouble("2nd Class"));
                 ticketPrice.setThirdClass(resultSet.getDouble("3rd Class"));
