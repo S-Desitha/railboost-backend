@@ -38,7 +38,8 @@ public class StaffRepo {
                 user.setEmail(resultSet.getString("email"));
                 user.setTelNo(resultSet.getString("telNo"));
                 user.setRole(new Role(resultSet.getShort("roleId"), resultSet.getString("role")));
-                user.setDob(resultSet.getDate("dob").toLocalDate());
+                if (resultSet.getDate("dob")!=null)
+                    user.setDob(resultSet.getDate("dob").toLocalDate());
                 user.setGender(resultSet.getString("gender"));
                 staff.setUser(user);
             }
