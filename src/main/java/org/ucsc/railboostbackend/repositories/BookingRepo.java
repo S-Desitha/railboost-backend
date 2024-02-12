@@ -36,17 +36,18 @@ public class BookingRepo {
                 byte[] qrCodePath = generateAndSaveQRCode(bookingId);
                 String toEmail = EmailById(id);
                 String subject = "RailBoost E-Ticket";
-                String body = "<html><body>" +
-                        "<h2>RailBoost E-Ticket</h2>" +
-                        "<p><strong>Start Station:</strong> " + booking.getStartStation() + "</p>" +
-                        "<p><strong>End Station:</strong> " + booking.getEndStation() + "</p>" +
-                        "<p><strong>Date:</strong> " + booking.getDate() + "</p>" +
-                        "<p><strong>Train Class:</strong> " + booking.getTrainClass() + "</p>" +
-                        "<p><strong>Number of Tickets:</strong> " + booking.getNumberOfTickets() + "</p>" +
-                        "<p><strong>Total Price:</strong> " + booking.getTotalPrice() + "</p>" +
-                        "</body></html>";
+//                String body = "<html><body>" +
+//                        "<h2>RailBoost E-Ticket</h2>" +
+//                        "<p><strong>Start Station:</strong> " + booking.getStartStation() + "</p>" +
+//                        "<p><strong>End Station:</strong> " + booking.getEndStation() + "</p>" +
+//                        "<p><strong>Date:</strong> " + booking.getDate() + "</p>" +
+//                        "<p><strong>Train Class:</strong> " + booking.getTrainClass() + "</p>" +
+//                        "<p><strong>Number of Tickets:</strong> " + booking.getNumberOfTickets() + "</p>" +
+//                        "<p><strong>Total Price:</strong> " + booking.getTotalPrice() + "</p>" +
+//                        "</body></html>";
 
                 EmailService emailService = new EmailService();
+                String body = emailService.createNormalETicketHTML(booking);
                 emailService.sendEmailWithQRCode(toEmail, subject, body, qrCodePath);
             }
 
