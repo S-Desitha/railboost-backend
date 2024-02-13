@@ -5,7 +5,10 @@ import com.google.gson.GsonBuilder;
 import org.ucsc.railboostbackend.models.Staff;
 import org.ucsc.railboostbackend.models.StaffSignup;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
-import org.ucsc.railboostbackend.services.*;
+import org.ucsc.railboostbackend.services.CustomRequest;
+import org.ucsc.railboostbackend.services.EmailService;
+import org.ucsc.railboostbackend.services.LocalDateDeserializer;
+import org.ucsc.railboostbackend.services.MyCache;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -22,11 +25,7 @@ public class StaffController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
-                .registerTypeAdapter(LocalDate.class, LocalDateSerializer.INSTANCE)
-                .setDateFormat("MM/dd/yyyy")
-                .create();
+        Gson gson = new Gson();
         StaffRepo staffRepo = new StaffRepo();
         List<Staff> staffList;
         Staff staff;
