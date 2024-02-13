@@ -58,16 +58,6 @@ public class SignUpController extends HttpServlet {
                 .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
                 .create();
 
-//        Staff staff = null;
-//        User user = null;
-//        if (req.getDispatcherType()== DispatcherType.FORWARD) {
-//            staff = gson.fromJson(wrappedReq.getReader(), Staff.class);
-//            user = staff.getUser();
-//        }
-//        else {
-//            user = gson.fromJson(wrappedReq.getReader(), User.class);
-//        }
-
         Staff staff = gson.fromJson(wrappedReq.getReader(), Staff.class);
         User user = staff.getUser();
 
