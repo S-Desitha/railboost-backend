@@ -36,6 +36,7 @@ public class BookingRepo {
                 byte[] qrCodePath = generateAndSaveQRCode(bookingId);
                 String toEmail = EmailById(id);
                 String subject = "RailBoost E-Ticket";
+
 //                String body = "<html><body>" +
 //                        "<h2>RailBoost E-Ticket</h2>" +
 //                        "<p><strong>Start Station:</strong> " + booking.getStartStation() + "</p>" +
