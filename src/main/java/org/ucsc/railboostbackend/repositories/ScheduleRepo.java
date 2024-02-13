@@ -193,7 +193,7 @@ public class ScheduleRepo {
         boolean isSuccess = false;
         short scheduleId = schedule.getScheduleId();
         Connection connection = DBConnection.getConnection();
-        String query_schedule = "INSERT INTO schedule (scheduleId, startStation, endStation, trainId) VALUES (?, ?, ?, ?)";
+        String query_schedule = "INSERT INTO schedule (scheduleId, startStation, endStation, trainId, speed) VALUES (?, ?, ?, ?, ?)";
         String query_stations = "INSERT INTO schedule_stations (scheduleId, station, stIndex, scheduledArrivalTime, scheduledDepartureTime) VALUES (?, ?, ?, ?, ?)";
         String query_days = "INSERT INTO schedule_days (scheduleId, day) VALUES (?, ?)";
 
@@ -209,6 +209,7 @@ public class ScheduleRepo {
             pst_schedule.setString(2, schedule.getStartStation());
             pst_schedule.setString(3, schedule.getEndStation());
             pst_schedule.setString(4, schedule.getTrainId());
+            pst_schedule.setString(5, schedule.getSpeed());
 
             for (ScheduleStation station : schedule.getStations()) {
                 pst_stations.setShort(1, scheduleId);

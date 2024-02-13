@@ -11,6 +11,7 @@ public class Schedule {
     private String endStation;
     private String trainId;
     private String trainType;
+    private String speed;
     private LocalDate date;
     private List<ScheduleStation> stations = new ArrayList<ScheduleStation>();
     private List<ScheduleDay> days = new ArrayList<ScheduleDay>();
@@ -45,6 +46,14 @@ public class Schedule {
 
     public void setTrainId(String trainId) {
         this.trainId = trainId;
+    }
+
+    public String getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(String speed) {
+        this.speed = speed;
     }
 
     public List<ScheduleStation> getStations() {
