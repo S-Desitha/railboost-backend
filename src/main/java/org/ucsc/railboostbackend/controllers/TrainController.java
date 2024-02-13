@@ -23,22 +23,19 @@ public class TrainController extends HttpServlet {
         List<Train> trains;
         Train train;
 
-        short count = Short.parseShort(req.getParameter("count"));
         String trainId = req.getParameter("trainId");
-
-        if (count!=0){
-            trains = trainRepo.getNTrains(count);
-            writer.write(gson.toJson(trains));
-        }
 
         if (trainId!=null){
             train = trainRepo.getTrainById(trainId);
             writer.write(gson.toJson(train));
         }
+        else {
+            trains = trainRepo.getTrains();
+            writer.write(gson.toJson(trains));
+        }
 
         writer.flush();
         writer.close();
-
     }
 
 
@@ -78,7 +75,5 @@ public class TrainController extends HttpServlet {
         train = gson.fromJson(req.getReader(), Train.class);
         trainRepo.deleteTrain(train);
     }
-
-
 
 }

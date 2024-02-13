@@ -1,10 +1,11 @@
 package org.ucsc.railboostbackend.models;
 
-public class Staff {
+public class    Staff {
     private String staffId;
     private int userId;
     private String station;
     private User user;
+    private String tempUID;
 
     public Staff() {
         user = new User();
@@ -40,6 +41,14 @@ public class Staff {
 
     public void setStation(String station) {
         this.station = station;
+    }
+
+    public String getTempUID() {
+        return tempUID;
+    }
+
+    public void setTempUID(String tempUID) {
+        this.tempUID = tempUID;
     }
 
     @Override

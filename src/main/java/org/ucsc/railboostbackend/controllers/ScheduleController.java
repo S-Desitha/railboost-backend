@@ -2,57 +2,67 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import org.ucsc.railboostbackend.enums.Day;
+import io.jsonwebtoken.Claims;
+import org.ucsc.railboostbackend.enums.Roles;
 import org.ucsc.railboostbackend.models.Schedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
+import org.ucsc.railboostbackend.services.LocalDateSerializer;
+import org.ucsc.railboostbackend.services.LocalTimeDeserializer;
+import org.ucsc.railboostbackend.services.LocalTimeSerializer;
+import org.ucsc.railboostbackend.utilities.Security;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.beans.IntrospectionException;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.net.URLDecoder;
+import java.text.DateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static org.ucsc.railboostbackend.utilities.Security.verifyAccess;
 
 public class ScheduleController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // return a list of all the train schedules based on the filtering provided by the user.
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()));
+        PrintWriter writer = resp.getWriter();
         ScheduleRepo scheduleRepo = new ScheduleRepo();
         List<Schedule> scheduleList;
+        Schedule schedule;
 
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
-                .setDateFormat("MM/dd/yyyy")
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
                 .create();
 
 
         String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
-
-        System.out.println(jsonQuery);
-
         Schedule reqSchedule = gson.fromJson(jsonQuery, Schedule.class);
 
-        System.out.println(Arrays.toString(Day.values()));
-
-        scheduleList = scheduleRepo.getSchedules(reqSchedule);
-
+        if(reqSchedule.getScheduleId()>0) {
+            schedule = scheduleRepo.getScheduleById(reqSchedule.getScheduleId());
+            writer.write(gson.toJson(schedule));
+            writer.flush();
+        }
+        else {
+            scheduleList = scheduleRepo.getSchedules(reqSchedule);
+            writer.write(gson.toJson(scheduleList));
+            writer.flush();
+        }
 //        scheduleList.forEach(System.out::println);
 
-        writer.write(gson.toJson(scheduleList));
-        writer.flush();
         writer.close();
     }
 
@@ -60,11 +70,14 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        HttpSession httpSession = req.getSession();
+        Claims jwt = (Claims) req.getAttribute("jwt");
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalTime.class, new LocalTimeDeserializer())
+                .create();
 
-        if (verifyAccess(httpSession, "admin")) {
-            Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
+        if (verifyAccess(jwt, Roles.ADMINISTRATOR)) {
             Schedule schedule = gson.fromJson(req.getReader(), Schedule.class);
+//            Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
 
             ScheduleRepo scheduleRepo = new ScheduleRepo();
             boolean result = scheduleRepo.addSchedule(schedule);
@@ -86,11 +99,14 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        HttpSession session = req.getSession();
+        Claims jwt = (Claims) req.getAttribute("jwt");
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalTime.class, new LocalTimeDeserializer())
+                .create();
 
-        if (verifyAccess(session, "admin")){
+        if (Security.verifyAccess(jwt, Roles.ADMINISTRATOR)){
             ScheduleRepo repo = new ScheduleRepo();
-            Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
+//            Gson gson = new GsonBuilder().setDateFormat("HH:mm").create();
             List<Schedule> schedules = gson.fromJson(req.getReader(), new TypeToken<ArrayList<Schedule>>(){});
             try {
                 repo.updateSchedule(schedules.get(0), schedules.get(1));
@@ -111,9 +127,9 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        HttpSession session = req.getSession();
+        Claims jwt = (Claims) req.getAttribute("jwt");
 
-        if (verifyAccess(session, "admin")){
+        if (Security.verifyAccess(jwt, Roles.ADMINISTRATOR)){
             ScheduleRepo scheduleRepo = new ScheduleRepo();
             short scheduleId = Short.parseShort(req.getParameter("scheduleId"));
             Schedule schedule = scheduleRepo.getScheduleById(scheduleId);
@@ -127,11 +143,4 @@ public class ScheduleController extends HttpServlet {
         writer.close();
     }
 
-
-    private boolean verifyAccess(HttpSession httpSession, String role) {
-        if (httpSession.getAttribute("role")!=null)
-            return httpSession.getAttribute("role").equals(role);
-
-        return false;
-    }
 }

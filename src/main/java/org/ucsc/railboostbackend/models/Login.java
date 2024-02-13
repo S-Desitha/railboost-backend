@@ -4,14 +4,9 @@ public class Login {
     private String username;
     private String password;
     private boolean isSuccessful;
-    private String role;
+    private Role role;
+    private String jwt;
 
-    public Login(String username) {
-        this.username = username;
-    }
-
-    public Login() {
-    }
 
     public String getUsername() {
         return username;
@@ -37,12 +32,20 @@ public class Login {
         isSuccessful = successful;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getJwt() {
+        return jwt;
+    }
+
+    public void setJwt(String jwt) {
+        this.jwt = jwt;
     }
 
     @Override

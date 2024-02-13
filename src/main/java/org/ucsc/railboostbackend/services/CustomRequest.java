@@ -29,4 +29,8 @@ public class CustomRequest extends HttpServletRequestWrapper {
         return new BufferedReader(new InputStreamReader(
                 new ByteArrayInputStream(body.getBytes())));
     }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
 }
