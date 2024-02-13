@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class LocalDateSerializer implements JsonSerializer<LocalDate> {
-
     @Override
     public JsonElement serialize(LocalDate date, Type type, JsonSerializationContext jsonSerializationContext) {
         return new JsonPrimitive(date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
