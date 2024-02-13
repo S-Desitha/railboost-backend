@@ -6,13 +6,12 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class LocalDateSerializer implements JsonSerializer<LocalDate> {
-
+public class LocalTimeSerializer implements JsonSerializer<LocalTime> {
     @Override
-    public JsonElement serialize(LocalDate date, Type type, JsonSerializationContext jsonSerializationContext) {
-        return new JsonPrimitive(date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+    public JsonElement serialize(LocalTime localTime, Type type, JsonSerializationContext jsonSerializationContext) {
+        return new JsonPrimitive(localTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
     }
 }

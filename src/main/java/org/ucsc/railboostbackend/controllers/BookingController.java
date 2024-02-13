@@ -27,8 +27,7 @@ public class BookingController extends HttpServlet {
         Object id = jwt.get("userId");
         BookingRepo bookingRepo = new BookingRepo();
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
-                .setDateFormat("MM/dd/yyyy")
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
                 .create();
 
 

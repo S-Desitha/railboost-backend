@@ -10,6 +10,7 @@ import org.ucsc.railboostbackend.repositories.JourneyRepo;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 import org.ucsc.railboostbackend.services.LocalTimeDeserializer;
+import org.ucsc.railboostbackend.services.LocalTimeSerializer;
 import org.ucsc.railboostbackend.utilities.Security;
 
 import javax.servlet.ServletException;
@@ -29,8 +30,7 @@ public class JourneyController extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         Claims jwt = (Claims) req.getAttribute("jwt");
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalTime.class, LocalTimeDeserializer.INSTANCE)
-                .setDateFormat("HH:mm:ss")
+                .registerTypeAdapter(LocalTime.class, new LocalTimeDeserializer())
                 .create();
 
         JourneyStation journeyStation = gson.fromJson(req.getReader(), JourneyStation.class);
@@ -38,7 +38,6 @@ public class JourneyController extends HttpServlet {
         if (Security.verifyAccess(jwt, Roles.STATION_MASTER, journeyStation.getStation())) {
             JourneyRepo journeyRepo = new JourneyRepo();
             journeyRepo.updateJourney(journeyStation);
-            writer.write("Journey updated successfully");
         }
         else {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -60,9 +59,8 @@ public class JourneyController extends HttpServlet {
         String stationCode;
 
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
-                .registerTypeAdapter(LocalTime.class, LocalTimeDeserializer.INSTANCE)
-                .setDateFormat("MM/dd/yyyy")
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
                 .create();
 
         String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
@@ -73,7 +71,7 @@ public class JourneyController extends HttpServlet {
             writer.write(gson.toJson(journey));
         }
 
-        else if (jwt.get("role")!=null && Objects.equals(jwt.get("role"), Roles.STATION_MASTER)) {
+        else if (jwt.get("role")!=null && Objects.equals(jwt.get("role"), Roles.STATION_MASTER.getRoleId())) {
             Staff staff = new StaffRepo()
                     .getStaffByUserId((Integer) jwt.get("userId", Integer.class));
             if (staff!=null){
