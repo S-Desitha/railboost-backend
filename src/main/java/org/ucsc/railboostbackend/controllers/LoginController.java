@@ -1,19 +1,16 @@
 package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.jsonwebtoken.JwtBuilder;
 import org.ucsc.railboostbackend.models.Login;
 import org.ucsc.railboostbackend.repositories.LoginRepo;
 import org.ucsc.railboostbackend.services.AuthorizationService;
-import org.ucsc.railboostbackend.services.LocalDateSerializer;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.sql.*;
-import java.time.LocalDate;
 
 public class LoginController extends HttpServlet {
     @Override
@@ -33,10 +30,7 @@ public class LoginController extends HttpServlet {
         String jwt;
 
         PrintWriter writer = resp.getWriter();
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, LocalDateSerializer.INSTANCE)
-                .setDateFormat("MM/dd/yyyy")
-                .create();
+        Gson gson = new Gson();
 
         LoginRepo loginRepo = new LoginRepo();
         Login loginReq = gson.fromJson(req.getReader(), Login.class);
