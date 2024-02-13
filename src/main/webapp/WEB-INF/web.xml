@@ -103,6 +103,16 @@
     <url-pattern>/stations</url-pattern>
   </servlet-mapping>
 
+ 
+  <servlet>
+    <servlet-name>Line</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.LineController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Line</servlet-name>
+    <url-pattern>/line</url-pattern>
+  </servlet-mapping>
+
   <servlet>
     <servlet-name>TicketPrice</servlet-name>
     <servlet-class>org.ucsc.railboostbackend.controllers.TicketPriceController</servlet-class>

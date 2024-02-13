@@ -41,6 +41,7 @@ public class TrainController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("Post train");
         PrintWriter writer = resp.getWriter();
         Gson gson = new Gson();
         TrainRepo trainRepo = new TrainRepo();
