@@ -1,6 +1,6 @@
 package org.ucsc.railboostbackend.services;
 
-import org.ucsc.railboostbackend.models.Staff;
+import org.ucsc.railboostbackend.models.Booking;
 
 import javax.activation.DataHandler;
 import javax.mail.*;
@@ -116,6 +116,17 @@ public class EmailService {
                 "<p style=\"font-size: 14px; margin-top: 10px;\">Thank you for choosing RailBoost!</p>\n" +
                 "</div>\n";
                   // Add a clear separation line
+    }
+    public String createNormalETicketHTML(Booking booking){
+        return "<html><body>" +
+                "<h2>RailBoost E-Ticket</h2>" +
+                "<p><strong>Start Station:</strong> " + booking.getStartStation() + "</p>" +
+                "<p><strong>End Station:</strong> " + booking.getEndStation() + "</p>" +
+                "<p><strong>Date:</strong> " + booking.getDate() + "</p>" +
+                "<p><strong>Train Class:</strong> " + booking.getTrainClass() + "</p>" +
+                "<p><strong>Number of Tickets:</strong> " + booking.getNumberOfTickets() + "</p>" +
+                "<p><strong>Total Price:</strong> " + booking.getTotalPrice() + "</p>" +
+                "</body></html>";
     }
 
 

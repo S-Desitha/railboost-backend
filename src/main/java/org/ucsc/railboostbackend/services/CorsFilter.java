@@ -16,7 +16,7 @@ public class CorsFilter implements Filter {
         String origin = httpRequest.getHeader("Origin");
 
         // Only set the allowed origin if it matches one of the allowed origins
-        if ("http://localhost:5500".equals(origin) || "http://localhost:5501".equals(origin)) {
+        if ("http://localhost:5500".equals(origin) || "http://localhost:5501".equals(origin) || "http://localhost".equals(origin)) {
             httpResponse.setHeader("Access-Control-Allow-Origin", origin);
         }
 
