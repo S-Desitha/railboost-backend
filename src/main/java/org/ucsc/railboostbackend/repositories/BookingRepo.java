@@ -38,10 +38,9 @@ public class BookingRepo {
                 String subject = "RailBoost E-Ticket";
                 String body = "<html><body>" +
                         "<h2>RailBoost E-Ticket Confirmation</h2>" +
-                        "<p>Dear [Passenger's Name],</p>" +
+                        "<p>Dear Passenger,</p>" +
                         "<p>We are delighted to inform you that your ticket booking with RailBoost has been successfully confirmed. Below are the details of your booking:</p>" +
                         "<ul>" +
-                        "  <li><strong>Booking ID:</strong> " + booking.getId()+ "</li>" +
                         "  <li><strong>Start Station:</strong> " + booking.getStartStation() + "</li>" +
                         "  <li><strong>End Station:</strong> " + booking.getEndStation() + "</li>" +
                         "  <li><strong>Date:</strong> " + booking.getDate() + "</li>" +
