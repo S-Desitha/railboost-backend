@@ -119,14 +119,21 @@ public class EmailService {
     }
     public String createNormalETicketHTML(Booking booking){
         return "<html><body>" +
-                "<h2>RailBoost E-Ticket</h2>" +
-                "<p><strong>Start Station:</strong> " + booking.getStartStation() + "</p>" +
-                "<p><strong>End Station:</strong> " + booking.getEndStation() + "</p>" +
-                "<p><strong>Date:</strong> " + booking.getDate() + "</p>" +
-                "<p><strong>Train Class:</strong> " + booking.getTrainClass() + "</p>" +
-                "<p><strong>Number of Tickets:</strong> " + booking.getNumberOfTickets() + "</p>" +
-                "<p><strong>Total Price:</strong> " + booking.getTotalPrice() + "</p>" +
-                "</body></html>";
+            "<h2>RailBoost E-Ticket Confirmation</h2>" +
+            "<p>Dear Passenger,</p>" +
+            "<p>We are delighted to inform you that your ticket booking with RailBoost has been successfully confirmed. Below are the details of your booking:</p>" +
+            "<ul>" +
+            "  <li><strong>Start Station:</strong> " + booking.getStartStation() + "</li>" +
+            "  <li><strong>End Station:</strong> " + booking.getEndStation() + "</li>" +
+            "  <li><strong>Date:</strong> " + booking.getDate() + "</li>" +
+            "  <li><strong>Train Class:</strong> " + booking.getTrainClass() + "</li>" +
+            "  <li><strong>Number of Tickets:</strong> " + booking.getNumberOfTickets() + "</li>" +
+            "  <li><strong>Total Price:</strong> " + booking.getTotalPrice() + "</li>" +
+            "</ul>" +
+            "<p>We look forward to serving you on your journey with RailBoost. If you have any questions or require further assistance, feel free to reach out to our customer support.</p>" +
+            "<p>Thank you for choosing RailBoost for your travel needs. We wish you a pleasant journey!</p>" +
+            "<p>Best regards,<br/>The RailBoost Team</p>" +
+            "</body></html>";
     }
 
 
