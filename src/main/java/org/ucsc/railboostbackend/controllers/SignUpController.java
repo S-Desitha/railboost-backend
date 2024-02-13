@@ -2,21 +2,17 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.quartz.JobKey;
 import org.quartz.Scheduler;
-import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
-import org.ucsc.railboostbackend.models.Login;
-import org.ucsc.railboostbackend.models.Staff;
-import org.ucsc.railboostbackend.models.StaffSignup;
-import org.ucsc.railboostbackend.models.User;
+import org.ucsc.railboostbackend.models.*;
 import org.ucsc.railboostbackend.repositories.SignUpRepo;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 import org.ucsc.railboostbackend.services.CustomRequest;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 import org.ucsc.railboostbackend.services.MyCache;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -61,6 +57,16 @@ public class SignUpController extends HttpServlet {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
                 .create();
+
+//        Staff staff = null;
+//        User user = null;
+//        if (req.getDispatcherType()== DispatcherType.FORWARD) {
+//            staff = gson.fromJson(wrappedReq.getReader(), Staff.class);
+//            user = staff.getUser();
+//        }
+//        else {
+//            user = gson.fromJson(wrappedReq.getReader(), User.class);
+//        }
 
         Staff staff = gson.fromJson(wrappedReq.getReader(), Staff.class);
         User user = staff.getUser();

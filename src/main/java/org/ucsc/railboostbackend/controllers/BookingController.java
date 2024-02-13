@@ -42,8 +42,8 @@ public class BookingController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
         PrintWriter writer = resp.getWriter();
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, LocalDateDeserializer.INSTANCE)
-                .registerTypeAdapter(LocalDate.class, LocalDateSerializer.INSTANCE)
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
                 .setDateFormat("MM/dd/yyyy")
                 .create();
         BookingRepo bookingRepo = new BookingRepo();

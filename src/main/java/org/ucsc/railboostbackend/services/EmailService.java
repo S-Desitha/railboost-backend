@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.services;
 
 import org.ucsc.railboostbackend.models.Booking;
+import org.ucsc.railboostbackend.models.Staff;
 
 import javax.activation.DataHandler;
 import javax.mail.*;
