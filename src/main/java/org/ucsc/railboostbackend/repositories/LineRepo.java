@@ -13,11 +13,11 @@ public class LineRepo {
 
     public void addLines(Line line)throws SQLException, ClassNotFoundException{
         Connection connection = DBConnection.getConnection();
-        String query = "INSERT INTO line(line_id, line_name) VALUES (?,?)";
+        String query = "INSERT INTO `railway_lines`(`line`) VALUES (?)";
 
         try(PreparedStatement statement = connection.prepareStatement(query)){
-            statement.setString(1,line.getLineId());
-            statement.setString(2, line.getLineName());
+            statement.setString(1,line.getLineName());
+
 
             statement.executeUpdate();
         }catch (SQLException e){
@@ -28,43 +28,19 @@ public class LineRepo {
 
     }
 
-    public Line getLineById(String lineId) throws SQLException {
-        Connection connection = DBConnection.getConnection();
-        Line line = new Line();
-        String query = "SELECT line_id, line_name FROM line  WHERE line_id=?";
-        PreparedStatement pst = null;
-        ResultSet resultSet = null;
 
-        //pst = connection.prepareStatement(query);
-
-
-        try(PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, lineId);
-            resultSet = statement.executeQuery();
-
-            if (resultSet.next())
-                line.setLineId(resultSet.getString("line_id"));
-                line.setLineName((resultSet.getString("line_name")));
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return line;
-        }
         public List<Line> getAllLine(){
         Connection connection = DBConnection.getConnection();
         List<Line> lineList = new ArrayList<>();
 
-        String query = "SELECT * FROM `line` ";
+        String query = "SELECT * FROM `railway_lines`";
 
         try(PreparedStatement statement = connection.prepareStatement(query)){
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()){
                 Line line = new Line();
-                line.setLineId(resultSet.getString("line_id"));
-                line.setLineName(resultSet.getString("line_name"));
+                line.setLineName(resultSet.getString("line"));
 
                 lineList.add(line);
             }
@@ -75,22 +51,13 @@ public class LineRepo {
         return lineList;
 
     }
-        public void updateLine(Line line) throws SQLException {
-        Connection connection = DBConnection.getConnection();
-        String query ="UPDATE `line` SET `line_name`=? WHERE line_id=?;";
-        PreparedStatement statement =connection.prepareStatement(query);
-        statement.setString(1,line.getLineName());
-        statement.setString(2,line.getLineId());
-        statement.executeUpdate();
-
-        }
 
         public void deleteLine(Line line){
         Connection connection = DBConnection.getConnection();
-        String query = "DELETE FROM `line` WHERE line_id=?";
+        String query = "DELETE FROM `railway_lines` WHERE line=?;";
 
         try(PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1,line.getLineId());
+            statement.setString(1,line.getLineName());
             statement.executeUpdate();
         } catch (SQLException e){
             System.out.println("Error occurred while executing delete query for train table");

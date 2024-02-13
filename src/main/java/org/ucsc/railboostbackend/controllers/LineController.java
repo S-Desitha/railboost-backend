@@ -25,19 +25,11 @@ public class LineController extends HttpServlet {
         System.out.println("test 0");
         String lineId = req.getParameter("lineId");
         System.out.println(lineId);
-        if (lineId != null){
-            try {
-                System.out.println("test 1");
-                line = lineRepo.getLineById(lineId);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-            writer.write(gson.toJson(line));
-        }else {
+
             System.out.println("test 2");
-//            lineList = lineRepo.getAllLine();
-//            writer.write(gson.toJson((lineList)));
-        }
+            lineList = lineRepo.getAllLine();
+            writer.write(gson.toJson((lineList)));
+
 
         writer.flush();
         writer.close();
