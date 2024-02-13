@@ -36,7 +36,7 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // return a list of all the train schedules based on the filtering provided by the user.
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(resp.getOutputStream()));
+        PrintWriter writer = resp.getWriter();
         ScheduleRepo scheduleRepo = new ScheduleRepo();
         List<Schedule> scheduleList;
         Schedule schedule;
