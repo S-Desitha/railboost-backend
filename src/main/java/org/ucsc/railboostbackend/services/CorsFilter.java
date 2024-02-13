@@ -12,20 +12,14 @@ public class CorsFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 
-//        if (httpRequest.getMethod().equals("OPTIONS")) {
-//            httpResponse.setHeader("Access-Control-Allow-Origin", "*"); // Replace with your specific origin
-//            httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
-//            httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-//            httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//
-//            System.out.println("CORS filter: OPTIONS");
-//
-////            filterChain.doFilter(httpRequest, httpResponse);
-//        }
+        // Get the origin from the request
+        String origin = httpRequest.getHeader("Origin");
 
+        // Only set the allowed origin if it matches one of the allowed origins
+        if ("http://localhost:5500".equals(origin) || "http://localhost:5501".equals(origin) || "http://localhost".equals(origin)) {
+            httpResponse.setHeader("Access-Control-Allow-Origin", origin);
+        }
 
-        // Allow requests from any origin - you might want to restrict this to specific origins in a production environment
-        httpResponse.setHeader("Access-Control-Allow-Origin", "http://localhost");
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
         httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         httpResponse.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");

@@ -13,7 +13,7 @@ public class TicketPriceRepo {
         TicketPrice ticketPrice = new TicketPrice();
         Connection  connection = DBConnection.getConnection();
 
-        String query = "SELECT * FROM ticketprice WHERE startStation=? AND endStation=?";
+        String query = "SELECT * FROM ticketprice WHERE startCode=? AND endCode=?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, startStation);
