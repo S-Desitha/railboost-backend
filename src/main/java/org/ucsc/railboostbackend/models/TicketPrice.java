@@ -47,6 +47,8 @@ public class TicketPrice {
         return id;
     }
 
+    public TicketPrice() {
+    }
     @Override
     public String toString() {
         return "TicketPrice{" +

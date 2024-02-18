@@ -53,19 +53,19 @@ public class LineController extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doPut(HttpServletRequest req,HttpServletResponse resp)throws ServletException,IOException{
-        Gson gson = new Gson();
-        LineRepo lineRepo = new LineRepo();
-
-
-        Line line = gson.fromJson(req.getReader(), Line.class);
-        try {
-            lineRepo.updateLine(line);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//
+//    protected void doPut(HttpServletRequest req,HttpServletResponse resp)throws ServletException,IOException{
+//        Gson gson = new Gson();
+//        LineRepo lineRepo = new LineRepo();
+//
+//
+//        Line line = gson.fromJson(req.getReader(), Line.class);
+//        try {
+//            lineRepo.updateLine(line);
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     @Override
     protected void doDelete(HttpServletRequest req,HttpServletResponse resp)throws ServletException,IOException{
