@@ -2,7 +2,9 @@ package org.ucsc.railboostbackend.models;
 
 public class TicketPrice {
     private int id;
+    private String startCode;
     private String startStation;
+    private String endCode;
     private String endStation;
     private double firstClass;
     private double secondClass;
@@ -59,5 +61,21 @@ public class TicketPrice {
                 ", 2st Class='" + secondClass + '\'' +
                 ", 3st Class='" + thirdClass + '\'' +
                 '}';
+    }
+
+    public String getEndCode() {
+        return endCode;
+    }
+
+    public void setEndCode(String endCode) {
+        this.endCode = endCode;
+    }
+
+    public String getStartCode() {
+        return startCode;
+    }
+
+    public void setStartCode(String startCode) {
+        this.startCode = startCode;
     }
 }

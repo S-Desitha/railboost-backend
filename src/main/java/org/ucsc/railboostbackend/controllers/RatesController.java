@@ -3,8 +3,10 @@ package org.ucsc.railboostbackend.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.ucsc.railboostbackend.models.TicketPrice;
+import org.ucsc.railboostbackend.models.Train;
 import org.ucsc.railboostbackend.repositories.RatesRepo;
 import org.ucsc.railboostbackend.repositories.TicketPriceRepo;
+import org.ucsc.railboostbackend.repositories.TrainRepo;
 import org.ucsc.railboostbackend.services.CustomRequest;
 import org.ucsc.railboostbackend.services.EmailService;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
@@ -37,4 +39,41 @@ public class RatesController extends HttpServlet{
         writer.flush();
         writer.close();
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        PrintWriter writer = resp.getWriter();
+        Gson gson = new Gson();
+        RatesRepo rateRepo = new RatesRepo();
+        TicketPrice rate;
+
+        rate = gson.fromJson(req.getReader(), TicketPrice.class);
+        rateRepo.addRate(rate);
+
+    }
+//
+//
+//    @Override
+//    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        PrintWriter writer = resp.getWriter();
+//        Gson gson = new Gson();
+//        RatesRepo rsteRepo = new RatesRepo();
+//        TicketPrice rate;
+//
+//        rate = gson.fromJson(req.getReader(), TicketPrice.class);
+//        RatesRepo.updateRate(rate);
+//    }
+//
+//
+//    @Override
+//    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        PrintWriter writer = resp.getWriter();
+//        Gson gson = new Gson();
+//        RatesRepo rsteRepo = new RatesRepo();
+//        TicketPrice rate;
+//
+//        rate = gson.fromJson(req.getReader(), TicketPrice.class);
+//        RatesRepo.deleteRate(rate);
+//    }
+//
 }

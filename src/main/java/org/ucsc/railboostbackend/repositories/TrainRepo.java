@@ -62,7 +62,7 @@ public class TrainRepo {
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, train.getTrainType());
-            statement.setString(3, train.getTrainId());
+            statement.setString(2, train.getTrainId());
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -80,6 +80,7 @@ public class TrainRepo {
             statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error occurred while executing delete query for train table");
+            e.printStackTrace();
         }
     }
 }
