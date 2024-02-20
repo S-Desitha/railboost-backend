@@ -38,7 +38,9 @@ public class RatesRepo {
             while (resultSet.next()){
                 TicketPrice rate = new TicketPrice();
                 rate.setStartStation(resultSet.getString("startStationName"));
+                rate.setStartCode(resultSet.getString("startCode")  );
                 rate.setEndStation(resultSet.getString("endStationName"));
+                rate.setEndCode(resultSet.getString("endCode"));
                 rate.setFirstClass(Double.parseDouble(resultSet.getString("1st Class")));
                 rate.setSecondClass(Double.parseDouble(resultSet.getString("2nd Class")));
                 rate.setThirdClass(Double.parseDouble(resultSet.getString("3rd Class")));
@@ -71,37 +73,41 @@ public class RatesRepo {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Error when inserting new entry in train table: "+e.getMessage());
+            System.out.println("Error when inserting new entry in rate table: "+e.getMessage());
         }
     }
 
 
     public void updateRate(TicketPrice rate) {
         Connection connection = DBConnection.getConnection();
-        String query = "UPDATE ticketprice SET `1st Class`=?, `2nd Class`=?, `3rd Class`=? WHERE id=?";
+        String query = "UPDATE ticketprice SET `1st Class`=?,`2nd Class`=?, `3rd Class`=? WHERE startCode=? AND endCode=? ";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
+
             statement.setDouble(1, rate.getFirstClass());
             statement.setDouble(2, rate.getSecondClass());
             statement.setDouble(3, rate.getThirdClass());
-            statement.setInt(4, rate.getId());
+            statement.setString(4, rate.getStartCode());
+            statement.setString(5, rate.getEndCode());
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Error occurred when executing the update query for train table");
+            System.out.println("Error occurred when executing the update query for rate table");
+            e.printStackTrace();
         }
     }
 
 
     public void deleteRate(TicketPrice rate) {
         Connection connection = DBConnection.getConnection();
-        String query = "DELETE FROM ticketprice WHERE id=?";
+        String query = "DELETE FROM ticketprice WHERE startCode=? AND endCode=?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, rate.getId());
+            statement.setString(1, rate.getStartCode());
+            statement.setString(2, rate.getEndCode());
             statement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Error occurred while executing delete query for train table");
+            System.out.println("Error occurred while executing delete query for rate table");
             e.printStackTrace();
         }
     }
