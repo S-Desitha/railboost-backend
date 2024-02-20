@@ -76,13 +76,15 @@ public class RatesRepo {
     }
 
 
-    public void updateRate(Train train) {
+    public void updateRate(TicketPrice rate) {
         Connection connection = DBConnection.getConnection();
-        String query = "UPDATE ticketprice SET trainType=?WHERE trainId=?";
+        String query = "UPDATE ticketprice SET `1st Class`=?, `2nd Class`=?, `3rd Class`=? WHERE id=?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, train.getTrainType());
-            statement.setString(2, train.getTrainId());
+            statement.setDouble(1, rate.getFirstClass());
+            statement.setDouble(2, rate.getSecondClass());
+            statement.setDouble(3, rate.getThirdClass());
+            statement.setInt(4, rate.getId());
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -91,12 +93,12 @@ public class RatesRepo {
     }
 
 
-    public void deleteRate(Train train) {
+    public void deleteRate(TicketPrice rate) {
         Connection connection = DBConnection.getConnection();
-        String query = "DELETE FROM train WHERE trainId=?";
+        String query = "DELETE FROM ticketprice WHERE id=?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, train.getTrainId());
+            statement.setInt(1, rate.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error occurred while executing delete query for train table");

@@ -53,27 +53,27 @@ public class RatesController extends HttpServlet{
     }
 //
 //
-//    @Override
-//    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        PrintWriter writer = resp.getWriter();
-//        Gson gson = new Gson();
-//        RatesRepo rsteRepo = new RatesRepo();
-//        TicketPrice rate;
-//
-//        rate = gson.fromJson(req.getReader(), TicketPrice.class);
-//        RatesRepo.updateRate(rate);
-//    }
-//
-//
-//    @Override
-//    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        PrintWriter writer = resp.getWriter();
-//        Gson gson = new Gson();
-//        RatesRepo rsteRepo = new RatesRepo();
-//        TicketPrice rate;
-//
-//        rate = gson.fromJson(req.getReader(), TicketPrice.class);
-//        RatesRepo.deleteRate(rate);
-//    }
-//
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        PrintWriter writer = resp.getWriter();
+        Gson gson = new Gson();
+        RatesRepo rateRepo = new RatesRepo();
+        TicketPrice rate;
+
+        rate = gson.fromJson(req.getReader(), TicketPrice.class);
+        rateRepo.updateRate(rate);
+    }
+
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        PrintWriter writer = resp.getWriter();
+        Gson gson = new Gson();
+        RatesRepo rateRepo = new RatesRepo();
+        TicketPrice rate;
+
+        rate = gson.fromJson(req.getReader(), TicketPrice.class);
+        rateRepo.deleteRate(rate);
+    }
+
 }
