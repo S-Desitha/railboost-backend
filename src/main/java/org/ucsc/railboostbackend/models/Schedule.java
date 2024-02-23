@@ -47,14 +47,6 @@ public class Schedule {
         this.trainId = trainId;
     }
 
-    public String getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(String speed) {
-        this.speed = speed;
-    }
-
     public List<ScheduleStation> getStations() {
         return stations;
     }
