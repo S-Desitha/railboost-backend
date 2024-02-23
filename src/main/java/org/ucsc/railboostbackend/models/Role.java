@@ -10,7 +10,7 @@ public class Role {
         this.roleId = roleId;
     }
 
-    public Role(short roleId, String role) {
+    public Role(int roleId, String role) {
         this.roleId = roleId;
         this.role = role;
     }
