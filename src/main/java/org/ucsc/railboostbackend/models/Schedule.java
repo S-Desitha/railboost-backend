@@ -63,13 +63,13 @@ public class Schedule {
         this.days = days;
     }
 
-//    public String getSpeed() {
-//        return speed;
-//    }
-//
-//    public void setSpeed(String speed) {
-//        this.speed = speed;
-//    }
+    public String getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(String speed) {
+        this.speed = speed;
+    }
 
     public LocalDate getDate() {
         return date;
