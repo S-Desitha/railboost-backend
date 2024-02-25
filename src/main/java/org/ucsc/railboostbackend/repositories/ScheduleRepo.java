@@ -106,8 +106,8 @@ public class ScheduleRepo {
                 (startStation!=null? "INNER JOIN schedule_stations ss1 ON ts.scheduleId = ss1.scheduleId " : "") +
                 (endStation!=null? "INNER JOIN schedule_stations ss2 ON ts.scheduleId = ss2.scheduleId " : "") +
                 "INNER JOIN schedule_days days ON ts.scheduleId = days.scheduleId " +
-                "LEFT JOIN schedule_dates dates ON ts.scheduleId = dates.scheduleId " +
-                "WHERE (days.day = ? OR DATE(dates.date) = ?) " +
+//                "WHERE (days.day = ? OR DATE(dates.date) = ?) " +
+                "WHERE (days.day = ? AND (ts.startDate <= ? AND (ts.endDate > ? OR ts.endDate IS NULL ))) " +
                 (startStation!=null? "AND ss1.station = ? " : "") +
                 (endStation!=null? "AND ss2.station = ? " : "") +
                 (startStation!=null && endStation!=null ? "AND ss1.stIndex < ss2.stIndex " : "") +
@@ -123,10 +123,11 @@ public class ScheduleRepo {
             pst = connection.prepareStatement(query);
             pst.setString(1, day.name());
             pst.setDate(2, Date.valueOf(date));
+            pst.setDate(3, Date.valueOf(date));
             if (startStation!=null)
-                pst.setString(3, startStation);
+                pst.setString(4, startStation);
             if (endStation!=null)
-                pst.setString(4, endStation);
+                pst.setString(5, endStation);
 
             resultSet = pst.executeQuery();
             while (resultSet.next()) {
@@ -193,7 +194,7 @@ public class ScheduleRepo {
         boolean isSuccess = false;
         short scheduleId = schedule.getScheduleId();
         Connection connection = DBConnection.getConnection();
-        String query_schedule = "INSERT INTO schedule (scheduleId, startStation, endStation, trainId, speed) VALUES (?, ?, ?, ?, ?)";
+        String query_schedule = "INSERT INTO schedule (scheduleId, startStation, endStation, startDate, endDate, trainId, speed) VALUES (?, ?, ?, ?, ?, ?, ?)";
         String query_stations = "INSERT INTO schedule_stations (scheduleId, station, stIndex, scheduledArrivalTime, scheduledDepartureTime) VALUES (?, ?, ?, ?, ?)";
         String query_days = "INSERT INTO schedule_days (scheduleId, day) VALUES (?, ?)";
 
@@ -208,8 +209,13 @@ public class ScheduleRepo {
             pst_schedule.setShort(1, schedule.getScheduleId());
             pst_schedule.setString(2, schedule.getStartStation());
             pst_schedule.setString(3, schedule.getEndStation());
-            pst_schedule.setString(4, schedule.getTrainId());
-            pst_schedule.setString(5, schedule.getSpeed());
+            pst_schedule.setDate(4, Date.valueOf(schedule.getStartDate()));
+            if (schedule.getEndDate()!=null)
+                pst_schedule.setDate(5, Date.valueOf(schedule.getEndDate()));
+            else
+                pst_stations.setNull(5, Types.DATE);
+            pst_schedule.setString(6, schedule.getTrainId());
+            pst_schedule.setString(7, schedule.getSpeed());
 
             for (ScheduleStation station : schedule.getStations()) {
                 pst_stations.setShort(1, scheduleId);
@@ -303,7 +309,8 @@ public class ScheduleRepo {
     public void deleteSchedule(Schedule schedule) {
         Connection connection = DBConnection.getConnection();
         short id = schedule.getScheduleId();
-        String sch_query = "DELETE FROM schedule WHERE scheduleId=\""+id+"\"";
+        String sch_query = "";
+//        String sch_query = "DELETE FROM schedule WHERE scheduleId=\""+id+"\"";
 //        String schStation_query = "DELETE FROM schedule_stations WHERE scheduleId=\""+id+"\"";
 //        String schDays_query= "DELETE FROM schedule_days WHERE scheduleId=\""+id+"\"";
 

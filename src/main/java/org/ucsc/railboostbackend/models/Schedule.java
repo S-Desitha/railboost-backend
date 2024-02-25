@@ -12,6 +12,8 @@ public class Schedule {
     private String trainId;
     private String trainType;
     private String speed;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private LocalDate date;
     private List<ScheduleStation> stations = new ArrayList<ScheduleStation>();
     private List<ScheduleDay> days = new ArrayList<ScheduleDay>();
@@ -80,6 +82,22 @@ public class Schedule {
         this.trainType = trainType;
     }
 
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
     public LocalDate getDate() {
         return date;
     }
@@ -96,12 +114,13 @@ public class Schedule {
                 ", endStation='" + endStation + '\'' +
                 ", trainId='" + trainId + '\'' +
                 ", trainType='" + trainType + '\'' +
-                ", date=" + date +
+                ", speed='" + speed + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
                 ", stations=" + stations +
                 ", days=" + days +
                 '}';
     }
-
 }
 
 
