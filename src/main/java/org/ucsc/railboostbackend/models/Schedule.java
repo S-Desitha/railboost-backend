@@ -3,6 +3,7 @@ package org.ucsc.railboostbackend.models;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Schedule {
@@ -118,7 +119,7 @@ public class Schedule {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", stations=" + stations +
-                ", days=" + days +
+//                ", days=" + days +
                 '}';
     }
 }

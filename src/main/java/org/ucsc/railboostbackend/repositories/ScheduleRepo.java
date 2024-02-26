@@ -213,7 +213,7 @@ public class ScheduleRepo {
             if (schedule.getEndDate()!=null)
                 pst_schedule.setDate(5, Date.valueOf(schedule.getEndDate()));
             else
-                pst_stations.setNull(5, Types.DATE);
+                pst_schedule.setNull(5, Types.DATE);
             pst_schedule.setString(6, schedule.getTrainId());
             pst_schedule.setString(7, schedule.getSpeed());
 
