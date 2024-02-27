@@ -142,6 +142,24 @@
     <url-pattern>/roles</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ParcelBooking</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.ParcelBookingController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ParcelBooking</servlet-name>
+    <url-pattern>/parcelBooking</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ParcelApprove</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.ApproveParcelController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ParcelApprove</servlet-name>
+    <url-pattern>/approveParcel</url-pattern>
+  </servlet-mapping>
+
 
 
   <filter>
