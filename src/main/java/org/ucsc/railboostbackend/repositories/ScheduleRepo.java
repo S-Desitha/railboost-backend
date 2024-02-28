@@ -21,7 +21,7 @@ import static org.quartz.JobBuilder.newJob;
 public class ScheduleRepo {
 
     public Schedule getScheduleById(Short scheduleId) {
-        Schedule schedule = new Schedule();
+        Schedule schedule = new Schedule(scheduleId);
         List<ScheduleStation> stations = new ArrayList<>();
         List<ScheduleDay> days = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
@@ -43,6 +43,8 @@ public class ScheduleRepo {
             pst.setShort(1, scheduleId);
 
             resultSet = pst.executeQuery();
+
+            StationRepo stationRepo = new StationRepo();
             for (int i=0; resultSet.next(); i++) {
                 if (i==0){
                     schedule.setScheduleId(resultSet.getShort("scheduleId"));
@@ -54,6 +56,7 @@ public class ScheduleRepo {
                 stations.add(new ScheduleStation(
                         resultSet.getShort("scheduleId"),
                         resultSet.getString("station"),
+                        stationRepo.getStationName(resultSet.getString("station")),
                         resultSet.getShort("stIndex"),
                         resultSet.getTime("scheduledArrivalTime").toLocalTime(),
                         resultSet.getTime("scheduledDepartureTime").toLocalTime()
@@ -101,29 +104,34 @@ public class ScheduleRepo {
 
         String startStation = reqSchedule.getStartStation();
         String endStation = reqSchedule.getEndStation();
+        LocalDate date = reqSchedule.getDate();
 
         String query = "SELECT ts.scheduleId FROM schedule ts " +
                 (startStation!=null? "INNER JOIN schedule_stations ss1 ON ts.scheduleId = ss1.scheduleId " : "") +
                 (endStation!=null? "INNER JOIN schedule_stations ss2 ON ts.scheduleId = ss2.scheduleId " : "") +
-                "INNER JOIN schedule_days days ON ts.scheduleId = days.scheduleId " +
+//                "INNER JOIN schedule_days days ON ts.scheduleId = days.scheduleId " +
 //                "WHERE (days.day = ? OR DATE(dates.date) = ?) " +
-                "WHERE (days.day = ? AND (ts.startDate <= ? AND (ts.endDate > ? OR ts.endDate IS NULL ))) " +
+                (date!=null? "INNER JOIN schedule_days days ON ts.scheduleId = days.scheduleId WHERE (days.day = ? AND (ts.startDate <= ? AND (ts.endDate > ? OR ts.endDate IS NULL ))) " : "") +
                 (startStation!=null? "AND ss1.station = ? " : "") +
                 (endStation!=null? "AND ss2.station = ? " : "") +
                 (startStation!=null && endStation!=null ? "AND ss1.stIndex < ss2.stIndex " : "") +
                 (startStation!=null? "ORDER BY ss1.scheduledArrivalTime ASC" : "");
 
 
-        LocalDate date = reqSchedule.getDate();
-        Day day = Day.valueOf(date.getDayOfWeek().toString());
+
+//        if (date!=null)
+//            Day day = Day.valueOf(date.getDayOfWeek().toString());
 
         PreparedStatement pst = null;
         ResultSet resultSet = null;
         try {
             pst = connection.prepareStatement(query);
-            pst.setString(1, day.name());
-            pst.setDate(2, Date.valueOf(date));
-            pst.setDate(3, Date.valueOf(date));
+            if (date!=null) {
+                Day day = Day.valueOf(date.getDayOfWeek().toString());
+                pst.setString(1, day.name());
+                pst.setDate(2, Date.valueOf(date));
+                pst.setDate(3, Date.valueOf(date));
+            }
             if (startStation!=null)
                 pst.setString(4, startStation);
             if (endStation!=null)
@@ -280,7 +288,7 @@ public class ScheduleRepo {
                 else if (descriptor.getName().equals("days"))
                     new ScheduleDaysRepo().compAndUpdate(original.getDays(), updated.getDays());
             }
-            else if (descriptor.getReadMethod().invoke(updated)!=null && !descriptor.getReadMethod().invoke(original).equals(descriptor.getReadMethod().invoke(updated))) {
+            else if ((descriptor.getReadMethod().invoke(updated)!=null && descriptor.getReadMethod().invoke(original)==null) || (descriptor.getReadMethod().invoke(original)!=null && !descriptor.getReadMethod().invoke(original).equals(descriptor.getReadMethod().invoke(updated)))) {
                 sch_queryBuilder
                         .append(descriptor.getName())
                         .append("=\"")

@@ -19,6 +19,13 @@ public class Schedule {
     private List<ScheduleStation> stations = new ArrayList<ScheduleStation>();
     private List<ScheduleDay> days = new ArrayList<ScheduleDay>();
 
+    public Schedule(short scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
+//    public Schedule() {
+//    }
+
     public short getScheduleId() {
         return scheduleId;
     }

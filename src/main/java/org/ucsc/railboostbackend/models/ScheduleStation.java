@@ -5,16 +5,18 @@ import java.time.LocalTime;
 public class ScheduleStation extends BaseModel {
     private Short scheduleId;
     private String station;
+    private String stationName;
     private Short stIndex;
     private LocalTime scheduledArrivalTime;
     private LocalTime scheduledDepartureTime;
 
-    public ScheduleStation(Short scheduleId, String station, Short stIndex, LocalTime scheduledArrivalTime, LocalTime scheduledDepartureTime) {
+    public ScheduleStation(Short scheduleId, String station, String stationName, Short stIndex, LocalTime scheduledArrivalTime, LocalTime scheduledDepartureTime) {
         this.scheduleId = scheduleId;
         this.station = station;
         this.stIndex = stIndex;
         this.scheduledArrivalTime = scheduledArrivalTime;
         this.scheduledDepartureTime = scheduledDepartureTime;
+        this.stationName = stationName;
     }
 
 
@@ -58,6 +60,14 @@ public class ScheduleStation extends BaseModel {
 
     public void setScheduledDepartureTime(LocalTime scheduledDepartureTime) {
         this.scheduledDepartureTime = scheduledDepartureTime;
+    }
+
+    public String getStationName() {
+        return stationName;
+    }
+
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
     }
 
     @Override
