@@ -323,10 +323,7 @@ public class ScheduleRepo {
     public void deleteSchedule(Schedule schedule) {
         Connection connection = DBConnection.getConnection();
         short id = schedule.getScheduleId();
-        String sch_query = "";
-//        String sch_query = "DELETE FROM schedule WHERE scheduleId=\""+id+"\"";
-//        String schStation_query = "DELETE FROM schedule_stations WHERE scheduleId=\""+id+"\"";
-//        String schDays_query= "DELETE FROM schedule_days WHERE scheduleId=\""+id+"\"";
+        String sch_query = "DELETE FROM schedule WHERE scheduleId=?";
 
         ScheduleStationRepo scheduleStationRepo = new ScheduleStationRepo();
         scheduleStationRepo.deleteSchStation(schedule.getStations());
@@ -334,19 +331,11 @@ public class ScheduleRepo {
         ScheduleDaysRepo scheduleDaysRepo = new ScheduleDaysRepo();
         scheduleDaysRepo.deleteSchDays(schedule.getDays());
 
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
-            statement.executeUpdate(sch_query);
+        try (PreparedStatement statement = connection.prepareStatement(sch_query)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error executing SQL query for schedule delete!!\n" + e.getMessage());
-        }
-        if (statement!=null) {
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                System.out.println("Error when closing DB connection!! \n" + e.getMessage());
-            }
         }
     }
 }
