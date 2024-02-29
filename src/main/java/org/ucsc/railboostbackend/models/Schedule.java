@@ -9,7 +9,9 @@ import java.util.List;
 public class Schedule {
     private short scheduleId;
     private String startStation;
+    private String startStationName;
     private String endStation;
+    private String endStationName;
     private String trainId;
     private String trainType;
     private String speed;
@@ -112,6 +114,22 @@ public class Schedule {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public String getStartStationName() {
+        return startStationName;
+    }
+
+    public void setStartStationName(String startStationName) {
+        this.startStationName = startStationName;
+    }
+
+    public String getEndStationName() {
+        return endStationName;
+    }
+
+    public void setEndStationName(String endStationName) {
+        this.endStationName = endStationName;
     }
 
     @Override
