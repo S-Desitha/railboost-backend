@@ -140,6 +140,15 @@
     <url-pattern>/booking</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>Season</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.SeasonController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Season</servlet-name>
+    <url-pattern>/season</url-pattern>
+  </servlet-mapping>
+
 
   <servlet>
     <servlet-name>Roles</servlet-name>
