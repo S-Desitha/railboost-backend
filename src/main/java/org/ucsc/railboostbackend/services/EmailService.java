@@ -1,5 +1,8 @@
 package org.ucsc.railboostbackend.services;
 
+import org.ucsc.railboostbackend.models.Booking;
+import org.ucsc.railboostbackend.models.Staff;
+
 import javax.activation.DataHandler;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -13,13 +16,32 @@ public class EmailService {
     private final String password = "oaqt gsqt jhpj tudc ";
     Session session;
     private Properties props = new Properties();
+    private String origin;
 
 
-    public EmailService() {
+    public EmailService(String origin) {
+        this.origin=origin;
         props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
         props.put("mail.smtp.port", "587"); //TLS Port
         props.put("mail.smtp.auth", "true"); //enable authentication
         props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
+
+
+        session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(fromEmail, password);
+            }
+        });
+    }
+
+    public EmailService() {
+        this.origin=origin;
+        props.put("mail.smtp.host", "smtp.gmail.com"); //SMTP Host
+        props.put("mail.smtp.port", "587"); //TLS Port
+        props.put("mail.smtp.auth", "true"); //enable authentication
+        props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
+
 
         session = Session.getInstance(props, new Authenticator() {
             @Override
@@ -81,16 +103,40 @@ public class EmailService {
     }
 
 
-    public String createStaffSignupHTML(String tempUID) {
-        return "<table style=\"width: auto; margin-top: 20px; text-align: center;\">\n" +
-                "  <tr>\n" +
-                "    <td style=\"background-color: #007bff; padding: 15px 30px; border-radius: 5px; color: #fff; font-weight: bold; text-decoration: none; white-space: normal;\">\n" +
-                "      <a href=\"http://localhost/html/signup.html?tempUID="+tempUID+"\" style=\"color: #fff; text-decoration: none; display: inline-block; text-align: left;\">\n" +
-                "        Complete Your Profile" +
-                "      </a>\n" +
-                "    </td>\n" +
-                "  </tr>\n" +
-                "</table>\n";
+    public String createStaffSignupHTML(String tempUID, Staff staff) {
+        String username = staff.getUser().getUsername();
+        String firstName = staff.getUser().getfName();
+
+        String railBoostLogoURL ="https://postimg.cc/QVgT87ys";
+
+        return "<div style=\"text-align: center;\">\n" +
+                "<p style=\"font-size: 18px; margin-bottom: 10px;\">Dear " + firstName + ",</p>" +
+                "<p style=\"font-size: 16px; margin-bottom: 10px;\">Welcome to RailBoost! Your username is: " + username + "</p>\n" +
+                "<p style=\"font-size: 16px; margin-bottom: 10px;\">We're thrilled to have you as part of RailBoost. To get started, please click the link below to complete your profile:</p>\n" +
+                "<a href=\""+ origin+ "/html/signup.html?tempUID=" + tempUID + "\" style=\"color: #007bff; text-decoration: none; font-weight: bold; display: inline-block; text-align: left;\">Complete Your Profile</a>\n" +
+                "<p style=\"font-size: 14px; margin-top: 10px;\">Thank you for choosing RailBoost!</p>\n" +
+                "</div>\n";
+                  // Add a clear separation line
     }
+    public String createNormalETicketHTML(Booking booking){
+        return "<html><body>" +
+            "<h2>RailBoost E-Ticket Confirmation</h2>" +
+            "<p>Dear Passenger,</p>" +
+            "<p>We are delighted to inform you that your ticket booking with RailBoost has been successfully confirmed. Below are the details of your booking:</p>" +
+            "<ul>" +
+            "  <li><strong>Start Station:</strong> " + booking.getStartStation() + "</li>" +
+            "  <li><strong>End Station:</strong> " + booking.getEndStation() + "</li>" +
+            "  <li><strong>Date:</strong> " + booking.getDate() + "</li>" +
+            "  <li><strong>Train Class:</strong> " + booking.getTrainClass() + "</li>" +
+            "  <li><strong>Number of Tickets:</strong> " + booking.getNumberOfTickets() + "</li>" +
+            "  <li><strong>Total Price:</strong> " + booking.getTotalPrice() + "</li>" +
+            "</ul>" +
+            "<p>We look forward to serving you on your journey with RailBoost. If you have any questions or require further assistance, feel free to reach out to our customer support.</p>" +
+            "<p>Thank you for choosing RailBoost for your travel needs. We wish you a pleasant journey!</p>" +
+            "<p>Best regards,<br/>The RailBoost Team</p>" +
+            "</body></html>";
+    }
+
+
 
 }

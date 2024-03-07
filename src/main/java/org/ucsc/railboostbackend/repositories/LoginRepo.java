@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.Login;
+import org.ucsc.railboostbackend.models.Role;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 import org.ucsc.railboostbackend.utilities.Security;
 
@@ -35,7 +36,7 @@ public class LoginRepo {
                 this.role = resultSet.getInt("roleId");
                 response.setSuccessful(true);
                 response.setUsername(resultSet.getString("username"));
-                response.setRole(resultSet.getInt("roleId"));
+                response.setRole(new Role(resultSet.getInt("roleId")));
             }
             else
                 response.setSuccessful(false);

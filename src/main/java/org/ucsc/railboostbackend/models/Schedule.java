@@ -13,7 +13,6 @@ public class Schedule {
     private String endStation;
     private String endStationName;
     private String trainId;
-    private String trainType;
     private String speed;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -60,14 +59,6 @@ public class Schedule {
         this.trainId = trainId;
     }
 
-    public String getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(String speed) {
-        this.speed = speed;
-    }
-
     public List<ScheduleStation> getStations() {
         return stations;
     }
@@ -84,12 +75,12 @@ public class Schedule {
         this.days = days;
     }
 
-    public String getTrainType() {
-        return trainType;
+    public String getSpeed() {
+        return speed;
     }
 
-    public void setTrainType(String trainType) {
-        this.trainType = trainType;
+    public void setSpeed(String speed) {
+        this.speed = speed;
     }
 
     public LocalDate getStartDate() {

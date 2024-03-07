@@ -39,7 +39,7 @@ public class LoginController extends HttpServlet {
             loginResp = loginRepo.verifyLogin(loginReq);
             if (loginResp.isSuccessful()){
                 jwtBuilder = jwtBuilder.claim("username", loginResp.getUsername());
-                jwtBuilder = jwtBuilder.claim("role", loginResp.getRole());
+                jwtBuilder = jwtBuilder.claim("role", loginResp.getRole().getRoleId());
                 jwtBuilder = jwtBuilder.claim("userId", loginRepo.getUserId());
 
                 jwt = jwtBuilder.signWith(authorizationService.getKey()).compact();

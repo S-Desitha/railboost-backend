@@ -11,20 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TrainRepo {
-    public List<Train> getNTrains(int count) {
+    public List<Train> getTrains() {
         List<Train> trains = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
-        String query = "SELECT * FROM train LIMIT ?";
+        String query = "SELECT * FROM train";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, count);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 Train train = new Train();
                 train.setTrainId(resultSet.getString("trainId"));
                 train.setTrainType(resultSet.getString("trainType"));
-                train.setnCompartments(resultSet.getShort("nCompartments"));
 
                 trains.add(train);
             }
@@ -45,12 +43,11 @@ public class TrainRepo {
 
     public void addTrain(Train train) {
         Connection connection = DBConnection.getConnection();
-        String query = "INSERT INTO train (trainId, trainType, nCompartments) VALUES (?, ?, ?) ";
+        String query = "INSERT INTO train (trainId, trainType) VALUES (?, ?) ";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, train.getTrainId());
             statement.setString(2, train.getTrainType());
-            statement.setShort(3, train.getnCompartments());
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -61,12 +58,11 @@ public class TrainRepo {
 
     public void updateTrain(Train train) {
         Connection connection = DBConnection.getConnection();
-        String query = "UPDATE train SET trainType=?, nCompartments=? WHERE trainId=?";
+        String query = "UPDATE train SET trainType=?WHERE trainId=?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, train.getTrainType());
-            statement.setShort(2, train.getnCompartments());
-            statement.setString(3, train.getTrainId());
+            statement.setString(2, train.getTrainId());
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -84,6 +80,7 @@ public class TrainRepo {
             statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error occurred while executing delete query for train table");
+            e.printStackTrace();
         }
     }
 }

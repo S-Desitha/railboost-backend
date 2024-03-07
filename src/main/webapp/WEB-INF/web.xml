@@ -103,6 +103,16 @@
     <url-pattern>/stations</url-pattern>
   </servlet-mapping>
 
+ 
+  <servlet>
+    <servlet-name>Line</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.LineController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Line</servlet-name>
+    <url-pattern>/line</url-pattern>
+  </servlet-mapping>
+
   <servlet>
     <servlet-name>TicketPrice</servlet-name>
     <servlet-class>org.ucsc.railboostbackend.controllers.TicketPriceController</servlet-class>
@@ -110,6 +120,15 @@
   <servlet-mapping>
     <servlet-name>TicketPrice</servlet-name>
     <url-pattern>/ticketPrice</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Rates</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.RatesController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Rates</servlet-name>
+    <url-pattern>/rates</url-pattern>
   </servlet-mapping>
 
   <servlet>
@@ -121,6 +140,15 @@
     <url-pattern>/booking</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>Season</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.SeasonController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Season</servlet-name>
+    <url-pattern>/season</url-pattern>
+  </servlet-mapping>
+
 
   <servlet>
     <servlet-name>Roles</servlet-name>
@@ -129,6 +157,16 @@
   <servlet-mapping>
     <servlet-name>Roles</servlet-name>
     <url-pattern>/roles</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet>
+    <servlet-name>User</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.UserController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>User</servlet-name>
+    <url-pattern>/user</url-pattern>
   </servlet-mapping>
 
 

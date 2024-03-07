@@ -1,6 +1,6 @@
 package org.ucsc.railboostbackend.models;
 
-public class Staff {
+public class    Staff {
     private String staffId;
     private int userId;
     private String station;
