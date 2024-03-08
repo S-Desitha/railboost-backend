@@ -12,6 +12,7 @@ public class Schedule {
     private String startStationName;
     private String endStation;
     private String endStationName;
+    private String trainType;
     private String trainId;
     private String speed;
     private LocalDate startDate;

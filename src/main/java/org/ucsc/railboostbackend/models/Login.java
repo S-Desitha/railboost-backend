@@ -2,6 +2,7 @@ package org.ucsc.railboostbackend.models;
 
 public class Login {
     private String username;
+    private String name;
     private String password;
     private boolean isSuccessful;
     private Role role;
@@ -35,6 +36,8 @@ public class Login {
     public Role getRole() {
         return role;
     }
+    public String getName() {return name;}
+    public void setName(String name) {this.name =name;}
 
     public void setRole(Role role) {
         this.role = role;
@@ -56,4 +59,6 @@ public class Login {
                 ", isSuccessful=" + isSuccessful +
                 '}';
     }
+
+
 }
