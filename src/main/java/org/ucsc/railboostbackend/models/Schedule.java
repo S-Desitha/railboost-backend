@@ -131,7 +131,6 @@ public class Schedule {
                 ", startStation='" + startStation + '\'' +
                 ", endStation='" + endStation + '\'' +
                 ", trainId='" + trainId + '\'' +
-                ", trainType='" + trainType + '\'' +
                 ", speed='" + speed + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
