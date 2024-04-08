@@ -1,7 +1,9 @@
 package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.Season;
+import org.ucsc.railboostbackend.services.EmailService;
 import org.ucsc.railboostbackend.utilities.DBConnection;
+import org.ucsc.railboostbackend.utilities.QRCodeGenerator;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -86,6 +88,7 @@ public class SeasonRepo {
         List<Season> seasonList = new ArrayList<>();
         String query = "SELECT " +
                 "s.id, " +
+                "s.userId,"+
                 "s1.name AS startStationName, " +
                 "s.startStation, " +
                 "s2.name AS endStationName, " +
@@ -111,6 +114,7 @@ public class SeasonRepo {
             while (resultSet.next()){
                 Season season = new Season();
                 season.setId(resultSet.getInt("id"));
+                season.setUserId(resultSet.getInt("userId"));
                 season.setStartStation(resultSet.getString("startStationName"));
                 season.setEndStation(resultSet.getString("endStationName"));
                 season.setStartDate(resultSet.getDate("startDate").toLocalDate());
@@ -134,16 +138,53 @@ public class SeasonRepo {
             String query = "UPDATE season SET status = ? WHERE id = ?";
             try(PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, season.getStatus());
-                statement.setInt(2,season.getId());
+                statement.setInt(2, season.getId());
 
                 statement.executeUpdate();
 
+//                notification function call
+
+                if (season.getStatus().equals("Paid")){
+                    int seasonId = season.getId();
+                    int uid=season.getUserId();
+                    byte[] qrCodePath = generateAndSaveQRCode(seasonId);
+                    String toEmail = EmailById(uid);
+                    String subject = "RailBoost Season Ticket";
+
+
+                    EmailService emailService = new EmailService();
+                    String body = emailService.createSeasonTicketHTML(season);
+                    emailService.sendEmailWithQRCode(toEmail, subject, body, qrCodePath);
+                }
             }
 
         }catch (SQLException e){
             System.out.println("Error occurred during updating season ticket status: " + e.getMessage());
         }
 
+    }
+    private static String EmailById(Object userId) {
+        String mail = null;
+        Connection  connection = DBConnection.getConnection();
+
+        String query = "SELECT email FROM users WHERE userId=?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setObject(1, userId);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                mail = resultSet.getString("email");
+
+            }
+        } catch (SQLException e){
+            System.out.println("Error in select query for users table: \n" + e.getMessage());
+        }
+        return mail;
+    }
+    private byte[] generateAndSaveQRCode(int seasonId){
+        String data = "Season ID: " + seasonId;
+        return QRCodeGenerator.generateQRCode(data);
     }
     private static String StationCodeById(Object userId) {
         String scode = null;
@@ -163,6 +204,55 @@ public class SeasonRepo {
             System.out.println("Error in select query for users table: \n" + e.getMessage());
         }
         return scode;
+    }
+    public Season getSeasonDetails(String id){
+        Season season = new Season();
+        Connection  connection = DBConnection.getConnection();
+
+        String query = "SELECT " +
+                "s.id, " +
+                "s.userId,"+
+                "s1.name AS startStationName, " +
+                "s.startStation, " +
+                "s2.name AS endStationName, " +
+                "s.endStation, " +
+                "s.`passengerType`, " +
+                "s.`startDate`, " +
+                "s.`endDate`, " +
+                "s.`duration`, " +
+                "s.`trainClass`, " +
+                "s.`totalPrice`, " +
+                "s.`status` " +
+                "FROM " +
+                "season s " +
+                "JOIN " +
+                "station s1 ON s.startStation COLLATE utf8mb4_unicode_ci = s1.stationCode COLLATE utf8mb4_unicode_ci " +
+                "JOIN "+
+                "station s2 ON s.endStation COLLATE utf8mb4_unicode_ci = s2.stationCode COLLATE utf8mb4_unicode_ci "+
+                "WHERE id=?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                season.setId(resultSet.getInt("id"));
+                season.setUserId(resultSet.getInt("userId"));
+                season.setStartStation(resultSet.getString("startStationName"));
+                season.setEndStation(resultSet.getString("endStationName"));
+                season.setPassengerType(resultSet.getString("passengerType"));
+                season.setStartDate(resultSet.getDate("startDate").toLocalDate());
+                season.setEndDate(resultSet.getDate("endDate").toLocalDate());
+                season.setDuration(resultSet.getString("duration"));
+                season.setTrainClass(resultSet.getString("trainClass"));
+                season.setTotalPrice(resultSet.getInt("totalPrice"));
+                season.setStatus(resultSet.getString("status"));
+
+            }
+        } catch (SQLException e){
+            System.out.println("Error in select query for season table: \n" + e.getMessage());
+        }
+        return season;
     }
 
 }
