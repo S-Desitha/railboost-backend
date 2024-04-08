@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.services;
 
 import org.ucsc.railboostbackend.models.Booking;
+import org.ucsc.railboostbackend.models.Season;
 import org.ucsc.railboostbackend.models.Staff;
 
 import javax.activation.DataHandler;
@@ -135,6 +136,26 @@ public class EmailService {
             "<p>Thank you for choosing RailBoost for your travel needs. We wish you a pleasant journey!</p>" +
             "<p>Best regards,<br/>The RailBoost Team</p>" +
             "</body></html>";
+    }
+    public String createSeasonTicketHTML(Season season){
+        return "<html><body>" +
+                "<h2>RailBoost Season Ticket Confirmation</h2>" +
+                "<p>Dear Passenger,</p>" +
+                "<p>We are delighted to inform you that your season ticket with RailBoost has been successfully confirmed. Below are the details of your booking:</p>" +
+                "<ul>" +
+                "  <li><strong>Start Station:</strong> " + season.getStartStation() + "</li>" +
+                "  <li><strong>End Station:</strong> " + season.getEndStation() + "</li>" +
+//                "  <li><strong>Passenger Type:</strong> " + season.getPassengerType() + "</li>" +
+                "  <li><strong>Start Date:</strong> " + season.getStartDate() + "</li>" +
+                "  <li><strong>End Date:</strong> " + season.getEndDate() + "</li>" +
+//                "  <li><strong>Duration:</strong> " + season.getDuration() + "</li>" +
+                "  <li><strong>Train Class:</strong> " + season.getTrainClass() + "</li>" +
+                "  <li><strong>Total Price:</strong> " + season.getTotalPrice() + "</li>" +
+                "</ul>" +
+                "<p>We look forward to serving you on your journey with RailBoost. If you have any questions or require further assistance, feel free to reach out to our customer support.</p>" +
+                "<p>Thank you for choosing RailBoost for your travel needs. We wish you a pleasant journey!</p>" +
+                "<p>Best regards,<br/>The RailBoost Team</p>" +
+                "</body></html>";
     }
 
 
