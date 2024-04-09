@@ -54,7 +54,7 @@ public class ScheduleRepo {
                     schedule.setEndStation(resultSet.getString("endStation"));
                     schedule.setEndStationName(stationRepo.getStationName(resultSet.getString("endStation")));
 
-                 schedule.setTrainType(resultSet.getString("trainType"));
+//                 schedule.setTrainType(resultSet.getString("trainType"));
 
 
                     if (resultSet.getDate("startDate")!=null)

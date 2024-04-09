@@ -20,7 +20,8 @@ public class NotificationController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        List<Notification> notifications = notificationRepo.getAllNotifications();
+        int userId = Integer.parseInt(req.getParameter("userId"));
+        List<Notification> notifications = notificationRepo.getAllNotifications(userId);
         writer.write(gson.toJson(notifications));
         writer.flush();
         writer.close();
