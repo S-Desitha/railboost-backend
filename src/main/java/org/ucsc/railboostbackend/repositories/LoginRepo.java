@@ -38,7 +38,7 @@ public class LoginRepo {
                 response.setSuccessful(true);
                 response.setUsername(resultSet.getString("username"));
                 response.setRole(new Role(resultSet.getInt("roleId")));
-
+                response.setUserID(resultSet.getInt("userId"));
                 String fullName = resultSet.getString("fName") + " " + resultSet.getString("lName");
                 response.setName(fullName);
             }
