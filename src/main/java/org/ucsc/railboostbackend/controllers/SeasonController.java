@@ -92,7 +92,7 @@ public class SeasonController extends HttpServlet {
 
                 writer.flush();
                 writer.close();
-            } else {
+            } else if(viewParam != null && viewParam.equals("3")){
                 PrintWriter writer = resp.getWriter();
                 Gson gson = new GsonBuilder()
                         .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
@@ -106,6 +106,29 @@ public class SeasonController extends HttpServlet {
                 seasonList=seasonRepo.getPendingSeasons(id);
                 writer.write(gson.toJson(seasonList));
 
+                writer.flush();
+                writer.close();
+            }else{
+                PrintWriter writer = resp.getWriter();
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                        .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                        .setDateFormat("MM/dd/yyyy")
+                        .create();
+                SeasonRepo seasonRepo = new SeasonRepo();
+
+                String sid = req.getParameter("id");
+
+                if (sid != null){
+                    Season season = seasonRepo.getSeasonDetails(sid);
+                    if (season != null){
+                        writer.write(gson.toJson(season));
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    }
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                }
                 writer.flush();
                 writer.close();
             }
