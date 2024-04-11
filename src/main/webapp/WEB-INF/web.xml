@@ -149,6 +149,15 @@
     <url-pattern>/season</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>Announcement</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.AnnouncementController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Announcement</servlet-name>
+    <url-pattern>/announcement</url-pattern>
+  </servlet-mapping>
+
 
   <servlet>
     <servlet-name>Roles</servlet-name>
