@@ -37,7 +37,7 @@ public class NotificationRepo {
         return notificationList;
     }
 
-    public void addNotification(Notification notification) {
+    public static void addNotification(Notification notification) {
         Connection connection = DBConnection.getConnection();
         String query = "INSERT INTO notifications (userId, title, message, timestamp) VALUES (?, ?, ?, ?)";
 

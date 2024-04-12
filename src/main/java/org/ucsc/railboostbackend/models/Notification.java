@@ -12,6 +12,7 @@ public class Notification {
     private LocalDateTime timestamp;
 
     public Notification() {
+
     }
 
     // Getters and setters for all attributes

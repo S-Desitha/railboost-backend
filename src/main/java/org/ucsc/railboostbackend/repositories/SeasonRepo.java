@@ -255,4 +255,28 @@ public class SeasonRepo {
         return season;
     }
 
+    public int getSMId(Season season) {
+        Connection connection = DBConnection.getConnection();
+        int userId = -1; // Default value if no user ID is found
+
+        try {
+            String query = "SELECT userId FROM staff WHERE stationCode = ?";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, season.getStartStation());
+                ResultSet resultSet = statement.executeQuery();
+
+                if (resultSet.next()) {
+                    userId = resultSet.getInt("userId");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error occurred during getting SM ID : " + e.getMessage());
+        }
+
+        return userId;
+    }
+
+
+
+
 }

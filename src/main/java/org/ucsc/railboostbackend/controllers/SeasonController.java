@@ -3,8 +3,10 @@ package org.ucsc.railboostbackend.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.jsonwebtoken.Claims;
+import org.ucsc.railboostbackend.models.Notification;
 import org.ucsc.railboostbackend.models.Season;
 import org.ucsc.railboostbackend.repositories.SeasonRepo;
+import org.ucsc.railboostbackend.repositories.NotificationRepo;
 import org.ucsc.railboostbackend.services.FileRequestWrapper;
 import org.ucsc.railboostbackend.services.FileResponseWrapper;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 //@WebServlet("/season")
@@ -49,6 +52,20 @@ public class SeasonController extends HttpServlet {
 
             String filename = requestWrapper.saveFile(UPLOAD_DIR, sid);
             writer.write(filename);
+
+
+            // Retrieve the station master ID
+            int stationMasterId = seasonRepo.getSMId(season);
+
+            // Create a notification for the station master
+            Notification notification = new Notification();
+            notification.setUserId(stationMasterId);
+            notification.setTitle("New Season Ticket Application");
+            notification.setMessage("A new season ticket application has been received.");
+            notification.setTimestamp(LocalDateTime.now());
+
+            // Add the notification
+            NotificationRepo.addNotification(notification);
             seasonRepo.ApplySeason(season,id,filename);
         }
         catch (ServletException e) {
