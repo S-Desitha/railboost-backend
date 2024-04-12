@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 //@WebServlet("/season")
@@ -54,18 +55,24 @@ public class SeasonController extends HttpServlet {
             writer.write(filename);
 
 
-            // Retrieve the station master ID
-            int stationMasterId = seasonRepo.getSMId(season);
+            ArrayList<Integer> SMIds = seasonRepo.getSMIds(season); // Retrieve all station master IDs
 
-            // Create a notification for the station master
-            Notification notification = new Notification();
-            notification.setUserId(stationMasterId);
-            notification.setTitle("New Season Ticket Application");
-            notification.setMessage("A new season ticket application has been received.");
-            notification.setTimestamp(LocalDateTime.now());
+// Iterate over each station master ID
+            for (int SMId : SMIds) {
+                // Print the SMId
+                System.out.println(SMId);
 
-            // Add the notification
-            NotificationRepo.addNotification(notification);
+                // Create a notification for the station master
+                Notification notification = new Notification();
+                notification.setUserId(SMId);
+                notification.setTitle("New Season Ticket Application");
+                notification.setMessage("A new season ticket application has been received.");
+                notification.setTimestamp(LocalDateTime.now());
+
+                // Add the notification to the repository
+                NotificationRepo.addNotification(notification);
+            }
+
             seasonRepo.ApplySeason(season,id,filename);
         }
         catch (ServletException e) {

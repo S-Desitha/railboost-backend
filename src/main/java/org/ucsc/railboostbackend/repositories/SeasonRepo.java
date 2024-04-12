@@ -255,9 +255,9 @@ public class SeasonRepo {
         return season;
     }
 
-    public int getSMId(Season season) {
+    public ArrayList<Integer> getSMIds(Season season) {
         Connection connection = DBConnection.getConnection();
-        int userId = -1; // Default value if no user ID is found
+        ArrayList<Integer> userIds = new ArrayList<>();
 
         try {
             String query = "SELECT userId FROM staff WHERE stationCode = ?";
@@ -265,18 +265,15 @@ public class SeasonRepo {
                 statement.setString(1, season.getStartStation());
                 ResultSet resultSet = statement.executeQuery();
 
-                if (resultSet.next()) {
-                    userId = resultSet.getInt("userId");
+                while (resultSet.next()) {
+                    int userId = resultSet.getInt("userId");
+                    userIds.add(userId);
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error occurred during getting SM ID : " + e.getMessage());
+            System.out.println("Error occurred during getting SM IDs: " + e.getMessage());
         }
 
-        return userId;
+        return userIds;
     }
-
-
-
-
 }
