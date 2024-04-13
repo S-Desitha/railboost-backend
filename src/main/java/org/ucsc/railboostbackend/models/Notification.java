@@ -1,42 +1,59 @@
 package org.ucsc.railboostbackend.models;
 
-// Notification.java
+import java.time.LocalDateTime;
 
 import java.time.LocalDateTime;
 
 public class Notification {
-
-    private Long id;
+    private long id;
+    private int userId; // Added userId attribute
+    private String title;
     private String message;
-    private LocalDateTime createdAt;
+    private LocalDateTime timestamp;
 
-    public Notification(long id, String message, LocalDateTime timestamp) {
-        this.id = id;
-        this.message = message;
-        this.createdAt = timestamp;
+    public Notification() {
+
     }
 
-    //getters
-    public Long getId() {
+    // Getters and setters for all attributes
+
+    public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getMessage() {
         return message;
     }
-    public LocalDateTime getTimestamp() {
-        return createdAt;
-    }
-    //setters
-    public void setId(Long id) {
-        this.id = id;
-    }
+
     public void setMessage(String message) {
         this.message = message;
     }
-    public void setTimestamp(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }
-

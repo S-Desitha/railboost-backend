@@ -255,4 +255,25 @@ public class SeasonRepo {
         return season;
     }
 
+    public ArrayList<Integer> getSMIds(Season season) {
+        Connection connection = DBConnection.getConnection();
+        ArrayList<Integer> userIds = new ArrayList<>();
+
+        try {
+            String query = "SELECT userId FROM staff WHERE stationCode = ?";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, season.getStartStation());
+                ResultSet resultSet = statement.executeQuery();
+
+                while (resultSet.next()) {
+                    int userId = resultSet.getInt("userId");
+                    userIds.add(userId);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error occurred during getting SM IDs: " + e.getMessage());
+        }
+
+        return userIds;
+    }
 }

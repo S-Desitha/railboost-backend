@@ -3,8 +3,10 @@ package org.ucsc.railboostbackend.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.jsonwebtoken.Claims;
+import org.ucsc.railboostbackend.models.Notification;
 import org.ucsc.railboostbackend.models.Season;
 import org.ucsc.railboostbackend.repositories.SeasonRepo;
+import org.ucsc.railboostbackend.repositories.NotificationRepo;
 import org.ucsc.railboostbackend.services.FileRequestWrapper;
 import org.ucsc.railboostbackend.services.FileResponseWrapper;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
@@ -19,6 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 //@WebServlet("/season")
@@ -49,6 +53,26 @@ public class SeasonController extends HttpServlet {
 
             String filename = requestWrapper.saveFile(UPLOAD_DIR, sid);
             writer.write(filename);
+
+
+            ArrayList<Integer> SMIds = seasonRepo.getSMIds(season); // Retrieve all station master IDs
+
+// Iterate over each station master ID
+            for (int SMId : SMIds) {
+                // Print the SMId
+                System.out.println(SMId);
+
+                // Create a notification for the station master
+                Notification notification = new Notification();
+                notification.setUserId(SMId);
+                notification.setTitle("New Season Ticket Application");
+                notification.setMessage("A new season ticket application has been received.");
+                notification.setTimestamp(LocalDateTime.now());
+
+                // Add the notification to the repository
+                NotificationRepo.addNotification(notification);
+            }
+
             seasonRepo.ApplySeason(season,id,filename);
         }
         catch (ServletException e) {
@@ -138,7 +162,7 @@ public class SeasonController extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-
+        System.out.println("PUT method called");
         try {
             SeasonRepo seasonRepo = new SeasonRepo();
             Gson gson = new GsonBuilder()
@@ -147,6 +171,30 @@ public class SeasonController extends HttpServlet {
 
             Season season;
             season = gson.fromJson(req.getReader(), Season.class);
+
+            if (season.getStatus().equals("Approved") || season.getStatus().equals("Rejected")) {
+
+                System.out.println("Season status is approved or rejected");
+                // Create a notification
+                Notification notification = new Notification();
+                notification.setUserId(season.getUserId());
+
+                // Set notification title and message based on the status
+                if (season.getStatus().equals("Approved")) {
+                    System.out.println("Season status is approved");
+                    notification.setTitle("Season Ticket Application Approved");
+                    notification.setMessage("Your season ticket application has been approved. You can now proceed to pay for it.");
+                } else {
+                    notification.setTitle("Season Ticket Application Rejected");
+                    notification.setMessage("Your season ticket application has been rejected. Please submit a valid application again.");
+                }
+
+                // Set timestamp
+                notification.setTimestamp(LocalDateTime.now());
+
+                // Add the notification to the repository
+                NotificationRepo.addNotification(notification);
+            }
             seasonRepo.updateStatus(season);
         }
         catch (IllegalStateException e) {
