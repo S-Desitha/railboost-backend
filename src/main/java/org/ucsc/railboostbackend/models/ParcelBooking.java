@@ -15,6 +15,12 @@ public class ParcelBooking {
     private  String receiverTelNo;
     private  String receiverEmail;
     private  String item;
+    private  User user;
+    private String status;
+
+    public ParcelBooking(){
+        user = new User();
+    }
 
     public String getBookingId() {
         return bookingId;
@@ -120,6 +126,24 @@ public class ParcelBooking {
         this.item = item;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+
     @Override
     public String toString() {
         return "ParcelBooking{" +
@@ -136,6 +160,8 @@ public class ParcelBooking {
                 ", receiverTelNo='" + receiverTelNo + '\'' +
                 ", receiverEmail='" + receiverEmail + '\'' +
                 ", item='" + item + '\'' +
+                ", user=" + user +
+                ", status='" + status + '\'' +
                 '}';
     }
 }
