@@ -3,12 +3,13 @@ package org.ucsc.railboostbackend.models;
 public class ApproveParcel {
 
     private String bookingId;
-    private  String senderName;
-    private  String receiverName;
-    private  String recoveringStation;
-    private  String item;
+    private String senderName;
+    private String receiverName;
+    private String recoveringStation;
+    private String item;
     private Float weight;
-    private Boolean status;
+    private String status;
+
 
     public String getBookingId() {
         return bookingId;
@@ -58,11 +59,11 @@ public class ApproveParcel {
         this.weight = weight;
     }
 
-    public Boolean getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -75,7 +76,7 @@ public class ApproveParcel {
                 ", recoveringStation='" + recoveringStation + '\'' +
                 ", item='" + item + '\'' +
                 ", weight=" + weight +
-                ", status=" + status +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

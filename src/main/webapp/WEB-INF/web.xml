@@ -157,7 +157,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>ParcelApprove</servlet-name>
-    <url-pattern>/approveParcel</url-pattern>
+    <url-pattern>/approveParcel </url-pattern>
   </servlet-mapping>
 
 
