@@ -22,6 +22,8 @@ public class UserRepo {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 user.setUserId(resultSet.getInt("userId"));
+                user.setUsername(resultSet.getString("username"));
+                user.setDp(resultSet.getString("dp"));
                 Roles role = Roles.valueOfRoleId(resultSet.getShort("roleId"));
                 user.setRole(new Role(role.getRoleId(), role.toString()));
                 user.setfName(resultSet.getString("fName"));

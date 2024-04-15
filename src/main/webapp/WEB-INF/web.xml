@@ -158,6 +158,15 @@
     <url-pattern>/announcement</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>Profile</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.ProfileController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Profile</servlet-name>
+    <url-pattern>/profile</url-pattern>
+  </servlet-mapping>
+
 
   <servlet>
     <servlet-name>Roles</servlet-name>

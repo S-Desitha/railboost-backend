@@ -26,7 +26,7 @@ public class UserController extends HttpServlet {
                 .create();
 
         User user = userRepo.getUserById(userId);
-        System.out.println(user);
+//        System.out.println(user);
 
         writer.write(gson.toJson(user));
         writer.flush();
