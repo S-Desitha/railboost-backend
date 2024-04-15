@@ -8,7 +8,7 @@ public class Login {
     private boolean isSuccessful;
     private Role role;
     private String jwt;
-    private int userId;
+//    private int userId;
 
 
     public String getUsername() {
