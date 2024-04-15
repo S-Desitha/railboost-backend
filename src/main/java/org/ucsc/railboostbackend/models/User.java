@@ -12,6 +12,9 @@ public class User {
     private String gender;
     private String email;
     private String telNo;
+    private String dp;
+    private String homeStation;
+    private String homeStCode;
     private Role role;
     private boolean isStaff;
 
@@ -19,6 +22,13 @@ public class User {
     public int getUserId() {
         return userId;
     }
+
+    public String getDp() {
+        return dp;
+    }
+
+    public String getHomeStation(){ return homeStation; }
+    public String getHomeStCode(){ return homeStCode; }
 
     public void setUserId(int userId) {
         this.userId = userId;
@@ -78,6 +88,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    public void setDp(String dp){ this.dp=dp; }
+    public void setHomeStation(String homeStation) {
+        this.homeStation = homeStation;
+    }
+    public void setHomeStCode(String homeStCode) {
+        this.homeStCode = homeStCode;
     }
 
     public String getTelNo() {

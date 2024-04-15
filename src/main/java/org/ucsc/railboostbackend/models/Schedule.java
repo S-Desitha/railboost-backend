@@ -115,6 +115,9 @@ public class Schedule {
     public void setStartStationName(String startStationName) {
         this.startStationName = startStationName;
     }
+    public void setTrainType(String trainType) {
+        this.trainType = trainType;
+    }
 
     public String getEndStationName() {
         return endStationName;

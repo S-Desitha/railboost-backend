@@ -41,6 +41,7 @@ public class LoginRepo {
 
                 String fullName = resultSet.getString("fName") + " " + resultSet.getString("lName");
                 response.setName(fullName);
+                response.setUserId(this.userId);
             }
             else
                 response.setSuccessful(false);
