@@ -137,6 +137,10 @@ public class EmailService {
             "</body></html>";
     }
 
+    public String createParcelBookingEmail(){
+        
+    }
+
 
 
 }
