@@ -54,6 +54,20 @@ public class AnnouncementController extends HttpServlet {
 
             writer.flush();
             writer.close();
+        }else if(viewParam != null && viewParam.equals("2")){
+            PrintWriter writer = resp.getWriter();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                    .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                    .setDateFormat("MM/dd/yyyy")
+                    .create();
+            AnnouncementRepo announcementRepo = new AnnouncementRepo();
+            List<Announcement> announcementList;
+            announcementList=announcementRepo.getAnnouncementsOfP();
+            writer.write(gson.toJson(announcementList));
+
+            writer.flush();
+            writer.close();
         }else{
             PrintWriter writer = resp.getWriter();
             Gson gson = new GsonBuilder()

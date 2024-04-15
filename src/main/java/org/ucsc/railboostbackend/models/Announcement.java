@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class Announcement {
     private int id;
     private String title;
+    private  String recivers;
     private String category;
     private LocalDate date;
     private String body;
@@ -15,6 +16,11 @@ public class Announcement {
     public String getCategory() {
         return category;
     }
+
+    public String getRecivers() {
+        return recivers;
+    }
+
     public LocalDate getDate() {
         return date;
     }
@@ -30,6 +36,11 @@ public class Announcement {
     public void setCategory(String category) {
         this.category = category;
     }
+
+    public void setRecivers(String recivers) {
+        this.recivers = recivers;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
