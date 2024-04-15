@@ -16,7 +16,6 @@ public class AuthFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
-        PrintWriter writer = null;
 
         AuthorizationService authService = new AuthorizationService();
 
@@ -25,7 +24,6 @@ public class AuthFilter implements Filter {
             String token = authHeader.replaceAll("(Bearer)", "").trim();
 
             try {
-                writer = resp.getWriter();
                 Claims jwt = authService.verifyToken(token);
 
                 if (authService.isRevoked(jwt))
@@ -34,38 +32,40 @@ public class AuthFilter implements Filter {
                     req.setAttribute("jwt", jwt);
                     filterChain.doFilter(req, resp);
                 }
-            } catch ( IllegalArgumentException e) {
+            }
+            catch ( IllegalArgumentException e) {
+                PrintWriter writer = resp.getWriter();
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 writer.write("empty");
-            } catch (ExpiredJwtException e) {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                writer.write("expired");
-            } catch (SecurityException e) {
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                writer.write("invalid");
-            } catch (JwtException e){
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                writer.write("error");
-            } finally {
-//                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 writer.flush();
                 writer.close();
             }
-
-
+            catch (ExpiredJwtException e) {
+                PrintWriter writer = resp.getWriter();
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                writer.write("expired");
+                writer.flush();
+                writer.close();
+            }
+            catch (SecurityException e) {
+                PrintWriter writer = resp.getWriter();
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                writer.write("invalid");
+                writer.flush();
+                writer.close();
+            }
+            catch (JwtException e){
+                PrintWriter writer = resp.getWriter();
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                writer.write("error");
+                writer.flush();
+                writer.close();
+            }
 
         }
         else
             filterChain.doFilter(req, resp);
 
-
-
-        // post-processing goes here
     }
-
-
-
-
-
 
 }

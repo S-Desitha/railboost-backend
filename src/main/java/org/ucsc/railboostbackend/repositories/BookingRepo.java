@@ -46,7 +46,8 @@ public class BookingRepo {
 //                        "<p><strong>Number of Tickets:</strong> " + booking.getNumberOfTickets() + "</p>" +
 //                        "<p><strong>Total Price:</strong> " + booking.getTotalPrice() + "</p>" +
 //                        "</body></html>";
-
+                String bid = String.valueOf(bookingId);
+                booking = getTicketDetails(bid);
                 EmailService emailService = new EmailService();
                 String body = emailService.createNormalETicketHTML(booking);
                 emailService.sendEmailWithQRCode(toEmail, subject, body, qrCodePath);
@@ -146,7 +147,11 @@ public class BookingRepo {
         Booking booking = new Booking();
         Connection  connection = DBConnection.getConnection();
 
-        String query = "SELECT * FROM booking WHERE id=?";
+        String query = "SELECT * , s1.name AS startStationName, s2.name AS endStationName "+
+                "FROM booking b "+
+                "JOIN station s1 ON b.startStation COLLATE utf8mb4_unicode_ci = s1.stationCode COLLATE utf8mb4_unicode_ci "+
+                "JOIN station s2 ON b.endStation COLLATE utf8mb4_unicode_ci = s2.stationCode COLLATE utf8mb4_unicode_ci "+
+                "WHERE id=?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, id);
@@ -155,8 +160,8 @@ public class BookingRepo {
             if (resultSet.next()) {
                 booking.setId(resultSet.getInt("id"));
                 booking.setUserId(resultSet.getInt("userId"));
-                booking.setStartStation(resultSet.getString("startStation"));
-                booking.setEndStation(resultSet.getString("endStation"));
+                booking.setStartStation(resultSet.getString("startStationName"));
+                booking.setEndStation(resultSet.getString("endStationName"));
                 booking.setDate(resultSet.getDate("date").toLocalDate());
                 booking.setTrainClass(resultSet.getString("trainClass"));
                 booking.setNumberOfTickets(resultSet.getInt("numberOfTickets"));

@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import org.ucsc.railboostbackend.models.Login;
 import org.ucsc.railboostbackend.repositories.LoginRepo;
@@ -29,6 +30,7 @@ public class LoginController extends HttpServlet {
         JwtBuilder jwtBuilder = authorizationService.getJWTBuilder();
         String jwt;
 
+
         PrintWriter writer = resp.getWriter();
         Gson gson = new Gson();
 
@@ -41,9 +43,16 @@ public class LoginController extends HttpServlet {
                 jwtBuilder = jwtBuilder.claim("username", loginResp.getUsername());
                 jwtBuilder = jwtBuilder.claim("role", loginResp.getRole().getRoleId());
                 jwtBuilder = jwtBuilder.claim("userId", loginRepo.getUserId());
+                jwtBuilder = jwtBuilder.claim("name", loginResp.getName());
 
                 jwt = jwtBuilder.signWith(authorizationService.getKey()).compact();
                 loginResp.setJwt(jwt);
+                String userId = Integer.toString(loginRepo.getUserId());
+                resp.setHeader("userId", userId);
+
+
+//                get userId from the jwt
+
 
                 writer.write(gson.toJson(loginResp));
                 writer.flush();

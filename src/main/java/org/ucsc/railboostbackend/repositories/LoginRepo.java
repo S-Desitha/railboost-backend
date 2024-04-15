@@ -13,6 +13,7 @@ import java.sql.SQLException;
 public class LoginRepo {
     private int userId;
     private int role;
+    private String name;
 
     public Login verifyLogin(Login login) throws SQLException {
         Login response = new Login();
@@ -21,7 +22,7 @@ public class LoginRepo {
         String inputPassword = login.getPassword();
 
 
-        String query = "SELECT username, userId, password, salt, roleId FROM users where username=?";
+        String query = "SELECT username, userId, password, salt, roleId, fName, lName FROM users where username=?";
         Connection connection = DBConnection.getConnection();
         PreparedStatement pst = connection.prepareStatement(query);
         pst.setString(1, username);
@@ -37,6 +38,9 @@ public class LoginRepo {
                 response.setSuccessful(true);
                 response.setUsername(resultSet.getString("username"));
                 response.setRole(new Role(resultSet.getInt("roleId")));
+                response.setUserID(resultSet.getInt("userId"));
+                String fullName = resultSet.getString("fName") + " " + resultSet.getString("lName");
+                response.setName(fullName);
             }
             else
                 response.setSuccessful(false);
@@ -59,5 +63,8 @@ public class LoginRepo {
 
     public int getRole() {
         return role;
+    }
+
+    public String getName() { return name;
     }
 }

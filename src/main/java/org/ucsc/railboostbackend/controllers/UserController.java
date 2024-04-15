@@ -2,10 +2,8 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.jsonwebtoken.Claims;
-import org.ucsc.railboostbackend.models.Role;
 import org.ucsc.railboostbackend.models.User;
-import org.ucsc.railboostbackend.services.LocalDateDeserializer;
+import org.ucsc.railboostbackend.repositories.UserRepo;
 import org.ucsc.railboostbackend.services.LocalDateSerializer;
 
 import javax.servlet.ServletException;
@@ -16,22 +14,23 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 
-public class UserCredentialsController extends HttpServlet {
+public class UserController extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        Claims jwt = (Claims) req.getAttribute("jwt");
-        User user = new User();
+        int userId = Integer.parseInt(req.getParameter("userId"));
+        UserRepo userRepo = new UserRepo();
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
                 .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
                 .create();
 
-        user.setUsername(jwt.get("username", String.class));
-        user.setRole(new Role(jwt.get("role", Integer.class)));
+        User user = userRepo.getUserById(userId);
+        System.out.println(user);
 
         writer.write(gson.toJson(user));
         writer.flush();
         writer.close();
+
     }
 }
