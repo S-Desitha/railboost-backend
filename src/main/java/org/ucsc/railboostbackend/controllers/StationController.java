@@ -44,22 +44,22 @@ public class StationController extends HttpServlet {
         writer.close();
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        PrintWriter writer = resp.getWriter();
-        Gson gson = new Gson();
-        StationRepo stationRepo = new StationRepo();
-        Station station;
 
-        try {
-            station = gson.fromJson(req.getReader(), Station.class);
-            stationRepo.addStation(station);
-            resp.setStatus(HttpServletResponse.SC_CREATED);
-            writer.write("Station added successfully");
-        } catch (JsonSyntaxException e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            writer.write("Error occurred while adding station: " + e.getMessage());
-        }
-    }
+//    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        PrintWriter writer = resp.getWriter();
+//        Gson gson = new Gson();
+//        StationRepo stationRepo = new StationRepo();
+//        Station station;
+//
+//        try {
+//            station = gson.fromJson(req.getReader(), Station.class);
+//            stationRepo.addStation(station);
+//            resp.setStatus(HttpServletResponse.SC_CREATED);
+//            writer.write("Station added successfully");
+//        } catch (JsonSyntaxException e) {
+//            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//            writer.write("Error occurred while adding station: " + e.getMessage());
+//        }
+//    }
 
 }
