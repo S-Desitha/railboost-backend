@@ -12,13 +12,19 @@ public class StationRepo {
     public List<Station> getStationNames() {
         List<Station> stationNames = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
-        String query = "SELECT stationCode, name FROM station";
+        String query = "SELECT stationCode, name, address, line, contactNo  FROM station";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                stationNames.add(new Station(resultSet.getString(1), resultSet.getString(2)));
-            }
+                Station station= new Station();
+                station.setStationCode(resultSet.getString("stationCode"));
+                station.setStationName(resultSet.getString("name"));
+                station.setAddress(resultSet.getString("address"));
+                station.setLine(resultSet.getString("line"));
+                station.setContactNo(resultSet.getString("contactNo"));
+                stationNames.add(station);
+                }
         } catch (SQLException e) {
             System.out.println("Error when executing select query for stations table: StationRepo.java");
             System.out.println(e.getMessage());
