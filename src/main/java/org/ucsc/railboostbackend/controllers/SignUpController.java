@@ -10,6 +10,7 @@ import org.ucsc.railboostbackend.repositories.SignUpRepo;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 import org.ucsc.railboostbackend.services.CustomRequest;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
+import org.ucsc.railboostbackend.services.LocalDateSerializer;
 import org.ucsc.railboostbackend.services.MyCache;
 
 import javax.servlet.DispatcherType;
@@ -56,6 +57,7 @@ public class SignUpController extends HttpServlet {
         MyCache cache = new MyCache();
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
                 .create();
 
         Staff staff = gson.fromJson(wrappedReq.getReader(), Staff.class);
@@ -98,10 +100,11 @@ public class SignUpController extends HttpServlet {
             wrappedReq.setBody(gson.toJson(user));
             dispatcher.forward(wrappedReq, resp);
         }
-        else
+        else {
             writer.write("Something went wrong when inserting new user!!");
-        writer.flush();
-        writer.close();
+            writer.flush();
+            writer.close();
+        }
     }
 
 }
