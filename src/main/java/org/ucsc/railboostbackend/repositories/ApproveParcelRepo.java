@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.ApproveParcel;
+import org.ucsc.railboostbackend.models.TicketPrice;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
 import java.io.IOException;
@@ -55,6 +56,60 @@ public class ApproveParcelRepo {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void addWeightAndTotal(ApproveParcel approveParcel) throws SQLException {
+        Connection connection = DBConnection.getConnection();
+        TicketPrice ticketPrice = new TicketPrice();
+        String query = "UPDATE parcelbooking SET weight= ?,totalprice= ?  WHERE bookingId= ?";
+
+        Double totalPrice = calculateTotalPrice(approveParcel);
+
+        try (PreparedStatement statement = connection.prepareStatement(query)){
+
+
+            statement.setFloat(1,approveParcel.getWeight());
+            statement.setDouble(2,totalPrice);
+            statement.setString(3,approveParcel.getBookingId());
+
+
+
+            statement.executeUpdate();
+        }
+
+    }
+
+    public Double calculateTotalPrice(ApproveParcel approveParcel){
+
+        TicketPriceRepo ticketPriceRepo = new TicketPriceRepo();
+        TicketPrice ticketPrice;
+        Integer charge = 0;
+
+        Connection connection = DBConnection.getConnection();
+
+        String mQuery = "SELECT  Charges FROM parcelcharges WHERE itemId = ?";
+        ResultSet resultSet;
+
+        try (PreparedStatement statement = connection.prepareStatement(mQuery) ){
+            statement.setInt(1,approveParcel.getItemId());
+
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                charge = resultSet.getInt(1);
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        Float weight = approveParcel.getWeight();
+        String startingStation = approveParcel.getSendingStation();
+        String endStation = approveParcel.getRecoveringStation();
+
+        ticketPrice = ticketPriceRepo.getTicketPrice(startingStation,endStation);
+        Double price = charge*ticketPrice.getThirdClass()*(0.1)*weight;
+        return price;
     }
 
 }
