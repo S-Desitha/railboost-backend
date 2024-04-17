@@ -51,4 +51,72 @@ public class StationRepo {
 
         return stationName;
     }
+
+    public void addStation(Station station) {
+        Connection connection = null;
+        PreparedStatement insertStatement = null;
+        PreparedStatement updateStatement1 = null;
+        PreparedStatement updateStatement2 = null;
+
+        try {
+            connection = DBConnection.getConnection();
+            connection.setAutoCommit(false); // Start a transaction
+
+            // Insert query
+            String insertQuery = "INSERT INTO station (stationCode, name, address, line, prevStation, nextStation, contactNo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            insertStatement = connection.prepareStatement(insertQuery);
+            insertStatement.setString(1, station.getStationCode());
+            insertStatement.setString(2, station.getStationName());
+            insertStatement.setString(3, station.getAddress());
+            insertStatement.setString(4, station.getLine());
+            insertStatement.setString(5, station.getPrevStation());
+            insertStatement.setString(6, station.getNextStation());
+            insertStatement.setString(7, station.getContactNo());
+            insertStatement.executeUpdate();
+
+            // Update query 1
+            String updateQuery1 = "UPDATE station SET nextStation = ? WHERE stationCode = ?";
+            updateStatement1 = connection.prepareStatement(updateQuery1);
+            updateStatement1.setString(1, station.getStationCode());
+            updateStatement1.setString(2, station.getPrevStation());
+            updateStatement1.executeUpdate();
+
+            // Update query 2
+            String updateQuery2 = "UPDATE station SET prevStation = ? WHERE stationCode = ?";
+            updateStatement2 = connection.prepareStatement(updateQuery2);
+            updateStatement2.setString(1, station.getStationCode());
+            updateStatement2.setString(2, station.getNextStation());
+            updateStatement2.executeUpdate();
+
+            connection.commit(); // Commit the transaction
+        } catch (SQLException e) {
+            try {
+                if (connection != null) {
+                    connection.rollback(); // Rollback the transaction in case of an exception
+                }
+            } catch (SQLException ex) {
+                System.out.println("Error rolling back transaction: " + ex.getMessage());
+            }
+            System.out.println("Error occurred when adding station: " + e.getMessage());
+        } finally {
+            // Close resources
+            try {
+                if (insertStatement != null) {
+                    insertStatement.close();
+                }
+                if (updateStatement1 != null) {
+                    updateStatement1.close();
+                }
+                if (updateStatement2 != null) {
+                    updateStatement2.close();
+                }
+                if (connection != null) {
+                    connection.setAutoCommit(true); // Reset auto-commit mode
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error closing resources: " + e.getMessage());
+            }
+        }
+    }
 }
