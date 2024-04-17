@@ -11,9 +11,11 @@ import org.ucsc.railboostbackend.repositories.StaffRepo;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Console;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.HttpRetryException;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ApproveParcelController extends HttpServlet {
@@ -41,13 +43,31 @@ public class ApproveParcelController extends HttpServlet {
 
 
     public void doPut(HttpServletRequest req,HttpServletResponse resp) throws  IOException, HttpRetryException{
+        String viewParam = req.getParameter("view");
         PrintWriter writer = resp.getWriter();
         Gson gson = new Gson();
         ApproveParcelRepo approveParcelRepo = new ApproveParcelRepo();
         ApproveParcel approveParcel;
 
         approveParcel = gson.fromJson(req.getReader(), ApproveParcel.class);
-        approveParcelRepo.updateStatus(approveParcel);
+
+        Float weight = approveParcel.getWeight();
+        if ((viewParam != null && viewParam.equals("1"))){
+
+            try {
+                approveParcelRepo.addWeightAndTotal(approveParcel);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        }else {
+
+            approveParcelRepo.updateStatus(approveParcel);
+
+
+        }
+
+
 
     }
 }
