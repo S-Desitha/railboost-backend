@@ -11,6 +11,7 @@ public class ApproveParcel {
     private Float weight;
     private String status;
     private Float totalprice;
+    private Integer itemId;
 
     public String getBookingId() {
         return bookingId;
@@ -82,5 +83,29 @@ public class ApproveParcel {
 
     public void setTotalprice(Float totalprice) {
         this.totalprice = totalprice;
+    }
+
+    public Integer getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Integer itemId) {
+        this.itemId = itemId;
+    }
+
+    @Override
+    public String toString() {
+        return "ApproveParcel{" +
+                "bookingId='" + bookingId + '\'' +
+                ", sendingStation='" + sendingStation + '\'' +
+                ", senderName='" + senderName + '\'' +
+                ", receiverName='" + receiverName + '\'' +
+                ", recoveringStation='" + recoveringStation + '\'' +
+                ", item='" + item + '\'' +
+                ", weight=" + weight +
+                ", status='" + status + '\'' +
+                ", totalprice=" + totalprice +
+                ", itemId=" + itemId +
+                '}';
     }
 }

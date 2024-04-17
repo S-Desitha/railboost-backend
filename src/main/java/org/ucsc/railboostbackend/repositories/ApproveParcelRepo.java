@@ -83,13 +83,32 @@ public class ApproveParcelRepo {
 
         TicketPriceRepo ticketPriceRepo = new TicketPriceRepo();
         TicketPrice ticketPrice;
+        Integer charge = 0;
+
+        Connection connection = DBConnection.getConnection();
+
+        String mQuery = "SELECT  Charges FROM parcelcharges WHERE itemId = ?";
+        ResultSet resultSet;
+
+        try (PreparedStatement statement = connection.prepareStatement(mQuery) ){
+            statement.setInt(1,approveParcel.getItemId());
+
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                charge = resultSet.getInt(1);
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         Float weight = approveParcel.getWeight();
         String startingStation = approveParcel.getSendingStation();
         String endStation = approveParcel.getRecoveringStation();
 
         ticketPrice = ticketPriceRepo.getTicketPrice(startingStation,endStation);
-        Double price = ticketPrice.getThirdClass()*(0.1)*weight;
+        Double price = charge*ticketPrice.getThirdClass()*(0.1)*weight;
         return price;
     }
 
