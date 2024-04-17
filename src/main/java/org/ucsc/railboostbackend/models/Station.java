@@ -7,6 +7,9 @@ public class Station {
     private String line;
     private String contactNo;
 
+//    station constructor
+    public Station() {new Station();}
+
     public Station(String stationCode, String stationName, String address, String line, String contactNo) {
         this.stationCode = stationCode;
         this.stationName = stationName;
