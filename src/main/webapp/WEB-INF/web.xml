@@ -105,12 +105,12 @@
 
  
   <servlet>
-    <servlet-name>Line</servlet-name>
+    <servlet-name>Lines</servlet-name>
     <servlet-class>org.ucsc.railboostbackend.controllers.LineController</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>Line</servlet-name>
-    <url-pattern>/line</url-pattern>
+    <servlet-name>Lines</servlet-name>
+    <url-pattern>/lines</url-pattern>
   </servlet-mapping>
 
   <servlet>
