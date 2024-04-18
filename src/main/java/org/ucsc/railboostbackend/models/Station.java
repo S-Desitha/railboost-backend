@@ -4,11 +4,20 @@ public class Station {
     private String stationCode;
     private String stationName;
     private String address;
+
+    //    previous station as a string
+    private String prevStation;
+    //    next station as a string
+    private String nextStation;
+//    setters and getters for previous and next stations
+
+
     private String line;
     private String contactNo;
 
-//    station constructor
-    public Station() {new Station();}
+    //    station constructor
+    public Station() {
+    }
 
     public Station(String stationCode, String stationName, String address, String line, String contactNo) {
         this.stationCode = stationCode;
@@ -62,4 +71,23 @@ public class Station {
     public void setContactNo(String contactNo) {
         this.contactNo = contactNo;
     }
+
+    public void setNextStation(String nextStation) {
+        this.nextStation = nextStation;
+    }
+
+    public String getNextStation() {
+        return nextStation;
+    }
+
+
+    public String getPrevStation() {
+        return prevStation;
+    }
+
+    public void setPrevStation(String prevStation) {
+        this.prevStation = prevStation;
+    }
 }
+
+

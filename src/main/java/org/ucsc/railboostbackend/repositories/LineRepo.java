@@ -13,10 +13,12 @@ public class LineRepo {
 
     public void addLines(Line line)throws SQLException, ClassNotFoundException{
         Connection connection = DBConnection.getConnection();
-        String query = "INSERT INTO `railway_lines`(`line`) VALUES (?)";
+        String query = "INSERT INTO line (lineName,lineStartStation,lineEndStation) VALUES (?,?,?)";
 
         try(PreparedStatement statement = connection.prepareStatement(query)){
             statement.setString(1,line.getLineName());
+            statement.setString(2,line.getLineStartStation());
+            statement.setString(3,line.getLineEndStation());
 
 
             statement.executeUpdate();
@@ -29,18 +31,22 @@ public class LineRepo {
     }
 
 
-        public List<Line> getAllLine(){
+        public List<Line> getAllLines(){
         Connection connection = DBConnection.getConnection();
         List<Line> lineList = new ArrayList<>();
 
-        String query = "SELECT * FROM `railway_lines`";
+        String query = "SELECT * FROM `line`";
 
         try(PreparedStatement statement = connection.prepareStatement(query)){
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()){
                 Line line = new Line();
-                line.setLineName(resultSet.getString("line"));
+                line.setLineId(resultSet.getInt("lineId"));
+                line.setLineName(resultSet.getString("lineName"));
+                line.setLineStartStation(resultSet.getString("lineStartStation"));
+                line.setLineEndStation(resultSet.getString("lineEndStation"));
+
 
                 lineList.add(line);
             }
@@ -52,16 +58,32 @@ public class LineRepo {
 
     }
 
-        public void deleteLine(Line line){
+    public Line updateLine(Line line) {
         Connection connection = DBConnection.getConnection();
-        String query = "DELETE FROM `railway_lines` WHERE line=?;";
+        String query = "UPDATE `line` SET lineEndStation = ? WHERE lineId = ?";
 
-        try(PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1,line.getLineName());
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, line.getLineEndStation());
+            statement.setInt(2, line.getLineId());
+
             statement.executeUpdate();
-        } catch (SQLException e){
-            System.out.println("Error occurred while executing delete query for train table");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        }
+
+        return line;
+    }
+
+//        public void deleteLine(Line line){
+//        Connection connection = DBConnection.getConnection();
+//        String query = "DELETE FROM `railway_lines` WHERE line=?;";
+//
+//        try(PreparedStatement statement = connection.prepareStatement(query)) {
+//            statement.setString(1,line.getLineName());
+//            statement.executeUpdate();
+//        } catch (SQLException e){
+//            System.out.println("Error occurred while executing delete query for train table");
+//        }
+//        }
     }
 
