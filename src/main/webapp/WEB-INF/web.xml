@@ -195,6 +195,15 @@
     <url-pattern>/approveParcel </url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ParcelCategory</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.ParcelCategoryController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ParcelCategory</servlet-name>
+    <url-pattern>/parcelCategory</url-pattern>
+  </servlet-mapping>
+
 
   <servlet>
     <servlet-name>User</servlet-name>

@@ -17,7 +17,7 @@ public class ParcelBookingRepo {
         Connection connection = DBConnection.getConnection();
         String parcel_query ="INSERT INTO `parcelbooking`( `trackingId`, `sendingStation`, " +
                 "`senderAddress`, `SenderNIC`, `recoveringStation`, `receiverName`, `receiverAddress`, `receiverTelNo`," +
-                " `receiverEmail`, `item`, `receiverNIC`, `userId`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
+                " `receiverEmail`, `item`, `receiverNIC`, `userId` ,`category`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
         String user_query = "SELECT `username` FROM `users` WHERE userId=?;";
 
         try (PreparedStatement statement = connection.prepareStatement(parcel_query)){
@@ -33,6 +33,7 @@ public class ParcelBookingRepo {
             statement.setString(10,parcelBooking.getItem());
             statement.setString(11,parcelBooking.getReceiverNIC());
             statement.setInt(12,parcelBooking.getUserId());
+            statement.setInt(13,parcelBooking.getCategory());
 
 
             statement.executeUpdate();
@@ -53,7 +54,7 @@ public class ParcelBookingRepo {
         //ParcelBooking parcelBooking = new ParcelBooking();
         List<ParcelBooking> parcelList = new ArrayList<>();
 
-        String parcelQuery = "SELECT bookingId, item, receiverName, receiverAddress, receiverEmail,status  FROM parcelbooking  WHERE userId=?";
+        String parcelQuery = "SELECT bookingId, item, receiverName, receiverAddress, receiverEmail,status   FROM parcelbooking  WHERE userId=?";
 
         try(PreparedStatement statement = connection.prepareStatement(parcelQuery)) {
             statement.setInt(1, userID);

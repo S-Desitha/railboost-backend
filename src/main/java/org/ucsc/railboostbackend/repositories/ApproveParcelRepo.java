@@ -18,7 +18,7 @@ public class ApproveParcelRepo {
         List<ApproveParcel> approveParcelsList = new ArrayList<>();
 
         String ApproveParcelQuery = "SELECT p.bookingId, p.recoveringStation, p.receiverName, p.item, p" +
-                ".userId, p.weight, p.status, u.fName FROM parcelbooking p INNER JOIN users u ON p.userId= u.userId " +
+                ".userId, p.weight, p.status, p.totalprice, u.fName FROM parcelbooking p INNER JOIN users u ON p.userId= u.userId " +
                 "WHERE p.sendingStation=?";
 
         try(PreparedStatement statement = connection.prepareStatement(ApproveParcelQuery)) {
@@ -34,6 +34,7 @@ public class ApproveParcelRepo {
                 approveParcel.setRecoveringStation(resultSet.getString("recoveringStation"));
                 approveParcel.setWeight(resultSet.getFloat("weight"));
                 approveParcel.setStatus(resultSet.getString("status"));
+                approveParcel.setTotalprice(resultSet.getFloat("totalprice"));
 
                 approveParcelsList.add(approveParcel);
 
@@ -84,18 +85,27 @@ public class ApproveParcelRepo {
         TicketPriceRepo ticketPriceRepo = new TicketPriceRepo();
         TicketPrice ticketPrice;
         Integer charge = 0;
+        String startingStation = "";
+        String endStation = "";
 
         Connection connection = DBConnection.getConnection();
 
-        String mQuery = "SELECT  Charges FROM parcelcharges WHERE itemId = ?";
+        String mQuery = "SELECT c.Charges ,p.sendingStation,p.recoveringStation\n" +
+                "FROM parcelcharges c\n" +
+                "INNER JOIN parcelbooking p ON c.itemId = p.category\n" +
+                "INNER JOIN parcelcategory i ON c.itemId = i.itemId\n" +
+                "WHERE p.bookingId = ?;\n";
         ResultSet resultSet;
 
         try (PreparedStatement statement = connection.prepareStatement(mQuery) ){
-            statement.setInt(1,approveParcel.getItemId());
+            statement.setString(1,approveParcel.getBookingId());
 
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 charge = resultSet.getInt(1);
+                startingStation = resultSet.getString(2);
+                endStation = resultSet.getString(3);
+
 
             }
 
@@ -104,11 +114,9 @@ public class ApproveParcelRepo {
         }
 
         Float weight = approveParcel.getWeight();
-        String startingStation = approveParcel.getSendingStation();
-        String endStation = approveParcel.getRecoveringStation();
 
         ticketPrice = ticketPriceRepo.getTicketPrice(startingStation,endStation);
-        Double price = charge*ticketPrice.getThirdClass()*(0.1)*weight;
+        Double price = charge*ticketPrice.getThirdClass()*(0.1)*weight +20;
         return price;
     }
 

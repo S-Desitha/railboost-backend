@@ -17,10 +17,7 @@ public class ParcelBooking {
     private  String item;
     private  User user;
     private String status;
-
-    public ParcelBooking(){
-        user = new User();
-    }
+    private  Integer category;
 
     public String getBookingId() {
         return bookingId;
@@ -134,7 +131,6 @@ public class ParcelBooking {
         this.user = user;
     }
 
-
     public String getStatus() {
         return status;
     }
@@ -143,6 +139,13 @@ public class ParcelBooking {
         this.status = status;
     }
 
+    public Integer getCategory() {
+        return category;
+    }
+
+    public void setCategory(Integer category) {
+        this.category = category;
+    }
 
     @Override
     public String toString() {
@@ -162,6 +165,7 @@ public class ParcelBooking {
                 ", item='" + item + '\'' +
                 ", user=" + user +
                 ", status='" + status + '\'' +
+                ", category=" + category +
                 '}';
     }
 }
