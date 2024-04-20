@@ -204,6 +204,15 @@
     <url-pattern>/parcelCategory</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ParcelTracking</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.ParcelTrackingController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ParcelTracking</servlet-name>
+    <url-pattern>/parcelTracking</url-pattern>
+  </servlet-mapping>
+
 
   <servlet>
     <servlet-name>User</servlet-name>
