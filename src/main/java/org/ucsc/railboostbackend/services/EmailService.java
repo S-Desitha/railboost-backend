@@ -1,9 +1,6 @@
 package org.ucsc.railboostbackend.services;
 
-import org.ucsc.railboostbackend.models.Booking;
-import org.ucsc.railboostbackend.models.ParcelBooking;
-import org.ucsc.railboostbackend.models.Season;
-import org.ucsc.railboostbackend.models.Staff;
+import org.ucsc.railboostbackend.models.*;
 
 import javax.activation.DataHandler;
 import javax.mail.*;
@@ -119,6 +116,22 @@ public class EmailService {
                 "<p style=\"font-size: 14px; margin-top: 10px;\">Thank you for choosing RailBoost!</p>\n" +
                 "</div>\n";
                   // Add a clear separation line
+    }
+
+    public String createFogetPWHTML(String tempUID, User user) {
+        String username = user.getUsername();
+//        String firstName = staff.getUser().getfName();
+
+        String railBoostLogoURL ="https://postimg.cc/QVgT87ys";
+
+        return "<div style=\"text-align: center;\">\n" +
+                "<p style=\"font-size: 18px; margin-bottom: 10px;\">Dear Sir/Madam" + ",</p>" +
+                "<p style=\"font-size: 16px; margin-bottom: 10px;\">Welcome to RailBoost! Your username is: " + username + "</p>\n" +
+                "<p style=\"font-size: 16px; margin-bottom: 10px;\">To recover your account, please click the link below:</p>\n" +
+                "<a href=\""+ origin+ "/html/forgetPW.html?tempUID=" + tempUID + "\" style=\"color: #007bff; text-decoration: none; font-weight: bold; display: inline-block; text-align: left;\">Recover accoount</a>\n" +
+                "<p style=\"font-size: 14px; margin-top: 10px;\">Thank you for choosing RailBoost!</p>\n" +
+                "</div>\n";
+        // Add a clear separation line
     }
     public String createNormalETicketHTML(Booking booking){
         return "<html><body>" +

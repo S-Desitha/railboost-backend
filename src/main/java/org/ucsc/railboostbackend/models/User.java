@@ -17,11 +17,14 @@ public class User {
     private String homeStCode;
     private Role role;
     private boolean isStaff;
+    private String tempUID;
 
 
     public int getUserId() {
         return userId;
     }
+    public String getTempUID(){return tempUID;}
+    public void setTempUID(String tempUID){ this.tempUID=tempUID;}
 
     public String getDp() {
         return dp;
