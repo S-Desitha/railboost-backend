@@ -29,7 +29,10 @@ public class SignUpController extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         Staff staff;
         String staffId;
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .create();
         StaffRepo staffRepo = new StaffRepo();
         MyCache cache = new MyCache();
         String tempUID = req.getParameter("tempUID");

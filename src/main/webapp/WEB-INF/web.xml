@@ -167,6 +167,15 @@
     <url-pattern>/profile</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ForgetPW</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.FogetPWController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ForgetPW</servlet-name>
+    <url-pattern>/forgetPW</url-pattern>
+  </servlet-mapping>
+
 
   <servlet>
     <servlet-name>Roles</servlet-name>
