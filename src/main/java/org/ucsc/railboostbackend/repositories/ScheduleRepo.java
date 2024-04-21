@@ -21,7 +21,7 @@ import static org.quartz.JobBuilder.newJob;
 public class ScheduleRepo {
 
     public Schedule getScheduleById(Short scheduleId) {
-        Schedule schedule = new Schedule(scheduleId);
+        Schedule schedule = new Schedule();
         List<ScheduleStation> stations = new ArrayList<>();
         List<ScheduleDay> days = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
