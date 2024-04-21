@@ -1,18 +1,20 @@
 package org.ucsc.railboostbackend.models;
 
 public class ParcelTracking {
-    private String bookingId;
+    private Integer bookingId;
     private String sendingStation;
     private String recoveringStation;
     private String trackingId;
     private String status;
     private String item;
 
-    public String getBookingId() {
+    private Integer scheduleId;
+
+    public Integer getBookingId() {
         return bookingId;
     }
 
-    public void setBookingId(String bookingId) {
+    public void setBookingId(Integer bookingId) {
         this.bookingId = bookingId;
     }
 
@@ -56,15 +58,24 @@ public class ParcelTracking {
         this.item = item;
     }
 
+    public Integer getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(Integer scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
     @Override
     public String toString() {
         return "ParcelTracking{" +
-                "bookingId='" + bookingId + '\'' +
+                "bookingId=" + bookingId +
                 ", sendingStation='" + sendingStation + '\'' +
                 ", recoveringStation='" + recoveringStation + '\'' +
                 ", trackingId='" + trackingId + '\'' +
                 ", status='" + status + '\'' +
                 ", item='" + item + '\'' +
+                ", scheduleId=" + scheduleId +
                 '}';
     }
 }

@@ -12,6 +12,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParcelTrackingRepo {
+    public void  addScheduleToParcel(ParcelTracking parcelTracking){
+        Connection connection = DBConnection.getConnection();
+        String query = "UPDATE parcelbooking\n" +
+                "SET scheduleId = ?\n" +
+                "WHERE bookingId = ?;\n";
+        try (PreparedStatement statement = connection.prepareStatement(query)){
+
+            statement.setInt(1,parcelTracking.getScheduleId());
+            statement.setInt(2, parcelTracking.getBookingId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     public List<ParcelTracking> getTrackingParcelsByID(String station){
         Connection connection = DBConnection.getConnection();
@@ -31,7 +46,7 @@ public class ParcelTrackingRepo {
 
                 parcelTracking.setRecoveringStation(resultSet.getString("recoveringStation"));
                 parcelTracking.setTrackingId(resultSet.getString("trackingId"));
-                parcelTracking.setBookingId(resultSet.getString("bookingId"));
+                parcelTracking.setBookingId(resultSet.getInt("bookingId"));
                 parcelTracking.setItem(resultSet.getString("item"));
                 parcelTracking.setSendingStation(resultSet.getString("sendingStation"));
                 
