@@ -12,11 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ParcelTrackingController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        PrintWriter writer =resp.getWriter();
+        PrintWriter writer = resp.getWriter();
         Gson gson = new Gson();
         ParcelTrackingRepo parcelTrackingRepo = new ParcelTrackingRepo();
         StaffRepo staffRepo = new StaffRepo();
@@ -30,6 +31,21 @@ public class ParcelTrackingController extends HttpServlet {
             String station = staff.getStation();
             parcelTrackingList = parcelTrackingRepo.getTrackingParcelsByID(station);
             writer.write(gson.toJson(parcelTrackingList));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        PrintWriter writer = resp.getWriter();
+        Gson gson = new Gson();
+        ParcelTrackingRepo parcelTrackingRepo = new ParcelTrackingRepo();
+        ParcelTracking parcelTracking = gson.fromJson(req.getReader(), ParcelTracking.class);
+
+        try {
+            parcelTrackingRepo.addScheduleToParcel(parcelTracking);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
