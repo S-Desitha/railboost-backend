@@ -25,8 +25,13 @@ public class Schedule {
         this.scheduleId = scheduleId;
     }
 
-//    public Schedule() {
-//    }
+    public Schedule(String startStation, String endStation, LocalDate date) {
+        this.startStation = startStation;
+        this.endStation = endStation;
+        this.date = date;
+    }
+
+    public Schedule() {}
 
     public short getScheduleId() {
         return scheduleId;

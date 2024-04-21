@@ -44,8 +44,26 @@ public class ScheduleController extends HttpServlet {
                 .create();
 
 
-        String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
-        Schedule reqSchedule = gson.fromJson(jsonQuery, Schedule.class);
+//        String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
+//        Schedule reqSchedule = gson.fromJson(jsonQuery, Schedule.class);
+
+        Schedule reqSchedule = null;
+
+        if (req.getParameter("scheduleId")!=null){
+            reqSchedule = new Schedule(Short.parseShort(req.getParameter("scheduleId")));
+        }
+        else if (req.getParameter("json")!=null) {
+            String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
+            reqSchedule = gson.fromJson(jsonQuery, Schedule.class);
+        }
+        else {
+            reqSchedule = new Schedule(
+                    req.getParameter("startStation"),
+                    req.getParameter("endStation"),
+                    LocalDate.parse(req.getParameter("date"), DateTimeFormatter.ofPattern("MM/dd/yyyy"))
+            );
+        }
+
 
         if(reqSchedule.getScheduleId()>0) {
             schedule = scheduleRepo.getScheduleById(reqSchedule.getScheduleId());
