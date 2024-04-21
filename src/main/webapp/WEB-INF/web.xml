@@ -176,6 +176,15 @@
     <url-pattern>/forgetPW</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ParcelReceiving</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.ParcelReceivingController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ParcelReceiving</servlet-name>
+    <url-pattern>/parcelReceiving</url-pattern>
+  </servlet-mapping>
+
 
   <servlet>
     <servlet-name>Roles</servlet-name>
