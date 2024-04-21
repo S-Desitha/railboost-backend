@@ -188,12 +188,37 @@ public class EmailService {
                 "        <li><strong>Tracking ID:</strong>"+ parcelBooking.getTrackingId()+"</li>\n" +
                 "        <li><strong>Booking ID:</strong> "+parcelBooking.getBookingId()+"</li>\n" +
                 "        <li><strong>Item:</strong> "+parcelBooking.getItem()+"</li>\n" +
-               "         <li><strong>Tel No:</strong> "+parcelBooking.getSenderNIC()+"</li>\n" +
+               "         <li><strong>Sender's NIC:</strong> "+parcelBooking.getSenderNIC()+"</li>\n" +
                 "    </ul>\n" +
                 "    <p>Please note that once your parcel arrives at the station, we will send you another email notification. You can then come to the station to collect your parcel.</p>\n" +
                 "    <p>If you have any questions or need further assistance, please feel free to contact our customer support team.</p>\n" +
                 "    <p>Thank you for choosing us for your parcel delivery. We look forward to serving you.</p>\n" +
                 "    <p>Best regards,<br/>The [Your Company Name] Team</p>\n" +
+                "</body>\n" +
+                "</html>\n";
+    }
+
+    public String createParcelRecievedHTML(ParcelReceiving parcelReceiving){
+        return "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                "    <title>Parcel Notification</title>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <h2>Parcel Delivery Notification</h2>\n" +
+                "    <p>Dear "+parcelReceiving.getReceiverName()+",</p>\n" +
+                "    <p>We are pleased to inform you that a parcel has been arrived to your recovering station. Below are the details of your delivery:</p>\n" +
+                "    <ul>\n" +
+                "        <li><strong>Booking ID:</strong> "+parcelReceiving.getBookingId()+"</li>\n" +
+                "        <li><strong>Item:</strong> "+parcelReceiving.getItem()+"</li>\n" +
+                "         <li><strong>Tel No:</strong> "+parcelReceiving.getSenderNIC()+"</li>\n" +
+                "    </ul>\n" +
+                "    <p>Please note that now you can come to the station to collect your parcel.</p>\n" +
+                "    <p>If you have any questions or need further assistance, please feel free to contact our customer support team.</p>\n" +
+                "    <p>Thank you for choosing us for your parcel delivery. We look forward to serving you.</p>\n" +
+                "    <p>Best regards,<br/>The RailBoost Team</p>\n" +
                 "</body>\n" +
                 "</html>\n";
     }
