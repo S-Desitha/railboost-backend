@@ -15,7 +15,7 @@ public class ParcelTrackingRepo {
     public void  addScheduleToParcel(ParcelTracking parcelTracking){
         Connection connection = DBConnection.getConnection();
         String query = "UPDATE parcelbooking\n" +
-                "SET scheduleId = ?\n" +
+                "SET scheduleId = ?\n , deliver_status=\"Assign\"" +
                 "WHERE bookingId = ?;\n";
         try (PreparedStatement statement = connection.prepareStatement(query)){
 
@@ -35,7 +35,7 @@ public class ParcelTrackingRepo {
 
         String query = "SELECT p.bookingId,p.trackingId, p.recoveringStation, p.item, p.sendingStation,p.status" +
                 " FROM parcelbooking p INNER JOIN users u ON p.userId= u.userId " +
-                "WHERE p.sendingStation=?";
+                "WHERE p.sendingStation=? AND p.deliver_status=\"Pending\"";
 
         try(PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1,station);

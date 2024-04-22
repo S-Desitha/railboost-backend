@@ -223,6 +223,15 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>AddParcelsToTrain</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.AddParcelToTrainsController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AddParcelsToTrain</servlet-name>
+    <url-pattern>/addParcelsToTrain</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>ParcelTracking</servlet-name>
     <servlet-class>org.ucsc.railboostbackend.controllers.ParcelTrackingController</servlet-class>
   </servlet>
