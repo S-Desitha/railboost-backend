@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.AddParcelsTOTrain;
+import org.ucsc.railboostbackend.models.SendParcels;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
 import javax.servlet.http.HttpServlet;
@@ -13,11 +14,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddParcelsToTrainRepo extends HttpServlet {
+
+    public void updateDeliveryStatusToPending(int scheduleId){
+        Connection connection = DBConnection.getConnection();
+        String query = "UPDATE parcelbooking SET scheduleId= 0,deliver_status=\"Pending\" WHERE scheduleId=? AND deliver_status=\"Assign\";";
+        try (PreparedStatement statement = connection.prepareStatement(query)){
+            statement.setInt(1,scheduleId);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    public  void updateDeliveryStatus(SendParcels sendParcels){
+        Connection connection = DBConnection.getConnection();
+
+        for (int i = 0; i < sendParcels.getBookingIdList().size(); i++) {
+            String query = "UPDATE parcelbooking SET deliver_status=\"Sent\" WHERE bookingId=? ";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)){
+                String bid = sendParcels.getBookingIdList().get(i);
+                int bookingId = Integer.parseInt(bid);
+                statement.setInt(1,bookingId);
+                statement.executeUpdate();
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+
+
+    }
     public  List<AddParcelsTOTrain> getParcelsByScheduleId(int scheduleId)throws IOException{
         Connection connection = DBConnection.getConnection();
         List<AddParcelsTOTrain> addParcelsTOTrainList = new ArrayList<>();
 
-        String query = "SELECT bookingId,item ,recoveringStation FROM `parcelbooking` WHERE deliver_status=\"Pending\" AND scheduleId= ?;";
+        String query = "SELECT bookingId,item ,recoveringStation FROM `parcelbooking` WHERE deliver_status=\"Assign\" AND scheduleId= ?;";
         try(PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1,scheduleId);
             ResultSet resultSet = statement.executeQuery();
@@ -27,7 +61,7 @@ public class AddParcelsToTrainRepo extends HttpServlet {
                 addParcelsTOTrain.setBookingId(resultSet.getInt("bookingId"));
                 addParcelsTOTrain.setItem(resultSet.getString("item"));
                 addParcelsTOTrainList.add(addParcelsTOTrain);
-                System.out.println(addParcelsTOTrainList);
+
             }
 
         } catch (SQLException e) {
@@ -42,7 +76,7 @@ public class AddParcelsToTrainRepo extends HttpServlet {
 
         String query ="SELECT DISTINCT scheduleId\n" +
                 "FROM parcelbooking\n" +
-                "WHERE sendingStation = ? AND scheduleId != 0 AND deliver_status=\"Pending\";";
+                "WHERE sendingStation = ? AND scheduleId != 0 AND deliver_status=\"Assign\";";
         try (PreparedStatement statement = connection.prepareStatement(query)){
             statement.setString(1,station);
             ResultSet resultSet = statement.executeQuery();
@@ -53,7 +87,7 @@ public class AddParcelsToTrainRepo extends HttpServlet {
                 addParcelsTOTrain.setScheduleId(resultSet.getInt("scheduleId"));
 
                 addParcelsTOTrainList.add(addParcelsTOTrain);
-                System.out.println(addParcelsTOTrainList);
+
             }
         }
 
