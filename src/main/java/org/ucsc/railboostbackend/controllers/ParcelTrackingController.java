@@ -3,6 +3,7 @@ package org.ucsc.railboostbackend.controllers;
 import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 import org.ucsc.railboostbackend.models.ParcelTracking;
+import org.ucsc.railboostbackend.models.SendParcels;
 import org.ucsc.railboostbackend.models.Staff;
 import org.ucsc.railboostbackend.repositories.ParcelTrackingRepo;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
@@ -39,12 +40,14 @@ public class ParcelTrackingController extends HttpServlet {
 
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PrintWriter writer = resp.getWriter();
-        Gson gson = new Gson();
         ParcelTrackingRepo parcelTrackingRepo = new ParcelTrackingRepo();
-        ParcelTracking parcelTracking = gson.fromJson(req.getReader(), ParcelTracking.class);
+        Gson gson = new Gson();
+        SendParcels sendParcels = gson.fromJson(req.getReader(), SendParcels.class);
+        int scheduleId = sendParcels.getScheduleId();
+//        ParcelTracking parcelTracking = gson.fromJson(req.getReader(), ParcelTracking.class);
 
         try {
-            parcelTrackingRepo.addScheduleToParcel(parcelTracking);
+            parcelTrackingRepo.addScheduleToParcel(sendParcels,scheduleId);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
