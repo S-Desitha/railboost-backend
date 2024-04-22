@@ -1,9 +1,7 @@
 package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.enums.Day;
-import org.ucsc.railboostbackend.models.Schedule;
-import org.ucsc.railboostbackend.models.ScheduleDay;
-import org.ucsc.railboostbackend.models.ScheduleStation;
+import org.ucsc.railboostbackend.models.*;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
 import java.beans.IntrospectionException;
@@ -208,6 +206,58 @@ public class ScheduleRepo {
     }
 
 
+    public List<TransitSchedule> getSchedulesWithTransit(Schedule reqSchedule) {
+        List<TransitSchedule> schedules = new ArrayList<>();
+        Connection connection = DBConnection.getConnection();
+        StationRepo stationRepo = new StationRepo();
+
+        String mainStation;
+        String commonStation;
+        List<Schedule> phase1;
+        List<Schedule> phase2;
+        String startStation = reqSchedule.getStartStation();
+        String destinationStation = reqSchedule.getEndStation();
+        List<String> startUp = stationRepo.getUpJunctions(startStation);
+        List<String> startDown = stationRepo.getDownJunctions(startStation);
+        List<String> destinationUp = stationRepo.getUpJunctions(destinationStation);
+        List<String> destinationDown = stationRepo.getDownJunctions(destinationStation);
+
+        commonStation = getFirstCommonStation(startUp, destinationUp);
+        if (commonStation==null) {
+            commonStation = getFirstCommonStation(startUp, destinationDown);
+            if (commonStation==null) {
+                commonStation = getFirstCommonStation(startDown, destinationUp);
+                if (commonStation==null) {
+                    commonStation = getFirstCommonStation(startDown, destinationDown);
+                    if (commonStation==null)
+                        return null;
+                }
+            }
+        }
+
+        System.out.println("Common Junction Station: " + commonStation);
+
+        phase1 = getSchedules(new Schedule(
+                reqSchedule.getStartStation(),
+                commonStation,
+                reqSchedule.getDate()
+        ));
+
+        phase2 = getSchedules(new Schedule(
+                commonStation,
+                reqSchedule.getEndStation(),
+                reqSchedule.getDate()
+        ));
+
+        if (!phase1.isEmpty() && !phase2.isEmpty()) {
+            schedules.add(new TransitSchedule(0, phase1));
+            schedules.add(new TransitSchedule(1, phase2));
+        }
+
+        return schedules;
+    }
+
+
     public boolean addSchedule(Schedule schedule) {
         boolean isSuccess = false;
         short scheduleId = schedule.getScheduleId();
@@ -341,5 +391,17 @@ public class ScheduleRepo {
         } catch (SQLException e) {
             System.out.println("Error executing SQL query for schedule delete!!\n" + e.getMessage());
         }
+    }
+
+
+    private String getFirstCommonStation(List<String> list1, List<String> list2) {
+        for (String e1 : list1) {
+            for (String e2 : list2) {
+                if (e1.equals(e2))
+                    return e1;
+            }
+        }
+
+        return null;
     }
 }

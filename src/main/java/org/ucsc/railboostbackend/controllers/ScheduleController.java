@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import io.jsonwebtoken.Claims;
 import org.ucsc.railboostbackend.enums.Roles;
 import org.ucsc.railboostbackend.models.Schedule;
+import org.ucsc.railboostbackend.models.TransitSchedule;
 import org.ucsc.railboostbackend.repositories.ScheduleRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
 import org.ucsc.railboostbackend.services.LocalDateSerializer;
@@ -35,6 +36,7 @@ public class ScheduleController extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         ScheduleRepo scheduleRepo = new ScheduleRepo();
         List<Schedule> scheduleList;
+        List<TransitSchedule> transitSchedules;
         Schedule schedule;
 
         Gson gson = new GsonBuilder()
@@ -44,17 +46,19 @@ public class ScheduleController extends HttpServlet {
                 .create();
 
 
-//        String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
-//        Schedule reqSchedule = gson.fromJson(jsonQuery, Schedule.class);
-
         Schedule reqSchedule = null;
-
         if (req.getParameter("scheduleId")!=null){
             reqSchedule = new Schedule(Short.parseShort(req.getParameter("scheduleId")));
+            schedule = scheduleRepo.getScheduleById(reqSchedule.getScheduleId());
+            writer.write(gson.toJson(schedule));
+            writer.flush();
         }
         else if (req.getParameter("json")!=null) {
             String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
             reqSchedule = gson.fromJson(jsonQuery, Schedule.class);
+            scheduleList = scheduleRepo.getSchedules(reqSchedule);
+            writer.write(gson.toJson(scheduleList));
+            writer.flush();
         }
         else {
             reqSchedule = new Schedule(
@@ -62,19 +66,34 @@ public class ScheduleController extends HttpServlet {
                     req.getParameter("endStation"),
                     LocalDate.parse(req.getParameter("date"), DateTimeFormatter.ofPattern("MM/dd/yyyy"))
             );
-        }
-
-
-        if(reqSchedule.getScheduleId()>0) {
-            schedule = scheduleRepo.getScheduleById(reqSchedule.getScheduleId());
-            writer.write(gson.toJson(schedule));
-            writer.flush();
-        }
-        else {
             scheduleList = scheduleRepo.getSchedules(reqSchedule);
-            writer.write(gson.toJson(scheduleList));
-            writer.flush();
+
+            if (scheduleList.isEmpty() && req.getParameter("transit")!=null && req.getParameter("transit").equals("true")) {
+                transitSchedules = scheduleRepo.getSchedulesWithTransit(new Schedule(
+                        req.getParameter("startStation"),
+                        req.getParameter("endStation"),
+                        LocalDate.parse(req.getParameter("date"), DateTimeFormatter.ofPattern("MM/dd/yyyy"))
+                ));
+                writer.write(gson.toJson(transitSchedules));
+                writer.flush();
+            }
+            else {
+                writer.write(gson.toJson(scheduleList));
+                writer.flush();
+            }
         }
+
+
+//        if(reqSchedule.getScheduleId()>0) {
+//            schedule = scheduleRepo.getScheduleById(reqSchedule.getScheduleId());
+//            writer.write(gson.toJson(schedule));
+//            writer.flush();
+//        }
+//        else {
+//            scheduleList = scheduleRepo.getSchedules(reqSchedule);
+//            writer.write(gson.toJson(scheduleList));
+//            writer.flush();
+//        }
 //        scheduleList.forEach(System.out::println);
 
         writer.close();
