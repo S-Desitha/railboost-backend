@@ -2,6 +2,7 @@ package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.ParcelBooking;
 import org.ucsc.railboostbackend.models.ParcelTracking;
+import org.ucsc.railboostbackend.models.SendParcels;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
 import java.sql.Connection;
@@ -12,18 +13,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParcelTrackingRepo {
-    public void  addScheduleToParcel(ParcelTracking parcelTracking){
+    public void  addScheduleToParcel(SendParcels sendParcels, int scheduleId){
         Connection connection = DBConnection.getConnection();
-        String query = "UPDATE parcelbooking\n" +
-                "SET scheduleId = ?\n , deliver_status=\"Assign\"" +
-                "WHERE bookingId = ?;\n";
-        try (PreparedStatement statement = connection.prepareStatement(query)){
-
-            statement.setInt(1,parcelTracking.getScheduleId());
-            statement.setInt(2, parcelTracking.getBookingId());
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        for (int i = 0; i < sendParcels.getBookingIdList().size(); i++) {
+            String query = "UPDATE parcelbooking\n" +
+                    "SET scheduleId = ?\n , deliver_status=\"Assign\"" +
+                    "WHERE bookingId = ?;\n";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                String bid = sendParcels.getBookingIdList().get(i);
+                int bookingId = Integer.parseInt(bid);
+//                int scheduleId = sendParcels.getScheduleId();
+                statement.setInt(1, sendParcels.getScheduleId());
+                statement.setInt(2, bookingId);
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
@@ -35,7 +40,7 @@ public class ParcelTrackingRepo {
 
         String query = "SELECT p.bookingId,p.trackingId, p.recoveringStation, p.item, p.sendingStation,p.status" +
                 " FROM parcelbooking p INNER JOIN users u ON p.userId= u.userId " +
-                "WHERE p.sendingStation=? AND p.deliver_status=\"Pending\"";
+                "WHERE p.sendingStation=? AND p.status =\"Approved\" AND p.deliver_status=\"Pending\"";
 
         try(PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1,station);
@@ -49,7 +54,7 @@ public class ParcelTrackingRepo {
                 parcelTracking.setBookingId(resultSet.getInt("bookingId"));
                 parcelTracking.setItem(resultSet.getString("item"));
                 parcelTracking.setSendingStation(resultSet.getString("sendingStation"));
-                
+
 
                 parcelTrackingList.add(parcelTracking);
 

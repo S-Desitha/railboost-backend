@@ -19,7 +19,7 @@ public class ApproveParcelRepo {
 
         String ApproveParcelQuery = "SELECT p.bookingId, p.recoveringStation, p.receiverName, p.item, p" +
                 ".userId, p.weight, p.status, p.totalprice, u.fName FROM parcelbooking p INNER JOIN users u ON p.userId= u.userId " +
-                "WHERE p.sendingStation=?";
+                "WHERE p.sendingStation=? AND p.status=\"Pending\"";
 
         try(PreparedStatement statement = connection.prepareStatement(ApproveParcelQuery)) {
             statement.setString(1,station);
