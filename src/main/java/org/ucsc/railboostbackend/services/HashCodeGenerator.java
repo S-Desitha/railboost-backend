@@ -1,6 +1,15 @@
 package org.ucsc.railboostbackend.services;
+import com.google.gson.Gson;
+import com.mysql.cj.admin.ServerController;
+import org.ucsc.railboostbackend.models.Hash;
+
+import com.google.gson.Gson;
+import org.ucsc.railboostbackend.models.Hash;
+import org.ucsc.railboostbackend.models.Train;
+import org.ucsc.railboostbackend.repositories.TrainRepo;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -25,13 +34,14 @@ public class HashCodeGenerator extends HttpServlet {
         String amountCurrency = request.getParameter("currency");
 
         // Generate hash
-        String hash = generatecode(orderId, totalAmount, merchantSecretId, merchantId, amountCurrency);
-
-        // Set response content type
-        response.setContentType("text/plain");
-
-        // Write hash value to response
-        response.getWriter().write(hash);
+        String hashed = generatecode(orderId, totalAmount, merchantSecretId, merchantId, amountCurrency);
+        System.out.println("Hashed: " + hashed);
+        PrintWriter writer = response.getWriter();
+        Gson gson = new Gson();
+        Hash hash = new Hash(hashed);
+        writer.write(gson.toJson(hash));
+        writer.flush();
+        writer.close();
     }
 
     public static String generatecode(String orderId, double totalAmount, String merchantSecretId, String merchantId,
