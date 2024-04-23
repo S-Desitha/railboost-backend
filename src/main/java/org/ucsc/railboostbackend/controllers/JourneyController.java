@@ -9,6 +9,7 @@ import org.ucsc.railboostbackend.models.Staff;
 import org.ucsc.railboostbackend.repositories.JourneyRepo;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 import org.ucsc.railboostbackend.services.LocalDateDeserializer;
+import org.ucsc.railboostbackend.services.LocalDateSerializer;
 import org.ucsc.railboostbackend.services.LocalTimeDeserializer;
 import org.ucsc.railboostbackend.services.LocalTimeSerializer;
 import org.ucsc.railboostbackend.utilities.Security;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,15 +58,26 @@ public class JourneyController extends HttpServlet {
         JourneyRepo journeyRepo = new JourneyRepo();
         List<Journey> journeyList;
         Journey journey;
+        Journey reqJourney = new Journey();
         String stationCode;
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
                 .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
                 .create();
 
-        String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
-        Journey reqJourney = gson.fromJson(jsonQuery, Journey.class);
+
+        if (req.getParameter("json")!=null) {
+            String jsonQuery = URLDecoder.decode(req.getParameter("json"), "UTF-8");
+            reqJourney = gson.fromJson(jsonQuery, Journey.class);
+        }
+        else if (req.getParameter("scheduleId")!=null && req.getParameter("date")!=null) {
+            reqJourney = new Journey(
+                    Short.parseShort(req.getParameter("scheduleId")),
+                    LocalDate.parse(req.getParameter("date"), DateTimeFormatter.ofPattern("MM/dd/yyyy"))
+            );
+        }
 
         if (reqJourney.getScheduleId()>0){
             journey = journeyRepo.getJourney(reqJourney.getDate(), reqJourney.getScheduleId());

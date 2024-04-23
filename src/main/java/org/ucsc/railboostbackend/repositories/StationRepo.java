@@ -124,6 +124,7 @@ public class StationRepo {
             }
         }
     }
+
     public void updateStation(Station station) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -213,6 +214,85 @@ public class StationRepo {
                 System.out.println("Error closing resources: " + e.getMessage());
             }
         }
+    }
+
+    public List<String> getUpJunctions(String currentStation) {
+        List<String> upJunctions = new ArrayList<>();
+        Connection connection = DBConnection.getConnection();
+
+        List<String> junctions = getJunctionStations();
+
+        String query = "SELECT s.nextStation " +
+                "FROM station s " +
+                "WHERE s.stationCode = ? ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            while(currentStation!=null){
+                statement.setString(1, currentStation);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    currentStation = resultSet.getString(1);
+                    if (junctions.contains(currentStation))
+                        upJunctions.add(currentStation);
+                } else
+                    currentStation = null;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error when executing select query for stations table: StationRepo.java : getUpJunctions()");
+            System.out.println(e.getMessage());
+        }
+
+        return upJunctions;
+    }
+
+    public List<String> getDownJunctions(String currentStation) {
+        List<String> downJunctions = new ArrayList<>();
+        Connection connection = DBConnection.getConnection();
+
+        List<String> junctions = getJunctionStations();
+
+        String query = "SELECT s.prevStation " +
+                "FROM station s " +
+                "WHERE s.stationCode = ? ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            while(currentStation!=null){
+                statement.setString(1, currentStation);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    currentStation = resultSet.getString(1);
+                    if (junctions.contains(currentStation))
+                        downJunctions.add(currentStation);
+                } else
+                    currentStation = null;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error when executing select query for stations table: StationRepo.java : getDownJunctions()");
+            System.out.println(e.getMessage());
+        }
+
+        return downJunctions;
+    }
+
+
+
+    public List<String> getJunctionStations() {
+        List<String> junctions = new ArrayList<>();
+        Connection connection = DBConnection.getConnection();
+        String query = "SELECT * FROM junction_stations ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next())
+                junctions.add(resultSet.getString(1));
+        } catch (SQLException e) {
+            System.out.println("Error when executing select query for stations table: StationRepo.java : getJunctionStations()");
+            System.out.println(e.getMessage());
+        }
+
+        return junctions;
     }
 
 }
