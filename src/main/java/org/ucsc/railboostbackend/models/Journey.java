@@ -10,6 +10,12 @@ public class Journey {
     private List<JourneyStation> stations = new ArrayList<>();
     private Schedule schedule;
 
+    public Journey(){}
+    public Journey(short scheduleId, LocalDate date) {
+        this.scheduleId = scheduleId;
+        this.date = date;
+    }
+
     public LocalDate getDate() {
         return date;
     }
