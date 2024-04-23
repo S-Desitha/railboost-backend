@@ -1,15 +1,41 @@
 package org.ucsc.railboostbackend.services;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
-public class HashCodeGenerator {
+public class HashCodeGenerator extends HttpServlet {
 
-    public static String generatecode(String orderId,double totalAmount ,String merchantSecretId,String merchantId,String amountcurrency){
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Get form data
+        String orderId = request.getParameter("order_id");
+        double totalAmount = Double.parseDouble(request.getParameter("amount"));
+        String merchantSecretId = "MTc4OTMzMjY2MTE1MTIxODQ1MTQyNjAxMjc4NzQzNjA2OTg1OTMw"; // Replace with your actual merchant secret ID
+        String merchantId = "1226549"; // Replace with your actual merchant ID
+        String amountCurrency = request.getParameter("currency");
+
+        // Generate hash
+        String hash = generatecode(orderId, totalAmount, merchantSecretId, merchantId, amountCurrency);
+
+        // Set response content type
+        response.setContentType("text/plain");
+
+        // Write hash value to response
+        response.getWriter().write(hash);
+    }
+
+    public static String generatecode(String orderId, double totalAmount, String merchantSecretId, String merchantId,
+                                      String amountcurrency) {
 
         String merahantID = merchantId;
         String merchantSecret = merchantSecretId;
