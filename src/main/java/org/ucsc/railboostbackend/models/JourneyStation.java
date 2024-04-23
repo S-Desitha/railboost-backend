@@ -1,15 +1,13 @@
 package org.ucsc.railboostbackend.models;
 
-import org.ucsc.railboostbackend.controllers.JourneyController;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 public class JourneyStation {
     private LocalDate date;
     private short scheduleId;
     private String station;
+    private String stationName;
     private short stIndex;
     private LocalTime arrivalTime;
     private LocalTime departureTime;
@@ -20,9 +18,10 @@ public class JourneyStation {
         date = LocalDate.now();
     }
 
-    public JourneyStation(short scheduleId, String station, short stIndex, LocalTime arrivalTime, LocalTime departureTime, LocalTime scheduledArrivalTime, LocalTime scheduledDepartureTime) {
+    public JourneyStation(short scheduleId, String station, String stationName, short stIndex, LocalTime arrivalTime, LocalTime departureTime, LocalTime scheduledArrivalTime, LocalTime scheduledDepartureTime) {
         this.scheduleId = scheduleId;
         this.station = station;
+        this.stationName = stationName;
         this.stIndex = stIndex;
         this.arrivalTime = arrivalTime;
         this.departureTime = departureTime;
@@ -61,6 +60,14 @@ public class JourneyStation {
     public void setStIndex(short stIndex) {
         this.stIndex = stIndex;
     }
+    public String getStationName() {
+        return stationName;
+    }
+
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
+    }
+
 
     public LocalTime getArrivalTime() {
         return arrivalTime;

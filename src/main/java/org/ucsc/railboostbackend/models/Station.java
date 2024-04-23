@@ -8,6 +8,8 @@ public class Station {
     //    previous station as a string
     private String prevStation;
     //    next station as a string
+    private String prevStationName;
+    private String nextStationName;
     private String nextStation;
 //    setters and getters for previous and next stations
 
@@ -48,6 +50,20 @@ public class Station {
         this.stationName = stationName;
     }
 
+    public String getPrevStationName() {
+        return prevStationName;
+    }
+    public void setPrevStationName(String prevStationName) {
+        this.prevStationName = prevStationName;
+    }
+
+    public String getNextStationName() {
+        return nextStationName;
+    }
+
+    public void setNextStationName(String nextStationName) {
+        this.nextStationName = nextStationName;
+    }
     public String getAddress() {
         return address;
     }

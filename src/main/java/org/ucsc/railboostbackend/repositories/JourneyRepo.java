@@ -87,6 +87,7 @@ public class JourneyRepo {
     public Journey getJourney(LocalDate date, short scheduleId) {
         Connection connection = DBConnection.getConnection();
         Journey journey = new Journey();
+        StationRepo stationRepo = new StationRepo();
         List<JourneyStation> stations = new ArrayList<>();
         String query ="SELECT jour.date, jour.scheduleId, js.station, js.stIndex, js.arrivalTime, js.departureTime " +
                 "FROM journey jour " +
@@ -112,6 +113,7 @@ public class JourneyRepo {
                 stations.add(new JourneyStation(
                         scheduleId,
                         station,
+                        stationRepo.getStationName(resultSet.getString("station")),
                         resultSet.getShort("stIndex"),
                         resultSet.getTime("arrivalTime") != null ? resultSet.getTime("arrivalTime").toLocalTime() : null,
                         resultSet.getTime("departureTime") != null ? resultSet.getTime("departureTime").toLocalTime() : null,

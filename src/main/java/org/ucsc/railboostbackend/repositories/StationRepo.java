@@ -13,7 +13,7 @@ public class StationRepo {
         List<Station> stationNames = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
         String query = "SELECT stationCode, name, address, line, nextStation ,prevStation, contactNo  FROM station";
-
+        StationRepo stationRepo = new StationRepo();
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -23,7 +23,10 @@ public class StationRepo {
                 station.setAddress(resultSet.getString("address"));
                 station.setLine(resultSet.getString("line"));
                 station.setNextStation(resultSet.getString("nextStation"));
+                station.setNextStationName(stationRepo.getStationName(resultSet.getString("nextStation")));
+
                 station.setPrevStation(resultSet.getString("prevStation"));
+                station.setPrevStationName(stationRepo.getStationName(resultSet.getString("prevStation")));
                 station.setContactNo(resultSet.getString("contactNo"));
                 stationNames.add(station);
                 }

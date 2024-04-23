@@ -251,6 +251,15 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>PaymentHash</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.services.HashCodeGenerator</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PaymentHash</servlet-name>
+    <url-pattern>/generateHash</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>NotificationServlet</servlet-name>
     //notification controller
     <servlet-class>org.ucsc.railboostbackend.controllers.NotificationController</servlet-class>
