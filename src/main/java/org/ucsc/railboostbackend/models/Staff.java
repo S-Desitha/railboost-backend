@@ -6,6 +6,7 @@ public class    Staff {
     private String station;
     private User user;
     private String tempUID;
+    private String stationName;
 
     public Staff() {
         user = new User();
@@ -50,6 +51,8 @@ public class    Staff {
     public void setTempUID(String tempUID) {
         this.tempUID = tempUID;
     }
+    public void setStationName(String stationName){this.stationName = stationName;}
+    public String getStationName(){return stationName;}
 
     @Override
     public String toString() {
@@ -57,6 +60,7 @@ public class    Staff {
                 "staffId='" + staffId + '\'' +
                 ", userId=" + userId +
                 ", station='" + station + '\'' +
+                ", stationName='" + stationName + '\'' +
                 ", user=" + user +
                 '}';
     }

@@ -97,9 +97,10 @@ public class StaffRepo {
     public List<Staff> getAllStaff() {
         Connection connection = DBConnection.getConnection();
         List<Staff> staffList = new ArrayList<>();
-        String query = "SELECT s.staffId, u.userId, u.roleId, u.fName, u.lName, u.username, u.telNo, u.roleId, r.role ,s.stationCode, u.email " +
+        String query = "SELECT s.staffId, u.userId, u.roleId, u.fName, u.lName, u.username, u.telNo, u.roleId, r.role ,s.stationCode, u.email, s1.name AS stationName " +
                 "FROM staff s " +
                 "INNER JOIN users u ON s.userId = u.userId " +
+                "INNER JOIN station s1 ON s.stationCode = s1.stationCode " +
                 "INNER JOIN roles r ON u.roleId = r.roleId ";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -110,7 +111,9 @@ public class StaffRepo {
                 staff.setStaffId(resultSet.getString("staffId"));
                 staff.setStation(resultSet.getString("stationCode"));
                 staff.setUserId(resultSet.getInt("userId"));
+                staff.setStationName(resultSet.getString("stationName"));
                 user.setUserId(resultSet.getInt("userId"));
+                user.setUsername(resultSet.getString("username"));
                 user.setfName(resultSet.getString("fName"));
                 user.setlName(resultSet.getString("lName"));
                 user.setEmail(resultSet.getString("email"));
