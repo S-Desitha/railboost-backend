@@ -1,5 +1,7 @@
 package org.ucsc.railboostbackend.controllers;
 
+import org.apache.poi.ss.usermodel.Workbook;
+import org.ucsc.railboostbackend.repositories.RatesRepo;
 import org.ucsc.railboostbackend.services.FileRequestWrapper;
 import org.ucsc.railboostbackend.services.FileResponseWrapper;
 
@@ -27,8 +29,12 @@ public class FileController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         FileResponseWrapper responseWrapper = new FileResponseWrapper(req, resp);
 
-        String filename = req.getParameter("filename");
-        responseWrapper.sendFile(filename, UPLOAD_DIR);
+//        String filename = req.getParameter("filename");
+//        responseWrapper.sendSimpleFile(filename, UPLOAD_DIR);
+        RatesRepo ratesRepo = new RatesRepo();
+        Workbook workbook = ratesRepo.createExcelTemplate("FOT", "Colombo Fort");
+        responseWrapper.sendExcelFile(workbook, "FOT");
+
     }
 
 

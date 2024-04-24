@@ -1,5 +1,8 @@
 package org.ucsc.railboostbackend.repositories;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.ucsc.railboostbackend.models.ResponseType;
 import org.ucsc.railboostbackend.models.TicketPrice;
 import org.ucsc.railboostbackend.models.Train;
@@ -174,6 +177,52 @@ public class RatesRepo {
             System.out.println(e.getMessage());
         }
 
+    }
+
+
+    public Workbook createExcelTemplate(String stationCode, String stationName) {
+        Workbook workbook = new XSSFWorkbook();
+
+        Sheet sheet = workbook.createSheet(stationName);
+        sheet.setColumnWidth(0, 256*40); // station name
+        sheet.setColumnWidth(1, 256*10); // station code
+        sheet.setColumnWidth(2, 256*20); // 1st class
+        sheet.setColumnWidth(3, 256*20); // 2nd class
+        sheet.setColumnWidth(4, 256*20); // 3rd class
+
+        Row header = sheet.createRow(0);
+
+        CellStyle headerStyle = workbook.createCellStyle();
+//        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+//        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        XSSFFont font = ((XSSFWorkbook) workbook).createFont();
+        font.setFontName("Arial");
+        font.setFontHeightInPoints((short) 16);
+        font.setBold(true);
+        headerStyle.setFont(font);
+
+        Cell headerCell = header.createCell(0);
+        headerCell.setCellValue("Station Name");
+        headerCell.setCellStyle(headerStyle);
+
+        headerCell = header.createCell(1);
+        headerCell.setCellValue("Code");
+        headerCell.setCellStyle(headerStyle);
+
+        headerCell = header.createCell(2);
+        headerCell.setCellValue("1st Class");
+        headerCell.setCellStyle(headerStyle);
+
+        headerCell = header.createCell(3);
+        headerCell.setCellValue("2ns Class");
+        headerCell.setCellStyle(headerStyle);
+
+        headerCell = header.createCell(4);
+        headerCell.setCellValue("3rd Class");
+        headerCell.setCellStyle(headerStyle);
+
+        return workbook;
     }
 }
 
