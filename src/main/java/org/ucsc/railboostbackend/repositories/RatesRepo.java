@@ -181,6 +181,34 @@ public class RatesRepo {
 
 
     public Workbook createExcelTemplate(String stationCode, String stationName) {
+        Connection connection = DBConnection.getConnection();
+        Workbook workbook = createBasicTemplate(stationName);
+        Sheet sheet = workbook.getSheet(stationName);
+        String query = "SELECT DISTINCT t.`3rd Class`, t.`2nd Class`, t.`1st Class`, s.stationCode, s.name FROM ticketprice t " +
+                "INNER JOIN station s ON s.stationCode = t.endCode " +
+                "WHERE t.startCode = ? ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, stationCode);
+
+            ResultSet resultSet = statement.executeQuery();
+            for (int i=1; resultSet.next(); i++) {
+                Row row = sheet.createRow(i);
+                row.createCell(0).setCellValue(resultSet.getString(5));
+                row.createCell(1).setCellValue(resultSet.getString(4));
+                row.createCell(2).setCellValue(resultSet.getString(3));
+                row.createCell(3).setCellValue(resultSet.getString(2));
+                row.createCell(4).setCellValue(resultSet.getString(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error on select query for station table: RatesRepo: createExcelTemplate()");
+            System.out.println(e.getMessage());
+        }
+
+        return workbook;
+    }
+
+    private Workbook createBasicTemplate(String stationName) {
         Workbook workbook = new XSSFWorkbook();
 
         Sheet sheet = workbook.createSheet(stationName);

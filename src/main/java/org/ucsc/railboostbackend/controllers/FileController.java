@@ -32,8 +32,8 @@ public class FileController extends HttpServlet {
 //        String filename = req.getParameter("filename");
 //        responseWrapper.sendSimpleFile(filename, UPLOAD_DIR);
         RatesRepo ratesRepo = new RatesRepo();
-        Workbook workbook = ratesRepo.createExcelTemplate("FOT", "Colombo Fort");
-        responseWrapper.sendExcelFile(workbook, "FOT");
+        Workbook workbook = ratesRepo.createExcelTemplate("KRN", "Kurunegala");
+        responseWrapper.sendExcelFile(workbook, "KRN");
 
     }
 
