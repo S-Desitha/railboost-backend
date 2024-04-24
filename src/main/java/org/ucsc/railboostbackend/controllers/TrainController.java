@@ -2,6 +2,7 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.mysql.cj.admin.ServerController;
+import org.ucsc.railboostbackend.models.ResponseType;
 import org.ucsc.railboostbackend.models.Train;
 import org.ucsc.railboostbackend.repositories.TrainRepo;
 
@@ -41,6 +42,7 @@ public class TrainController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ResponseType responseType;
         System.out.println("Post train");
         PrintWriter writer = resp.getWriter();
         Gson gson = new Gson();
@@ -48,7 +50,10 @@ public class TrainController extends HttpServlet {
         Train train;
 
         train = gson.fromJson(req.getReader(), Train.class);
-        trainRepo.addTrain(train);
+        responseType=trainRepo.addTrain(train);
+        writer.write(gson.toJson(responseType));
+        writer.flush();
+        writer.close();
 
     }
 

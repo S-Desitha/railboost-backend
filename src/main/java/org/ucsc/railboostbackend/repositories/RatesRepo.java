@@ -1,5 +1,6 @@
 package org.ucsc.railboostbackend.repositories;
 
+import org.ucsc.railboostbackend.models.ResponseType;
 import org.ucsc.railboostbackend.models.TicketPrice;
 import org.ucsc.railboostbackend.models.Train;
 import org.ucsc.railboostbackend.utilities.DBConnection;
@@ -62,7 +63,9 @@ public class RatesRepo {
 //    }
 
 
-    public void addRate(TicketPrice rate) {
+    public ResponseType addRate(TicketPrice rate) {
+        ResponseType responseType = new ResponseType();
+        boolean isSuccess = false;
         Connection connection = DBConnection.getConnection();
         String query = "INSERT INTO ticketprice (startCode,endCode,`1st Class`,`2nd Class`, `3rd Class`) VALUES (?, ?, ?, ?, ?) ";
 
@@ -73,10 +76,13 @@ public class RatesRepo {
             statement.setDouble(4, rate.getSecondClass());
             statement.setDouble(5, rate.getThirdClass());
 
-            statement.executeUpdate();
+            isSuccess = statement.executeUpdate()>0;
         } catch (SQLException e) {
+            responseType.setError(e.getMessage());
             System.out.println("Error when inserting new entry in rate table: "+e.getMessage());
         }
+        responseType.setISSuccessful(isSuccess);
+        return responseType;
     }
 
 

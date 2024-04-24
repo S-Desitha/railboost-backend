@@ -1,5 +1,6 @@
 package org.ucsc.railboostbackend.repositories;
 
+import org.ucsc.railboostbackend.models.ResponseType;
 import org.ucsc.railboostbackend.models.Train;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
@@ -41,7 +42,9 @@ public class TrainRepo {
     }
 
 
-    public void addTrain(Train train) {
+    public ResponseType addTrain(Train train) {
+        ResponseType responseType = new ResponseType();
+        boolean isSuccess = false;
         Connection connection = DBConnection.getConnection();
         String query = "INSERT INTO train (trainId, trainType) VALUES (?, ?) ";
 
@@ -49,10 +52,13 @@ public class TrainRepo {
             statement.setString(1, train.getTrainId());
             statement.setString(2, train.getTrainType());
 
-            statement.executeUpdate();
+            isSuccess=statement.executeUpdate()>0;
         } catch (SQLException e) {
+            responseType.setError(e.getMessage());
             System.out.println("Error when inserting new entry in train table: "+e.getMessage());
         }
+        responseType.setISSuccessful(isSuccess);
+        return responseType;
     }
 
 

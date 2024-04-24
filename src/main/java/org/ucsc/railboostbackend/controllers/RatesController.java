@@ -2,6 +2,7 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.ucsc.railboostbackend.models.ResponseType;
 import org.ucsc.railboostbackend.models.TicketPrice;
 import org.ucsc.railboostbackend.models.Train;
 import org.ucsc.railboostbackend.repositories.RatesRepo;
@@ -42,13 +43,17 @@ public class RatesController extends HttpServlet{
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ResponseType responseType;
         PrintWriter writer = resp.getWriter();
         Gson gson = new Gson();
         RatesRepo rateRepo = new RatesRepo();
         TicketPrice rate;
 
         rate = gson.fromJson(req.getReader(), TicketPrice.class);
-        rateRepo.addRate(rate);
+        responseType=rateRepo.addRate(rate);
+        writer.write(gson.toJson(responseType));
+        writer.flush();
+        writer.close();
 
     }
 //

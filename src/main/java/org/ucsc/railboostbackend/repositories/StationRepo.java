@@ -1,5 +1,6 @@
 package org.ucsc.railboostbackend.repositories;
 
+import org.ucsc.railboostbackend.models.ResponseType;
 import org.ucsc.railboostbackend.models.Station;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
@@ -57,7 +58,9 @@ public class StationRepo {
         return stationName;
     }
 
-    public void addStation(Station station) {
+    public ResponseType addStation(Station station) {
+        ResponseType responseType = new ResponseType();
+        boolean isSuccess = false;
         Connection connection = null;
         PreparedStatement insertStatement = null;
         PreparedStatement updateStatement1 = null;
@@ -94,14 +97,17 @@ public class StationRepo {
             updateStatement2.executeUpdate();
 
             connection.commit(); // Commit the transaction
+            isSuccess=true;
         } catch (SQLException e) {
             try {
                 if (connection != null) {
                     connection.rollback(); // Rollback the transaction in case of an exception
                 }
             } catch (SQLException ex) {
+                responseType.setError(e.getMessage());
                 System.out.println("Error rolling back transaction: " + ex.getMessage());
             }
+            responseType.setError(e.getMessage());
             System.out.println("Error occurred when adding station: " + e.getMessage());
         } finally {
             // Close resources
@@ -120,9 +126,12 @@ public class StationRepo {
                     connection.close();
                 }
             } catch (SQLException e) {
+                responseType.setError(e.getMessage());
                 System.out.println("Error closing resources: " + e.getMessage());
             }
         }
+        responseType.setISSuccessful(isSuccess);
+        return responseType;
     }
 
     public void updateStation(Station station) throws SQLException {

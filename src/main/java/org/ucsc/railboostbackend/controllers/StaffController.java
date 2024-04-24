@@ -92,7 +92,9 @@ public class StaffController extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .create();
         StaffRepo staffRepo = new StaffRepo();
         Staff staff;
 
@@ -104,7 +106,9 @@ public class StaffController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .create();
         StaffRepo staffRepo = new StaffRepo();
         Staff staff;
 

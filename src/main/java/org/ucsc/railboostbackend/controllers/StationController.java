@@ -2,6 +2,7 @@ package org.ucsc.railboostbackend.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import org.ucsc.railboostbackend.models.ResponseType;
 import org.ucsc.railboostbackend.models.Station;
 import org.ucsc.railboostbackend.repositories.StationRepo;
 
@@ -39,16 +40,21 @@ public class StationController extends HttpServlet {
         Gson gson = new Gson();
         StationRepo stationRepo = new StationRepo();
         Station station;
+        ResponseType responseType = new ResponseType();
 
         try {
             station = gson.fromJson(req.getReader(), Station.class);
-            stationRepo.addStation(station);
+            responseType=stationRepo.addStation(station);
             resp.setStatus(HttpServletResponse.SC_CREATED);
-            writer.write("Station added successfully");
+//            writer.write("Station added successfully");
         } catch (JsonSyntaxException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            writer.write("Error occurred while adding station: " + e.getMessage());
+//            writer.write("Error occurred while adding station: " + e.getMessage());
+            responseType.setError(e.getMessage());
         }
+        writer.write(gson.toJson(responseType));
+        writer.flush();
+        writer.close();
     }
 
     @Override
