@@ -88,7 +88,9 @@ public class RatesRepo {
 
     public void updateRate(TicketPrice rate) {
         Connection connection = DBConnection.getConnection();
-        String query = "UPDATE ticketprice SET `1st Class`=?,`2nd Class`=?, `3rd Class`=? WHERE startCode=? AND endCode=? ";
+        String query = "UPDATE ticketprice SET `1st Class`=?,`2nd Class`=?, `3rd Class`=? " +
+                "WHERE (startCode=? AND endCode=?) " +
+                    "OR (startCode=? AND endCode=?) ";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -97,6 +99,8 @@ public class RatesRepo {
             statement.setDouble(3, rate.getThirdClass());
             statement.setString(4, rate.getStartCode());
             statement.setString(5, rate.getEndCode());
+            statement.setString(6, rate.getEndCode());
+            statement.setString(7, rate.getStartCode());
 
             statement.executeUpdate();
         } catch (SQLException e) {
