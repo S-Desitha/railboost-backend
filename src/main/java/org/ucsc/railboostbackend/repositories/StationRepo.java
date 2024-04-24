@@ -65,6 +65,7 @@ public class StationRepo {
         PreparedStatement insertStatement = null;
         PreparedStatement updateStatement1 = null;
         PreparedStatement updateStatement2 = null;
+        RatesRepo ratesRepo = new RatesRepo();
 
         try {
             connection = DBConnection.getConnection();
@@ -97,6 +98,9 @@ public class StationRepo {
             updateStatement2.executeUpdate();
 
             connection.commit(); // Commit the transaction
+
+            ratesRepo.setDefaultRates(station.getStationCode());
+
             isSuccess=true;
         } catch (SQLException e) {
             try {
@@ -162,7 +166,7 @@ public class StationRepo {
         PreparedStatement updatestatement1 = null;
         PreparedStatement updatestatement2 = null;
         PreparedStatement deletestatement = null;
-
+        RatesRepo ratesRepo = new RatesRepo();
 
         try {
             connection = DBConnection.getConnection();
@@ -193,6 +197,8 @@ public class StationRepo {
 
 
             connection.commit(); // Commit transaction
+            ratesRepo.onStationDelete(station.getStationCode());
+
         } catch (SQLException e) {
             try {
                 if (connection != null) {

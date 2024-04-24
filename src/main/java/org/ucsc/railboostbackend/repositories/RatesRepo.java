@@ -119,5 +119,57 @@ public class RatesRepo {
             e.printStackTrace();
         }
     }
+
+
+    public void setDefaultRates(String station) {
+        Connection connection = DBConnection.getConnection();
+        String query = "SELECT stationCode FROM station";
+        String batchQuery = "INSERT INTO ticketprice " +
+                "(startCode, endCode, `1st Class`, `2nd Class`, `3rd Class`) VALUES " +
+                "(?, ?, 0, 0, 0) " +
+                "ON DUPLICATE KEY UPDATE " +
+                    "`1st Class` = 0, " +
+                    "`2nd Class` = 0, " +
+                    "`3rd Class` = 0 ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            try (PreparedStatement batchStatement = connection.prepareStatement(batchQuery)) {
+                while (resultSet.next()) {
+                    batchStatement.setString(1, station);
+                    batchStatement.setString(2, resultSet.getString(1));
+                    batchStatement.addBatch();
+
+                    batchStatement.setString(1, resultSet.getString(1));
+                    batchStatement.setString(2, station);
+                    batchStatement.addBatch();
+                }
+                batchStatement.executeBatch();
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error in setting default values to inserted station rates. RatesRepo.java: setDefaultRates()");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void onStationDelete(String station) {
+        Connection connection = DBConnection.getConnection();
+        String query = "DELETE FROM ticketprice " +
+                "WHERE " +
+                    "startCode=? " +
+                "OR " +
+                    "endCode=? ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, station);
+            statement.setString(2, station);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("SQL error in deleting rates on station delete. RatesRepo.java: onStationDelete()");
+            System.out.println(e.getMessage());
+        }
+
+    }
 }
 
