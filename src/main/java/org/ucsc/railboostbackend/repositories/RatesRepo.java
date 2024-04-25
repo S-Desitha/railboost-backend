@@ -184,21 +184,46 @@ public class RatesRepo {
         Connection connection = DBConnection.getConnection();
         Workbook workbook = createBasicTemplate(stationName);
         Sheet sheet = workbook.getSheet(stationName);
-        String query = "SELECT DISTINCT t.`3rd Class`, t.`2nd Class`, t.`1st Class`, s.stationCode, s.name FROM ticketprice t " +
-                "INNER JOIN station s ON s.stationCode = t.endCode " +
-                "WHERE t.startCode = ? ";
+//        String query = "SELECT DISTINCT t.`3rd Class`, t.`2nd Class`, t.`1st Class`, s.stationCode, s.name FROM ticketprice t " +
+//                "INNER JOIN station s ON s.stationCode = t.endCode " +
+//                "WHERE t.startCode = ? ";
+//        String query = "SELECT DISTINCT t.`3rd Class`, t.`2nd Class`, t.`1st Class`, s.stationCode, s.name FROM station s " +
+//                "INNER JOIN ticketprice t ON t.endCode = s.stationCode " +
+//                "WHERE t.startCode = ? ";
+
+        String query = "(SELECT " +
+                "     s.stationCode, " +
+                "     s.name, " +
+                "     NULL AS `1st Class`, " +
+                "     NULL AS `1st Class`, " +
+                "     NULL AS `1st Class` " +
+                " FROM station s " +
+                " WHERE NOT EXISTS ( " +
+                "     SELECT 1 FROM ticketprice tp WHERE tp.endCode = s.stationCode AND tp.startCode = ? " +
+                " ) " +
+                " UNION " +
+                " SELECT " +
+                "     s.stationCode AS endCode, " +
+                "     s.name AS stationName, " +
+                "     tp.`1st Class`, " +
+                "     tp.`2nd Class`, " +
+                "     tp.`3rd Class` " +
+                " FROM station s " +
+                "          LEFT JOIN ticketprice tp ON tp.endCode = s.stationCode " +
+                " WHERE tp.startCode = ?) ";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, stationCode);
+            statement.setString(2, stationCode);
 
             ResultSet resultSet = statement.executeQuery();
             for (int i=1; resultSet.next(); i++) {
                 Row row = sheet.createRow(i);
-                row.createCell(0).setCellValue(resultSet.getString(5));
-                row.createCell(1).setCellValue(resultSet.getString(4));
+                row.createCell(0).setCellValue(resultSet.getString(2));
+                row.createCell(1).setCellValue(resultSet.getString(1));
                 row.createCell(2).setCellValue(resultSet.getString(3));
-                row.createCell(3).setCellValue(resultSet.getString(2));
-                row.createCell(4).setCellValue(resultSet.getString(1));
+                row.createCell(3).setCellValue(resultSet.getString(4));
+                row.createCell(4).setCellValue(resultSet.getString(5));
             }
         } catch (SQLException e) {
             System.out.println("SQL error on select query for station table: RatesRepo: createExcelTemplate()");
