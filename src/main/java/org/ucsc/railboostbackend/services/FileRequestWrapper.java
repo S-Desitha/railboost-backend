@@ -59,6 +59,10 @@ public class FileRequestWrapper extends HttpServletRequestWrapper {
     }
 
 
+    public String getFolderPath() {
+        return request.getServletContext().getRealPath("").split("target")[0];
+    }
+
     private String getFileType(String fileData) {
         for (String token : fileData.split(";")) {
             if (token.trim().startsWith("filename")) {

@@ -14,7 +14,6 @@ import org.ucsc.railboostbackend.services.LocalDateSerializer;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -99,7 +98,7 @@ public class SeasonController extends HttpServlet {
                 FileResponseWrapper responseWrapper = new FileResponseWrapper(req, resp);
 
                 String filename = req.getParameter("fileName");
-                responseWrapper.sendFile(filename, UPLOAD_DIR);
+                responseWrapper.sendSimpleFile(filename, UPLOAD_DIR);
             }else if(viewParam != null && viewParam.equals("2")){
                 PrintWriter writer = resp.getWriter();
                 Gson gson = new GsonBuilder()
