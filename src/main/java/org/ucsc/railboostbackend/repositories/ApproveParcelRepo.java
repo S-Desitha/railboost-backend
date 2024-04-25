@@ -18,7 +18,7 @@ public class ApproveParcelRepo {
         List<ApproveParcel> approveParcelsList = new ArrayList<>();
 
         String ApproveParcelQuery = "SELECT p.bookingId, p.recoveringStation, p.receiverName, p.item, p" +
-                ".userId, p.weight, p.status, p.totalprice, u.fName FROM parcelbooking p INNER JOIN users u ON p.userId= u.userId " +
+                ".userId, p.weight, p.status, p.totalprice, u.fName , u.userId FROM parcelbooking p INNER JOIN users u ON p.userId= u.userId " +
                 "WHERE p.sendingStation=? AND p.status=\"Pending\"";
 
         try(PreparedStatement statement = connection.prepareStatement(ApproveParcelQuery)) {
@@ -35,6 +35,7 @@ public class ApproveParcelRepo {
                 approveParcel.setWeight(resultSet.getFloat("weight"));
                 approveParcel.setStatus(resultSet.getString("status"));
                 approveParcel.setTotalprice(resultSet.getFloat("totalprice"));
+                approveParcel.setUserId(resultSet.getInt("userId"));
 
                 approveParcelsList.add(approveParcel);
 
