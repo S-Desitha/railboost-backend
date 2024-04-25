@@ -257,7 +257,11 @@ public class RatesRepo {
     }
 
 
-    public void updateRatesFromExcel(String filepath, String stationCode) {
+    public ResponseType updateRatesFromExcel(String filepath, String stationCode) {
+        ResponseType responseType = new ResponseType();
+        responseType.setISSuccessful(false);
+        responseType.setError("Invalid Excel file. Please follow the correct format and upload again.");
+
         Connection connection = DBConnection.getConnection();
         String query = "INSERT INTO ticketprice (startCode, endCode, `1st Class`, `2nd Class`, `3rd Class`) " +
                 "VALUES (?, ?, ?, ?, ?) " +
@@ -270,7 +274,6 @@ public class RatesRepo {
             Sheet sheet = workbook.getSheetAt(0);
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {
-                int count = 0;
                 for (Row row : sheet) {
                     String endCode = row.getCell(1).getStringCellValue();
                     if (endCode.isEmpty())
@@ -294,21 +297,13 @@ public class RatesRepo {
                         statement.setString(2, stationCode);
                         statement.addBatch();
                     }
-
-//                    if (count>=50) {
-//                        for (int i : (statement.executeBatch())) {
-//                            System.out.println("inner: " +i);
-//                        }
-//                        statement.clearBatch();
-//                        count = 0;
-//                    }
-//                    count++;
                 }
 
                 for (int i : (statement.executeBatch())) {
                     System.out.println(i);
                 }
-
+                responseType.setISSuccessful(true);
+                responseType.setError("");
             }
 
         } catch (SQLException e) {
@@ -322,6 +317,7 @@ public class RatesRepo {
             System.out.println(e.getMessage());
         }
 
+        return responseType;
     }
 
 

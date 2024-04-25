@@ -59,6 +59,7 @@ public class RatesController extends HttpServlet{
         PrintWriter writer = resp.getWriter();
         TicketPrice ticketPrice = new TicketPrice();
         RatesRepo ratesRepo = new RatesRepo();
+        ResponseType responseType = new ResponseType();
         Gson gson = new Gson();
 
         try {
@@ -66,22 +67,20 @@ public class RatesController extends HttpServlet{
             ticketPrice = gson.fromJson(jsonObj, TicketPrice.class);
 
             String filename = requestWrapper.saveFile( Constants.EXCEL_UPLOAD_DIR, ticketPrice.getStartCode());
-            writer.write(filename);
-
-            ratesRepo.updateRatesFromExcel(requestWrapper.getFolderPath()+Constants.EXCEL_UPLOAD_DIR+File.separator+filename, ticketPrice.getStartCode());
-
+            responseType = ratesRepo.updateRatesFromExcel(requestWrapper.getFolderPath()+Constants.EXCEL_UPLOAD_DIR+File.separator+filename, ticketPrice.getStartCode());
         }
         catch (ServletException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.setContentType("text/html");
-            writer.write("Unsupported content-type. Should be \"multipart/form-data\"");
+            responseType.setError("Unsupported content-type. Should be \"multipart/form-data\"");
         }
         catch (IllegalStateException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.setContentType("text/html");
-            writer.write("File size exceeds. Request body is greater than 10 MB or file size is greater than 5 MB");
+            responseType.setError("File size exceeds. Request body is greater than 10 MB or file size is greater than 5 MB");
         }
 
+        writer.write(gson.toJson(responseType));
         writer.flush();
         writer.close();
 
