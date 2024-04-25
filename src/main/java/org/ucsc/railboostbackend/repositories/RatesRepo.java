@@ -1,13 +1,19 @@
 package org.ucsc.railboostbackend.repositories;
 
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.usermodel.*;
 import org.ucsc.railboostbackend.models.ResponseType;
 import org.ucsc.railboostbackend.models.TicketPrice;
 import org.ucsc.railboostbackend.models.Train;
+import org.ucsc.railboostbackend.utilities.Constants;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -184,12 +190,6 @@ public class RatesRepo {
         Connection connection = DBConnection.getConnection();
         Workbook workbook = createBasicTemplate(stationName);
         Sheet sheet = workbook.getSheet(stationName);
-//        String query = "SELECT DISTINCT t.`3rd Class`, t.`2nd Class`, t.`1st Class`, s.stationCode, s.name FROM ticketprice t " +
-//                "INNER JOIN station s ON s.stationCode = t.endCode " +
-//                "WHERE t.startCode = ? ";
-//        String query = "SELECT DISTINCT t.`3rd Class`, t.`2nd Class`, t.`1st Class`, s.stationCode, s.name FROM station s " +
-//                "INNER JOIN ticketprice t ON t.endCode = s.stationCode " +
-//                "WHERE t.startCode = ? ";
 
         String query = "(SELECT " +
                 "     s.stationCode, " +
@@ -216,6 +216,7 @@ public class RatesRepo {
             statement.setString(1, stationCode);
             statement.setString(2, stationCode);
 
+            int rowCount = 1;
             ResultSet resultSet = statement.executeQuery();
             for (int i=1; resultSet.next(); i++) {
                 Row row = sheet.createRow(i);
@@ -224,7 +225,12 @@ public class RatesRepo {
                 row.createCell(2).setCellValue(resultSet.getString(3));
                 row.createCell(3).setCellValue(resultSet.getString(4));
                 row.createCell(4).setCellValue(resultSet.getString(5));
+                rowCount++;
             }
+            CellRangeAddressList rangeAddress = new CellRangeAddressList(1 ,rowCount, 2, 4);
+            XSSFDataValidation validation = getXssfDataValidation((XSSFSheet) sheet, rangeAddress);
+            sheet.addValidationData(validation);
+
         } catch (SQLException e) {
             System.out.println("SQL error on select query for station table: RatesRepo: createExcelTemplate()");
             System.out.println(e.getMessage());
@@ -232,6 +238,92 @@ public class RatesRepo {
 
         return workbook;
     }
+
+
+    private static XSSFDataValidation getXssfDataValidation(XSSFSheet sheet, CellRangeAddressList rangeAddress) {
+        XSSFDataValidationHelper dvHelper = new XSSFDataValidationHelper(sheet);
+        XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint) dvHelper.createNumericConstraint(
+                XSSFDataValidationConstraint.ValidationType.DECIMAL,
+                XSSFDataValidationConstraint.OperatorType.GREATER_OR_EQUAL,
+                String.valueOf(0), // Minimum value
+                "" // Maximum value
+        );
+
+        XSSFDataValidation validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, rangeAddress);
+        validation.setSuppressDropDownArrow(true); // Hide drop-down arrow
+        validation.setShowErrorBox(true); // Display error box for invalid input
+
+        return validation;
+    }
+
+
+    public void updateRatesFromExcel(String filepath, String stationCode) {
+        Connection connection = DBConnection.getConnection();
+        String query = "INSERT INTO ticketprice (startCode, endCode, `1st Class`, `2nd Class`, `3rd Class`) " +
+                "VALUES (?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE `1st Class` = VALUES(`1st Class`), `2nd Class` = VALUES(`2nd Class`), `3rd Class` = VALUES(`3rd Class`) ";
+
+        try {
+            FileInputStream file = new FileInputStream(filepath);
+            XSSFWorkbook workbook = new XSSFWorkbook(file);
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                int count = 0;
+                for (Row row : sheet) {
+                    String endCode = row.getCell(1).getStringCellValue();
+                    if (endCode.isEmpty())
+                        break;
+
+                    double first, second, third;
+                    if (endCode.length()==3){
+                        first = row.getCell(2).getCellType()!=CellType.NUMERIC? 0 : row.getCell(2).getNumericCellValue();
+                        second = row.getCell(3).getCellType()!=CellType.NUMERIC? 0 : row.getCell(3).getNumericCellValue();
+                        third = row.getCell(4).getCellType()!=CellType.NUMERIC? 0 : row.getCell(4).getNumericCellValue();
+
+                        statement.setDouble(3, first);
+                        statement.setDouble(4, second);
+                        statement.setDouble(5, third);
+
+                        statement.setString(1, stationCode);
+                        statement.setString(2, endCode);
+                        statement.addBatch();
+
+                        statement.setString(1, endCode);
+                        statement.setString(2, stationCode);
+                        statement.addBatch();
+                    }
+
+//                    if (count>=50) {
+//                        for (int i : (statement.executeBatch())) {
+//                            System.out.println("inner: " +i);
+//                        }
+//                        statement.clearBatch();
+//                        count = 0;
+//                    }
+//                    count++;
+                }
+
+                for (int i : (statement.executeBatch())) {
+                    System.out.println(i);
+                }
+
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL error: batch updating ticket rates: RatesRepo.java: updateRatesFromExcel()");
+            System.out.println(e.getMessage());
+        } catch (IOException e){
+            System.out.println("IO Error: reading the excel file: RatesRepo.java: updateRatesFromExcel()");
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Unknown exception RatesRepo.java: updateRatesFromExcel()");
+            System.out.println(e.getMessage());
+        }
+
+    }
+
 
     private Workbook createBasicTemplate(String stationName) {
         Workbook workbook = new XSSFWorkbook();

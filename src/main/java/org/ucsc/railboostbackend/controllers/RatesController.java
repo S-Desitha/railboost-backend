@@ -11,6 +11,7 @@ import org.ucsc.railboostbackend.repositories.StationRepo;
 import org.ucsc.railboostbackend.repositories.TicketPriceRepo;
 import org.ucsc.railboostbackend.repositories.TrainRepo;
 import org.ucsc.railboostbackend.services.*;
+import org.ucsc.railboostbackend.utilities.Constants;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -18,6 +19,7 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -53,21 +55,39 @@ public class RatesController extends HttpServlet{
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ResponseType responseType;
+        FileRequestWrapper requestWrapper = new FileRequestWrapper(req);
         PrintWriter writer = resp.getWriter();
+        TicketPrice ticketPrice = new TicketPrice();
+        RatesRepo ratesRepo = new RatesRepo();
         Gson gson = new Gson();
-        RatesRepo rateRepo = new RatesRepo();
-        TicketPrice rate;
 
-        rate = gson.fromJson(req.getReader(), TicketPrice.class);
-        responseType=rateRepo.addRate(rate);
-        writer.write(gson.toJson(responseType));
+        try {
+            String jsonObj = requestWrapper.getJsonObj();
+            ticketPrice = gson.fromJson(jsonObj, TicketPrice.class);
+
+            String filename = requestWrapper.saveFile( Constants.EXCEL_UPLOAD_DIR, ticketPrice.getStartCode());
+            writer.write(filename);
+
+            ratesRepo.updateRatesFromExcel(requestWrapper.getFolderPath()+Constants.EXCEL_UPLOAD_DIR+File.separator+filename, ticketPrice.getStartCode());
+
+        }
+        catch (ServletException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setContentType("text/html");
+            writer.write("Unsupported content-type. Should be \"multipart/form-data\"");
+        }
+        catch (IllegalStateException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setContentType("text/html");
+            writer.write("File size exceeds. Request body is greater than 10 MB or file size is greater than 5 MB");
+        }
+
         writer.flush();
         writer.close();
 
     }
-//
-//
+
+
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         PrintWriter writer = resp.getWriter();
