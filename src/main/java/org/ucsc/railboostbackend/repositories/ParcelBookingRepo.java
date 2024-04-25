@@ -39,8 +39,8 @@ public class ParcelBookingRepo {
             statement.executeUpdate();
 
             EmailService emailService =  new EmailService();
-//            String body = emailService.createParcelBookingEmail(parcelBooking);
-//            emailService.sendEmail(parcelBooking.getReceiverEmail(),"parcel Booking Email",body);
+            String body = emailService.createParcelBookingEmail(parcelBooking);
+            emailService.sendEmail(parcelBooking.getReceiverEmail(),"parcel Booking Email",body);
 
 
 
