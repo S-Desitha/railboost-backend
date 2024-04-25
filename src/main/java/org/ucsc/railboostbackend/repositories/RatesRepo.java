@@ -194,9 +194,9 @@ public class RatesRepo {
         String query = "(SELECT " +
                 "     s.stationCode, " +
                 "     s.name, " +
-                "     NULL AS `1st Class`, " +
-                "     NULL AS `1st Class`, " +
-                "     NULL AS `1st Class` " +
+                "     0 AS `1st Class`, " +
+                "     0 AS `2st Class`, " +
+                "     0 AS `3st Class` " +
                 " FROM station s " +
                 " WHERE NOT EXISTS ( " +
                 "     SELECT 1 FROM ticketprice tp WHERE tp.endCode = s.stationCode AND tp.startCode = ? " +
@@ -222,9 +222,9 @@ public class RatesRepo {
                 Row row = sheet.createRow(i);
                 row.createCell(0).setCellValue(resultSet.getString(2));
                 row.createCell(1).setCellValue(resultSet.getString(1));
-                row.createCell(2).setCellValue(resultSet.getString(3));
-                row.createCell(3).setCellValue(resultSet.getString(4));
-                row.createCell(4).setCellValue(resultSet.getString(5));
+                row.createCell(2).setCellValue(resultSet.getDouble(3));
+                row.createCell(3).setCellValue(resultSet.getDouble(4));
+                row.createCell(4).setCellValue(resultSet.getDouble(5));
                 rowCount++;
             }
             CellRangeAddressList rangeAddress = new CellRangeAddressList(1 ,rowCount, 2, 4);
@@ -281,7 +281,7 @@ public class RatesRepo {
 
                     double first, second, third;
                     if (endCode.length()==3){
-                        first = row.getCell(2).getCellType()!=CellType.NUMERIC? 0 : row.getCell(2).getNumericCellValue();
+                        first = row.getCell(2).getNumericCellValue();
                         second = row.getCell(3).getCellType()!=CellType.NUMERIC? 0 : row.getCell(3).getNumericCellValue();
                         third = row.getCell(4).getCellType()!=CellType.NUMERIC? 0 : row.getCell(4).getNumericCellValue();
 
