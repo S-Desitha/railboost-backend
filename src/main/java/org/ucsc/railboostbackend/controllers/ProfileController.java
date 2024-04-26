@@ -45,7 +45,7 @@ public class ProfileController extends HttpServlet {
             FileResponseWrapper responseWrapper = new FileResponseWrapper(req, resp);
 
             String filename = req.getParameter("fileName");
-            responseWrapper.sendFile(filename, UPLOAD_DIR);
+            responseWrapper.sendSimpleFile(filename, UPLOAD_DIR);
         }
 
     }

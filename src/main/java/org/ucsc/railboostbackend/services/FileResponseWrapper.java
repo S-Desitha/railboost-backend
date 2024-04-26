@@ -1,10 +1,16 @@
 package org.ucsc.railboostbackend.services;
 
+import org.apache.poi.ss.usermodel.Workbook;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.*;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class FileResponseWrapper extends HttpServletResponseWrapper {
     private final HttpServletResponse response;
@@ -18,7 +24,7 @@ public class FileResponseWrapper extends HttpServletResponseWrapper {
     }
 
 
-    public void sendFile(String filename, String folder) throws IOException {
+    public void sendSimpleFile(String filename, String folder) throws IOException {
         String filePath =
                 request.getServletContext().getRealPath("").split("target")[0] + File.separator +
                 folder + File.separator +
@@ -77,6 +83,39 @@ public class FileResponseWrapper extends HttpServletResponseWrapper {
             response.getWriter().write("Error: Cannot find the file requested!");
         }
     }
+
+
+    public void sendExcelFile(Workbook workbook, String stationCode){
+        response.setContentType("application/vnd.ms-excel");
+
+        String headerKey = "content-disposition";
+        String headerVal = String.format("attachment; filename=\"%s - %s.%s\"", stationCode, LocalDateTime.now().format(DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss yyyy")), "xls");
+        response.setHeader(headerKey, headerVal);
+
+        try (
+                OutputStream outputStream = response.getOutputStream();
+        )
+        {
+            workbook.write(outputStream);
+            outputStream.flush();
+        }
+        catch (IllegalStateException e) {
+            System.out.println("FileResponseWrapper : sendFile() : 36 \n" +
+                    "Cannot get outputstream to send the file.\n" +
+                    "Possible error: getWrite() is previously called for this object\n");
+            System.out.println(e.getMessage());
+        }
+        catch (IOException e) {
+            System.out.println("FileResponseWrapper : sendFile()\n");
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    private void sendFile() {
+
+    }
+
 
 
     private String getFileExtension(File file) {
