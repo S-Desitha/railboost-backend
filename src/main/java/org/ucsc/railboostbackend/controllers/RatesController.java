@@ -43,11 +43,14 @@ public class RatesController extends HttpServlet{
             responseWrapper.sendExcelFile(workbook, req.getParameter("stationCode"));
         }
         else {
-            List<TicketPrice> ratesList;
             PrintWriter writer = resp.getWriter();
-            ratesList=ratesRepo.getAllRates();
+            List<TicketPrice> ratesList;
+            int limit = Integer.parseInt(req.getParameter("limit"));
+            int offset = Integer.parseInt(req.getParameter("offset"));
 
+            ratesList=ratesRepo.getAllRates(limit, offset);
             writer.write(gson.toJson(ratesList));
+
             writer.flush();
             writer.close();
         }
