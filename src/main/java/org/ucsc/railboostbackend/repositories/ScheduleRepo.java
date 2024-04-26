@@ -51,7 +51,7 @@ public class ScheduleRepo {
                     schedule.setStartStationName(stationRepo.getStationName(resultSet.getString("startStation")));
                     schedule.setEndStation(resultSet.getString("endStation"));
                     schedule.setEndStationName(stationRepo.getStationName(resultSet.getString("endStation")));
-
+                    schedule.setCancelled(isScheduleCancelled(resultSet.getShort("scheduleId")));
 //                 schedule.setTrainType(resultSet.getString("trainType"));
 
 
@@ -311,6 +311,29 @@ public class ScheduleRepo {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
                 if (resultSet.getInt(1)==cancelledSchedule.getScheduleId())
+                    return true;
+            }
+            return false;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private boolean isScheduleCancelled(int scheduleId) {
+        Connection connection = DBConnection.getConnection();
+        String query = "SELECT scheduleId, fromDate, toDate FROM cancelled_schedules " +
+                "WHERE (fromDate <= ? " +
+                "AND (toDate IS NULL OR toDate > ?) )";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setDate(1, Date.valueOf(LocalDate.now()));
+            statement.setDate(2, Date.valueOf(LocalDate.now()));
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                if (resultSet.getInt(1)==scheduleId)
                     return true;
             }
             return false;
