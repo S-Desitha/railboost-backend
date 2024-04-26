@@ -240,6 +240,15 @@
     <url-pattern>/parcelTracking</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>GetRevenue</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.GetRevenueController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetRevenue</servlet-name>
+    <url-pattern>/getRevenue</url-pattern>
+  </servlet-mapping>
+
 
   <servlet>
     <servlet-name>User</servlet-name>
