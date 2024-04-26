@@ -4,6 +4,13 @@ public class ResponseType {
     private boolean isSuccessful;
     private String error;
 
+    public ResponseType() {}
+
+    public ResponseType(boolean isSuccessful, String error) {
+        this.isSuccessful = isSuccessful;
+        this.error = error;
+    }
+
     public String getError(){
         return  error;
     }

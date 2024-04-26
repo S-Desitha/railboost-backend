@@ -258,6 +258,40 @@ public class ScheduleRepo {
     }
 
 
+    public ResponseType cancelSchedules(List<CancelledSchedule> cancelledSchedules) {
+        Connection connection = DBConnection.getConnection();
+        ResponseType responseType = new ResponseType(false, "");
+        String query = "INSERT INTO canceled_schedules" +
+                " (scheduleId, startDate, endDate) " +
+                "VALUES " +
+                "(?, ?, ?) ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            for (CancelledSchedule cancelledSchedule : cancelledSchedules) {
+                statement.setInt(1, cancelledSchedule.getScheduleId());
+                statement.setDate(2, Date.valueOf(cancelledSchedule.getFromDate()));
+                if (cancelledSchedule.getToDate()!=null)
+                    statement.setDate(3, Date.valueOf(cancelledSchedule.getToDate()));
+                else statement.setNull(3, Types.NULL);
+
+                statement.addBatch();
+            }
+            statement.executeBatch();
+            responseType.setISSuccessful(true);
+        } catch (SQLException e) {
+            System.out.println("SQL error when cancelling the schedule list.");
+            System.out.println(e.getMessage());
+            responseType.setError(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Unknown error when cancelling the schedule list.");
+            System.out.println(e.getMessage());
+            responseType.setError(e.getMessage());
+        }
+
+        return responseType;
+    }
+
+
     public boolean addSchedule(Schedule schedule) {
         boolean isSuccess = false;
         short scheduleId = schedule.getScheduleId();
