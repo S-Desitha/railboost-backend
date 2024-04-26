@@ -272,13 +272,15 @@ public class ScheduleRepo {
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             for (CancelledSchedule cancelledSchedule : cancelledSchedules) {
-                statement.setInt(1, cancelledSchedule.getScheduleId());
-                statement.setDate(2, Date.valueOf(cancelledSchedule.getFromDate()));
-                if (cancelledSchedule.getToDate()!=null)
-                    statement.setDate(3, Date.valueOf(cancelledSchedule.getToDate()));
-                else statement.setNull(3, Types.NULL);
+                if (!isScheduleCancelled(cancelledSchedule)){
+                    statement.setInt(1, cancelledSchedule.getScheduleId());
+                    statement.setDate(2, Date.valueOf(cancelledSchedule.getFromDate()));
+                    if (cancelledSchedule.getToDate()!=null)
+                        statement.setDate(3, Date.valueOf(cancelledSchedule.getToDate()));
+                    else statement.setNull(3, Types.NULL);
 
-                statement.addBatch();
+                    statement.addBatch();
+                }
             }
             statement.executeBatch();
             responseType.setISSuccessful(true);
@@ -293,6 +295,29 @@ public class ScheduleRepo {
         }
 
         return responseType;
+    }
+
+
+    private boolean isScheduleCancelled(CancelledSchedule cancelledSchedule) {
+        Connection connection = DBConnection.getConnection();
+        String query = "SELECT scheduleId, fromDate, toDate FROM cancelled_schedules " +
+                "WHERE (fromDate < ? " +
+                "AND (toDate IS NULL OR toDate > ?) )";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setDate(1, Date.valueOf(cancelledSchedule.getFromDate()));
+            statement.setDate(2, Date.valueOf(cancelledSchedule.getToDate()));
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                if (resultSet.getInt(1)==cancelledSchedule.getScheduleId())
+                    return true;
+            }
+            return false;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
