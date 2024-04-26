@@ -9,13 +9,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StationRepo {
-
     public List<Station> getStationNames() {
         List<Station> stationNames = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
         String query = "SELECT stationCode, name, address, line, nextStation ,prevStation, contactNo  FROM station";
         StationRepo stationRepo = new StationRepo();
         try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Station station= new Station();
+                station.setStationCode(resultSet.getString("stationCode"));
+                station.setStationName(resultSet.getString("name"));
+                station.setAddress(resultSet.getString("address"));
+                station.setLine(resultSet.getString("line"));
+                station.setNextStation(resultSet.getString("nextStation"));
+                station.setNextStationName(stationRepo.getStationName(resultSet.getString("nextStation")));
+
+                station.setPrevStation(resultSet.getString("prevStation"));
+                station.setPrevStationName(stationRepo.getStationName(resultSet.getString("prevStation")));
+                station.setContactNo(resultSet.getString("contactNo"));
+                stationNames.add(station);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error when executing select query for stations table: StationRepo.java");
+            System.out.println(e.getMessage());
+        }
+
+        return stationNames;
+    }
+
+    public List<Station> getStationNamesPagination(int limit,int offset) {
+        List<Station> stationNames = new ArrayList<>();
+        Connection connection = DBConnection.getConnection();
+        String query = "SELECT stationCode, name, address, line, nextStation ,prevStation, contactNo  FROM station LIMIT ? OFFSET ?";
+        StationRepo stationRepo = new StationRepo();
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, limit);
+            statement.setInt(2, offset);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Station station= new Station();
