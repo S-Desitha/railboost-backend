@@ -18,17 +18,34 @@ import java.util.List;
 public class StationController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        PrintWriter writer = resp.getWriter();
+        String limitParam = req.getParameter("limit");
+        if (limitParam != null) {
+            PrintWriter writer = resp.getWriter();
+            StationRepo stationRepo = new StationRepo();
+            List<Station> stationNames;
+            Gson gson = new Gson();
+            int limit = Integer.parseInt(req.getParameter("limit"));
+            int offset = Integer.parseInt(req.getParameter("offset"));
+
+            stationNames = stationRepo.getStationNamesPagination(limit, offset);
+
+            writer.write(gson.toJson(stationNames, List.class));
+            writer.flush();
+            writer.close();
+        }else{
+            PrintWriter writer = resp.getWriter();
 //        System.out.println("Get stations called");
-        StationRepo stationRepo = new StationRepo();
-        List<Station> stationNames;
-        Gson gson = new Gson();
+            StationRepo stationRepo = new StationRepo();
+            List<Station> stationNames;
+            Gson gson = new Gson();
 
-        stationNames = stationRepo.getStationNames();
+            stationNames = stationRepo.getStationNames();
 
-        writer.write(gson.toJson(stationNames, List.class));
-        writer.flush();
-        writer.close();
+            writer.write(gson.toJson(stationNames, List.class));
+            writer.flush();
+            writer.close();
+
+        }
 
     }
 
