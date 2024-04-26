@@ -14,7 +14,7 @@ import java.util.List;
 
 public class RatesRepo {
 
-    public List<TicketPrice> getAllRates(){
+    public List<TicketPrice> getAllRates(int limit,int offset){
         Connection connection= DBConnection.getConnection();
         List<TicketPrice> ratesList = new ArrayList<>();
         String query = "SELECT " +
@@ -31,12 +31,14 @@ public class RatesRepo {
                 "station s1 ON tp.startCode COLLATE utf8mb4_unicode_ci = s1.stationCode COLLATE utf8mb4_unicode_ci " +
                 "JOIN " +
                 "station s2 ON tp.endCode COLLATE utf8mb4_unicode_ci = s2.stationCode COLLATE utf8mb4_unicode_ci " +
-                "ORDER BY endStationName";
+                "ORDER BY startStationName LIMIT ? OFFSET ?";
 
 
 
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, limit);
+            statement.setInt(2, offset);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
                 TicketPrice rate = new TicketPrice();

@@ -30,11 +30,10 @@ public class RatesController extends HttpServlet{
         Gson gson = new Gson();
         RatesRepo ratesRepo = new RatesRepo();
         List<TicketPrice> ratesList;
-        TicketPrice rates;
-        String start = req.getParameter("startCode");
-        String end = req.getParameter("endCode");
+        int limit = Integer.parseInt(req.getParameter("limit"));
+        int offset = Integer.parseInt(req.getParameter("offset"));
 
-        ratesList=ratesRepo.getAllRates();
+        ratesList=ratesRepo.getAllRates(limit, offset);
         writer.write(gson.toJson(ratesList));
         
         writer.flush();
