@@ -261,10 +261,14 @@ public class ScheduleRepo {
     public ResponseType cancelSchedules(List<CancelledSchedule> cancelledSchedules) {
         Connection connection = DBConnection.getConnection();
         ResponseType responseType = new ResponseType(false, "");
-        String query = "INSERT INTO canceled_schedules" +
-                " (scheduleId, startDate, endDate) " +
+        String query = "INSERT INTO cancelled_schedules" +
+                " (scheduleId, fromDate, toDate) " +
                 "VALUES " +
-                "(?, ?, ?) ";
+                    "(?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE " +
+                    "scheduleId = VALUES(scheduleId), " +
+                    "fromDate = VALUES(fromDate), " +
+                    "toDate = VALUES(toDate) ";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             for (CancelledSchedule cancelledSchedule : cancelledSchedules) {
