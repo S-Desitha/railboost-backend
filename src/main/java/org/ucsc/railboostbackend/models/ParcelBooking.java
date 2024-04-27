@@ -18,6 +18,15 @@ public class ParcelBooking {
     private  User user;
     private String status;
     private  Integer category;
+    private  String deliver_status;
+
+    public String getDeliver_status() {
+        return deliver_status;
+    }
+
+    public void setDeliver_status(String deliver_status) {
+        this.deliver_status = deliver_status;
+    }
 
     public String getBookingId() {
         return bookingId;
