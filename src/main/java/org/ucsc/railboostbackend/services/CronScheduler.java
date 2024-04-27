@@ -17,7 +17,7 @@ public class CronScheduler implements ServletContextListener {
 
         Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity("journey")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?"))
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 50 9 * * ?"))
                 .build();
 
         try {
