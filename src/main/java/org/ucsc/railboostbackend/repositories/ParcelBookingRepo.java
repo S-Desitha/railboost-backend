@@ -58,7 +58,7 @@ public class ParcelBookingRepo {
         //ParcelBooking parcelBooking = new ParcelBooking();
         List<ParcelBooking> parcelList = new ArrayList<>();
 
-        String parcelQuery = "SELECT bookingId, item, receiverName, receiverAddress, receiverEmail,status   FROM parcelbooking  WHERE userId=?";
+        String parcelQuery = "SELECT bookingId, item, receiverName, receiverAddress, receiverEmail,status,deliver_status  FROM parcelbooking  WHERE userId=?";
 
         try(PreparedStatement statement = connection.prepareStatement(parcelQuery)) {
             statement.setInt(1, userID);
@@ -74,6 +74,7 @@ public class ParcelBookingRepo {
                 parcelBooking.setReceiverAddress(resultSet.getString("receiverAddress"));
                 parcelBooking.setReceiverEmail((resultSet.getString("receiverEmail")));
                 parcelBooking.setStatus((resultSet.getString("status")));
+                parcelBooking.setDeliver_status(resultSet.getString("deliver_status"));
                 parcelList.add(parcelBooking);
             }
         } catch (SQLException e) {
