@@ -11,14 +11,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+ 
 public class ParcelBookingRepo {
     public void addParcel(ParcelBooking parcelBooking) throws SQLException {
         Connection connection = DBConnection.getConnection();
         String parcel_query ="INSERT INTO `parcelbooking`( `trackingId`, `sendingStation`, " +
                 "`senderAddress`, `SenderNIC`, `recoveringStation`, `receiverName`, `receiverAddress`, `receiverTelNo`," +
                 " `receiverEmail`, `item`, `receiverNIC`, `userId` ,`category`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
-        String user_query = "SELECT `username` FROM `users` WHERE userId=?;";
+        String user_query = "SELECT `email` FROM `users` WHERE userId=?;";
 
         try (PreparedStatement statement = connection.prepareStatement(parcel_query)){
             statement.setString(1,parcelBooking.getTrackingId());
@@ -39,13 +39,17 @@ public class ParcelBookingRepo {
             statement.executeUpdate();
 
             EmailService emailService =  new EmailService();
-//            String body = emailService.createParcelBookingEmail(parcelBooking);
-//            emailService.sendEmail(parcelBooking.getReceiverEmail(),"parcel Booking Email",body);
+            String body = emailService.createParcelBookingEmail(parcelBooking);
+            emailService.sendEmail(parcelBooking.getReceiverEmail(),"parcel Booking Email",body);
 
 
 
         }catch (SQLException e){
             System.out.println("Error when inserting new entry in line table: "+e.getMessage());
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(user_query)){
+            statement.setInt(1,parcelBooking.getUserId());
         }
     }
 
@@ -54,7 +58,7 @@ public class ParcelBookingRepo {
         //ParcelBooking parcelBooking = new ParcelBooking();
         List<ParcelBooking> parcelList = new ArrayList<>();
 
-        String parcelQuery = "SELECT bookingId, item, receiverName, receiverAddress, receiverEmail,status   FROM parcelbooking  WHERE userId=?";
+        String parcelQuery = "SELECT bookingId, item, receiverName, receiverAddress, receiverEmail,status,deliver_status  FROM parcelbooking  WHERE userId=?";
 
         try(PreparedStatement statement = connection.prepareStatement(parcelQuery)) {
             statement.setInt(1, userID);
@@ -70,6 +74,7 @@ public class ParcelBookingRepo {
                 parcelBooking.setReceiverAddress(resultSet.getString("receiverAddress"));
                 parcelBooking.setReceiverEmail((resultSet.getString("receiverEmail")));
                 parcelBooking.setStatus((resultSet.getString("status")));
+                parcelBooking.setDeliver_status(resultSet.getString("deliver_status"));
                 parcelList.add(parcelBooking);
             }
         } catch (SQLException e) {

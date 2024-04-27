@@ -12,6 +12,7 @@ public class ApproveParcel {
     private String status;
     private Float totalprice;
     private Integer itemId;
+    private  int userId;
 
     public String getBookingId() {
         return bookingId;
@@ -93,6 +94,14 @@ public class ApproveParcel {
         this.itemId = itemId;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return "ApproveParcel{" +
@@ -106,6 +115,7 @@ public class ApproveParcel {
                 ", status='" + status + '\'' +
                 ", totalprice=" + totalprice +
                 ", itemId=" + itemId +
+                ", userId=" + userId +
                 '}';
     }
 }
