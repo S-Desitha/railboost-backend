@@ -19,7 +19,7 @@ public class GetRevenueRepo extends HttpServlet {
         String query = "SELECT MONTH(`date`) AS month , month AS month1\n" +
                 "FROM `monthlyrevenue`\n" +
                 "WHERE `date` >= CURDATE() - INTERVAL 12 MONTH\n" +
-                "ORDER BY month;\n";
+                "ORDER BY `date`;\n";
         List<String> list;
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
@@ -66,7 +66,7 @@ public class GetRevenueRepo extends HttpServlet {
         String query = "SELECT MONTH(`date`) AS month, `revenue` AS total_revenue\n" +
                 "FROM `monthlyrevenue`\n" +
                 "WHERE `date` >= CURDATE() - INTERVAL 12 MONTH\n" +
-                "ORDER BY month;\n";
+                "ORDER BY `date`;\n";
         List<Integer> list;
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
