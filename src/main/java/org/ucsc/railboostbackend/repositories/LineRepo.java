@@ -13,12 +13,12 @@ public class LineRepo {
 
     public void addLines(Line line)throws SQLException, ClassNotFoundException{
         Connection connection = DBConnection.getConnection();
-        String query = "INSERT INTO line (lineName,lineStartStation,lineEndStation) VALUES (?,?,?)";
+        String query = "INSERT INTO line (lineName) VALUES (?)";
 
         try(PreparedStatement statement = connection.prepareStatement(query)){
             statement.setString(1,line.getLineName());
-            statement.setString(2,line.getLineStartStation());
-            statement.setString(3,line.getLineEndStation());
+//            statement.setString(2,line.getLineStartStation());
+//            statement.setString(3,line.getLineEndStation());
 
 
             statement.executeUpdate();
@@ -44,8 +44,8 @@ public class LineRepo {
                 Line line = new Line();
                 line.setLineId(resultSet.getInt("lineId"));
                 line.setLineName(resultSet.getString("lineName"));
-                line.setLineStartStation(resultSet.getString("lineStartStation"));
-                line.setLineEndStation(resultSet.getString("lineEndStation"));
+//                line.setLineStartStation(resultSet.getString("lineStartStation"));
+//                line.setLineEndStation(resultSet.getString("lineEndStation"));
 
 
                 lineList.add(line);
