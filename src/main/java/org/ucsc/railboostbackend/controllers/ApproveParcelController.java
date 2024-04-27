@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 import org.checkerframework.checker.units.qual.A;
 import org.ucsc.railboostbackend.models.ApproveParcel;
+import org.ucsc.railboostbackend.models.Notification;
 import org.ucsc.railboostbackend.models.Staff;
 import org.ucsc.railboostbackend.repositories.ApproveParcelRepo;
+import org.ucsc.railboostbackend.repositories.NotificationRepo;
 import org.ucsc.railboostbackend.repositories.StaffRepo;
 
 import javax.servlet.http.HttpServlet;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.HttpRetryException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ApproveParcelController extends HttpServlet {
@@ -33,7 +36,6 @@ public class ApproveParcelController extends HttpServlet {
             Staff staff = staffRepo.getStaffByUserId(userId);
             String station = staff.getStation();
             approvedParcelList = approveParcelRepo.getParcelDetailsByStation(station);
-
             writer.write(gson.toJson(approvedParcelList));
         } catch (Exception e) {
         }
@@ -53,7 +55,6 @@ public class ApproveParcelController extends HttpServlet {
 
         Float weight = approveParcel.getWeight();
         if ((viewParam != null && viewParam.equals("1"))){
-
             try {
                 approveParcelRepo.addWeightAndTotal(approveParcel);
             } catch (SQLException e) {
@@ -63,6 +64,27 @@ public class ApproveParcelController extends HttpServlet {
         }else {
 
             approveParcelRepo.updateStatus(approveParcel);
+
+            String approveStatus = approveParcel.getStatus();
+            if (approveParcel.getStatus().equals("Approved") || approveParcel.getStatus().equals("Rejected")){
+                Notification notification = new Notification();
+                notification.setUserId(approveParcel.getUserId());
+
+                if (approveParcel.getStatus().equals("Approved")){
+                    notification.setTitle("Parcel Booking Application Approved");
+                    notification.setMessage("Your parcel has been approved. You can now proceed to pay for it.");
+                }else {
+                    notification.setTitle("Parcel Booking Application Rejected");
+                    notification.setMessage("Your parcel has been rejected. Please submit a valid application again.");
+                }
+
+                // Set timestamp
+                notification.setTimestamp(LocalDateTime.now());
+
+                // Add the notification to the repository
+                NotificationRepo.addNotification(notification);
+
+            }
 
 
         }

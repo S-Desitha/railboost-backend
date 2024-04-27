@@ -1,6 +1,7 @@
 package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.AddParcelsTOTrain;
+import org.ucsc.railboostbackend.models.Notification;
 import org.ucsc.railboostbackend.models.SendParcels;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
@@ -10,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,6 @@ public class AddParcelsToTrainRepo extends HttpServlet {
     }
     public  void updateDeliveryStatus(SendParcels sendParcels){
         Connection connection = DBConnection.getConnection();
-
         for (int i = 0; i < sendParcels.getBookingIdList().size(); i++) {
             String query = "UPDATE parcelbooking SET deliver_status=\"Sent\" WHERE bookingId=? ";
 
@@ -39,11 +40,30 @@ public class AddParcelsToTrainRepo extends HttpServlet {
                 statement.setInt(1,bookingId);
                 statement.executeUpdate();
 
+                String userIdQuery = "SELECT userId FROM parcelbooking WHERE bookingId=?";
+                try (PreparedStatement statement2 = connection.prepareStatement(userIdQuery)){
+                    statement2.setInt(1,bookingId);
+
+                    ResultSet result = statement2.executeQuery();
+                    if (result.next()){
+                        Notification notification = new Notification();
+                        notification.setUserId( result.getInt("userId"));
+
+                        notification.setTitle("Your parcel has been loaded onto the train.");
+                        notification.setMessage("Your package has been placed on the train, and we'll notify you once it arrives at the destination station.");
+                        notification.setTimestamp(LocalDateTime.now());
+                        NotificationRepo.addNotification(notification);
+                    }
+
+
+                }
+
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
 
         }
+
 
 
     }
