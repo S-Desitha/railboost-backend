@@ -62,7 +62,7 @@ public class LineController extends HttpServlet {
         Line line;
 
         line = gson.fromJson(req.getReader(), Line.class);
-        lineRepo.updateLine(line);
+//        lineRepo.updateLine(line);
         writer.write("Line updated successfully");
         writer.flush();
         writer.close();
