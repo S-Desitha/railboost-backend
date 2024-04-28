@@ -2,6 +2,7 @@ package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.ParcelReceiving;
 import org.ucsc.railboostbackend.models.Season;
+import org.ucsc.railboostbackend.models.Station;
 import org.ucsc.railboostbackend.services.EmailService;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
@@ -45,6 +46,9 @@ public class ParcelReceivingRepo {
                 parcelReceiving.setUserId(resultSet.getInt("userId"));
                 parcelReceiving.setSenderNIC(resultSet.getString("SenderNIC"));
                 parcelReceiving.setDeliverStatus(resultSet.getString("deliver_status"));
+//                parcelReceiving.setOTP(resultSet.getInt("OTP"));
+                parcelReceiving.setRecoveringStation(resultSet.getString("recoveringStation"));
+                parcelReceiving.setReceiverNIC(resultSet.getString("receiverNIC"));
 
                 parcelReceivingList.add(parcelReceiving);
             }
@@ -102,8 +106,11 @@ public class ParcelReceivingRepo {
         return scode;
     }
 
-    public void updateDeliveryStatus(ParcelReceiving parcelReceiving){
+    public void updateDeliveryStatus(ParcelReceiving parcelReceiving) throws SQLException {
         Connection connection = DBConnection.getConnection();
+        StationRepo stationRepo = new StationRepo();
+
+        String stationName =stationRepo.getStationName(parcelReceiving.getRecoveringStation());
 
         try{
             String query = "UPDATE parcelbooking SET deliver_status = ? WHERE bookingId = ?";
@@ -113,16 +120,31 @@ public class ParcelReceivingRepo {
 
                 statement.executeUpdate();
 
+
 //                notification function call
 
                 if (parcelReceiving.getDeliverStatus().equals("Received")){
                     String toEmail = parcelReceiving.getReceiverEmail();
                     String subject = "RailBoost Parcel Delivery";
+                    try {
+                        String otp = "SELECT OTP FROM parcelbooking WHERE bookingId=?";
+                        try (PreparedStatement statement1 = connection.prepareStatement(otp)){
+                            statement1.setString(1,parcelReceiving.getBookingId());
+                            ResultSet resultSet = statement1.executeQuery();
+                            if(resultSet.next()){
+                                int OTP = resultSet.getInt("OTP");
+                                EmailService emailService = new EmailService();
+                                String body = emailService.createParcelRecievedHTML(parcelReceiving,stationName,OTP);
+                                emailService.sendEmail(toEmail, subject, body);
+                            }
+
+                        }
+
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
 
 
-                    EmailService emailService = new EmailService();
-                    String body = emailService.createParcelRecievedHTML(parcelReceiving);
-                    emailService.sendEmail(toEmail, subject, body);
                 }
             }
 

@@ -24,6 +24,7 @@ public class CheckOTPController extends HttpServlet {
 
         try {
            responseType = checkOTPRepo.verifyOTP(checkOTP);
+           checkOTPRepo.updateDeliverStatus(checkOTP);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -11,6 +11,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CheckOTPRepo extends HttpServlet {
+    public void updateDeliverStatus(CheckOTP checkOTP){
+        Connection connection = DBConnection.getConnection();
+        String query = "UPDATE parcelbooking SET deliver_status=\"Collected\" WHERE bookingId=?";
+        try(PreparedStatement statement = connection.prepareStatement(query)){
+            statement.setInt(1,checkOTP.getBookingId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public ResponseType verifyOTP(CheckOTP checkOTP){
         Connection connection = DBConnection.getConnection();
         ResponseType responseType = new ResponseType();

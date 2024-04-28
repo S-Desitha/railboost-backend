@@ -95,8 +95,9 @@ public class ParcelReceivingController extends HttpServlet {
                 // Add the notification to the repository
                 NotificationRepo.addNotification(notification);
             }
-            parcelReceivingRepo.updateDeliveryStatus(parcelReceiving);
             parcelReceivingRepo.generateOTP(bookingId);
+            parcelReceivingRepo.updateDeliveryStatus(parcelReceiving);
+
         }
         catch (IllegalStateException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -104,7 +105,7 @@ public class ParcelReceivingController extends HttpServlet {
             writer.write("File size exceeds. Request body is greater than 10 MB or file size is greater than 5 MB");
         } catch (SQLException e) {
             throw new RuntimeException(e);
-git         }
+        }
 
 
         writer.flush();
