@@ -8,8 +8,22 @@ import org.ucsc.railboostbackend.utilities.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class ParcelReceivingRepo {
+    public  void generateOTP(int bookingId) throws SQLException {
+        Connection connection = DBConnection.getConnection();
+        Random rand = new Random();
+        int OTP = rand.nextInt(999999);
+        String query = "UPDATE parcelbooking SET OTP = ? WHERE bookingId = ?;\n";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)){
+            statement.setInt(1,OTP);
+            statement.setInt(2,bookingId);
+
+            statement.executeUpdate();
+        }
+    }
 
     public List<ParcelReceiving> GetParcelDetails(Object userId,String sheduleId){
         Connection connection= DBConnection.getConnection();
