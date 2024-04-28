@@ -1,45 +1,37 @@
 package org.ucsc.railboostbackend.models;
 
+import java.util.List;
+
 public class Line {
 
     private String lineName;
-
     private Integer lineId;
-
-    public String lineStartStation;
-
-    public String lineEndStation;
-
-//    setters and getters
-    public Integer getLineId() {
-        return lineId;
-    }
-
-            public void setLineId(Integer lineId) {
-        this.lineId = lineId;
-    }
-
-    public String getLineStartStation() {
-        return lineStartStation;
-    }
-
-    public void setLineStartStation(String lineStartStation) {
-        this.lineStartStation = lineStartStation;
-    }
-
-    public String getLineEndStation() {
-        return lineEndStation;
-    }
-
-    public void setLineEndStation(String lineEndStation) {
-        this.lineEndStation = lineEndStation;
-    }
+    private List<String> stationList;
 
 
     public Line() {
     }
 
+    public Line(String lineName, List<String> stationList) {
+        this.lineName = lineName;
+        this.stationList = stationList;
+    }
 
+    public List<String> getStationList() {
+        return stationList;
+    }
+
+    public void setStationList(List<String> stationList) {
+        this.stationList = stationList;
+    }
+
+    public Integer getLineId() {
+        return lineId;
+    }
+
+    public void setLineId(Integer lineId) {
+        this.lineId = lineId;
+    }
 
     public String getLineName() {
         return lineName;
