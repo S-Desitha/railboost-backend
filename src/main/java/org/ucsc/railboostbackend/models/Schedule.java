@@ -20,6 +20,7 @@ public class Schedule {
     private LocalDate date;
     private List<ScheduleStation> stations = new ArrayList<ScheduleStation>();
     private List<ScheduleDay> days = new ArrayList<ScheduleDay>();
+    private boolean isCancelled;
 
     public Schedule(short scheduleId) {
         this.scheduleId = scheduleId;
@@ -132,18 +133,35 @@ public class Schedule {
         this.endStationName = endStationName;
     }
 
+    public String getTrainType() {
+        return trainType;
+    }
+
+    public boolean isCancelled() {
+        return isCancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        isCancelled = cancelled;
+    }
+
     @Override
     public String toString() {
         return "Schedule{" +
                 "scheduleId=" + scheduleId +
                 ", startStation='" + startStation + '\'' +
+                ", startStationName='" + startStationName + '\'' +
                 ", endStation='" + endStation + '\'' +
+                ", endStationName='" + endStationName + '\'' +
+                ", trainType='" + trainType + '\'' +
                 ", trainId='" + trainId + '\'' +
                 ", speed='" + speed + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
+                ", date=" + date +
                 ", stations=" + stations +
-//                ", days=" + days +
+                ", days=" + days +
+                ", isCancelled=" + isCancelled +
                 '}';
     }
 }

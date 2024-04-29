@@ -37,6 +37,15 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>CancelSchedules</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.ScheduleCancelController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CancelSchedules</servlet-name>
+    <url-pattern>/cancelSchedules</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>Staff</servlet-name>
     <servlet-class>org.ucsc.railboostbackend.controllers.StaffController</servlet-class>
   </servlet>
