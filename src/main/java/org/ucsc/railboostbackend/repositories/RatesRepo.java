@@ -26,21 +26,17 @@ public class RatesRepo {
     public List<TicketPrice> getAllRates(int limit,int offset){
         Connection connection= DBConnection.getConnection();
         List<TicketPrice> ratesList = new ArrayList<>();
-        String query = "SELECT " +
-                "s1.name AS startStationName, " +
-                "tp.startCode, " +
-                "s2.name AS endStationName, " +
-                "tp.endCode, " +
-                "tp.`1st Class`, " +
-                "tp.`2nd Class`, " +
-                "tp.`3rd Class` " +
-                "FROM " +
-                "ticketprice tp " +
-                "JOIN " +
-                "station s1 ON tp.startCode COLLATE utf8mb4_unicode_ci = s1.stationCode COLLATE utf8mb4_unicode_ci " +
-                "JOIN " +
-                "station s2 ON tp.endCode COLLATE utf8mb4_unicode_ci = s2.stationCode COLLATE utf8mb4_unicode_ci " +
-                "ORDER BY startStationName LIMIT ? OFFSET ?";
+
+        String query = "SELECT tp.startCode, tp.endCode, tp.`1st Class`, tp.`2nd Class`, tp.`3rd Class`, " +
+                "       s1.name AS startStationName, s2.name AS endStationName " +
+                "FROM (" +
+                "         SELECT startCode, endCode, `1st Class`, `2nd Class`, `3rd Class` " +
+                "         FROM ticketprice " +
+                "         ORDER BY startCode " +
+                "         LIMIT ? OFFSET ? " +
+                "     ) AS tp " +
+                "         INNER JOIN station s1 ON tp.startCode = s1.stationCode " +
+                "         INNER JOIN station s2 ON tp.endCode = s2.stationCode";
 
 
 
