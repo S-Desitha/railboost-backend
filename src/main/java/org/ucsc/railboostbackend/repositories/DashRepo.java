@@ -12,11 +12,13 @@ import java.time.LocalDate;
 public class DashRepo {
     public int getTrainCount() {
         Connection connection = DBConnection.getConnection();
+        LocalDate currentDate = LocalDate.now();
         int tcount = 0;
         String query = "SELECT COUNT(*) AS tCount " +
-                "FROM train;";
+                "FROM journey WHERE date=?;";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setObject(1, currentDate);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 
@@ -24,7 +26,7 @@ public class DashRepo {
 
             }
         } catch (SQLException e) {
-            System.out.println("Error occurred while executing delete query for train table");
+            System.out.println("Error occurred while executing delete query for journey table");
             e.printStackTrace();
         }
         return tcount;
@@ -47,7 +49,7 @@ public class DashRepo {
 
         }
     } catch (SQLException e) {
-        System.out.println("Error occurred while executing delete query for train table");
+        System.out.println("Error occurred while executing delete query for booking table");
         e.printStackTrace();
     }
         return tktcount;
