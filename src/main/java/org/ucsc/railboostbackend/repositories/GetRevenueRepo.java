@@ -19,7 +19,7 @@ public class GetRevenueRepo extends HttpServlet {
         String query = "SELECT MONTH(`date`) AS month , month AS month1\n" +
                 "FROM `monthlyrevenue`\n" +
                 "WHERE `date` >= CURDATE() - INTERVAL 12 MONTH\n" +
-                "ORDER BY month;\n";
+                "ORDER BY `date`;\n";
         List<String> list;
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
@@ -43,7 +43,7 @@ public class GetRevenueRepo extends HttpServlet {
         String query = "SELECT MONTH(`date`) AS month,`ticketRevenue` AS total_ticket_revenue\n" +
                 "FROM `monthlyrevenue`\n" +
                 "WHERE `date` >= CURDATE() - INTERVAL 12 MONTH\n" +
-                "ORDER BY month;\n";
+                "ORDER BY `date`;\n";
         List<Integer> list;
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
@@ -66,7 +66,7 @@ public class GetRevenueRepo extends HttpServlet {
         String query = "SELECT MONTH(`date`) AS month, `revenue` AS total_revenue\n" +
                 "FROM `monthlyrevenue`\n" +
                 "WHERE `date` >= CURDATE() - INTERVAL 12 MONTH\n" +
-                "ORDER BY month;\n";
+                "ORDER BY `date`;\n";
         List<Integer> list;
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
@@ -104,28 +104,26 @@ public class GetRevenueRepo extends HttpServlet {
         return total;
     }
 
-    public int getTotalTicketRevenue(){
+    public int getTotalTicketRevenue() {
         Connection connection = DBConnection.getConnection();
-        GetRevenue getRevenue = new GetRevenue();
         int total = 0;
 
-        String query = "SELECT SUM(totalPrice) AS totalTicketsum FROM booking;\n";
-        try(PreparedStatement statement = connection.prepareStatement(query)){
+        // Updated query to get sum of totalPrice where date is in the current month and year
+        String query = "SELECT SUM(totalPrice) AS totalTicketsum FROM booking WHERE YEAR(date) = YEAR(CURDATE()) AND MONTH(date) = MONTH(CURDATE());";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 total = resultSet.getInt("totalTicketsum");
             }
-
-
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         return total;
-
     }
+
 
 
 }
