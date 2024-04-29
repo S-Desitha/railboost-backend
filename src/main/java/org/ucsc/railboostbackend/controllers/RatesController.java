@@ -48,7 +48,11 @@ public class RatesController extends HttpServlet{
             int limit = Integer.parseInt(req.getParameter("limit"));
             int offset = Integer.parseInt(req.getParameter("offset"));
 
-            ratesList=ratesRepo.getAllRates(limit, offset);
+            if (req.getParameter("type")!=null && req.getParameter("stationCode")!=null)
+                ratesList=ratesRepo.getAllRates(limit, offset, req.getParameter("type"), req.getParameter("stationCode"));
+            else
+                ratesList=ratesRepo.getAllRates(limit, offset, "", "");
+
             writer.write(gson.toJson(ratesList));
 
             writer.flush();

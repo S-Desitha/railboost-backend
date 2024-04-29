@@ -23,27 +23,36 @@ import java.util.List;
 
 public class RatesRepo {
 
-    public List<TicketPrice> getAllRates(int limit,int offset){
+    public List<TicketPrice> getAllRates(int limit,int offset, String type, String stationCode){
         Connection connection= DBConnection.getConnection();
         List<TicketPrice> ratesList = new ArrayList<>();
 
         String query = "SELECT tp.startCode, tp.endCode, tp.`1st Class`, tp.`2nd Class`, tp.`3rd Class`, " +
-                "       s1.name AS startStationName, s2.name AS endStationName " +
+                    "s1.name AS startStationName, s2.name AS endStationName " +
                 "FROM (" +
-                "         SELECT startCode, endCode, `1st Class`, `2nd Class`, `3rd Class` " +
-                "         FROM ticketprice " +
-                "         ORDER BY startCode " +
-                "         LIMIT ? OFFSET ? " +
-                "     ) AS tp " +
-                "         INNER JOIN station s1 ON tp.startCode = s1.stationCode " +
-                "         INNER JOIN station s2 ON tp.endCode = s2.stationCode";
+                    "SELECT startCode, endCode, `1st Class`, `2nd Class`, `3rd Class` " +
+                    "FROM ticketprice " +
+                (type.equals("start") && !stationCode.isEmpty() ? "WHERE startCode = ? " : "") +
+                (type.equals("end") && !stationCode.isEmpty()? "WHERE endCode = ? " : "") +
+                    "ORDER BY startCode " +
+                    "LIMIT ? OFFSET ? " +
+                    ") AS tp " +
+                    "INNER JOIN station s1 ON tp.startCode = s1.stationCode " +
+                    "INNER JOIN station s2 ON tp.endCode = s2.stationCode";
 
 
 
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, limit);
-            statement.setInt(2, offset);
+            if ((type.equals("start") && !stationCode.isEmpty()) || (type.equals("end") && !stationCode.isEmpty())) {
+                statement.setString(1, stationCode);
+                statement.setInt(2, limit);
+                statement.setInt(3, offset);
+            }
+            else {
+                statement.setInt(1, limit);
+                statement.setInt(2, offset);
+            }
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
                 TicketPrice rate = new TicketPrice();
