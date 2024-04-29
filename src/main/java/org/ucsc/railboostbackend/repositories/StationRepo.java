@@ -1,12 +1,19 @@
 package org.ucsc.railboostbackend.repositories;
 
 import org.apache.poi.hssf.record.StyleRecord;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.ConnectivityInspector;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.DepthFirstIterator;
+import org.ucsc.railboostbackend.models.Booking;
 import org.ucsc.railboostbackend.models.ResponseType;
 import org.ucsc.railboostbackend.models.Station;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class StationRepo {
@@ -339,7 +346,7 @@ public class StationRepo {
         return junctions;
     }
 
-    public List<String> getIndexStations() {
+    private List<String> getIndexStations() {
         Connection connection = DBConnection.getConnection();
         List<String> stationList = new ArrayList<>();
         String query = "SELECT s.stationCode " +
@@ -360,7 +367,7 @@ public class StationRepo {
         return stationList;
     }
 
-    public List<String> getTerminalStations() {
+    private List<String> getTerminalStations() {
         Connection connection = DBConnection.getConnection();
         List<String> stationList = new ArrayList<>();
         String query = "SELECT stationCode FROM station WHERE nextStation IS NULL ";
@@ -397,6 +404,51 @@ public class StationRepo {
         }
 
         return station;
+    }
+
+    public DirectedGraph<String, DefaultEdge> getNextStGraph() {
+        DirectedGraph<String, DefaultEdge> graph = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+        Connection connection = DBConnection.getConnection();
+        List<String> indexStations = getIndexStations();
+        String query = "SELECT nextStation, prevStation FROM station WHERE stationCode = ? ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            for (String indexSt : indexStations) {
+                String newSt;
+                String oldSt = indexSt;
+                graph.addVertex(oldSt);
+                while (true) {
+                    statement.setString(1, oldSt);
+                    ResultSet resultSet = statement.executeQuery();
+                    if (resultSet.next()){
+                        newSt = resultSet.getString(1);
+                        graph.addVertex(newSt);
+                        if (oldSt.equals(indexSt) && resultSet.getString(2)!=null) {
+                            graph.addVertex(resultSet.getString(2));
+                            graph.addEdge(resultSet.getString(2), newSt);
+                        }
+                        graph.addEdge(oldSt, newSt);
+                        oldSt = newSt;
+                    }
+                    else
+                        break;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return graph;
+    }
+
+    public boolean pathExists(DirectedGraph<String, DefaultEdge> graph, String source, String dest) {
+        Iterator<String> iterator = new DepthFirstIterator<>(graph, source);
+        while (iterator.hasNext()) {
+            String vertex = iterator.next();
+            if (vertex.equals(dest))
+                return true;
+        }
+        return false;
     }
 
 }
