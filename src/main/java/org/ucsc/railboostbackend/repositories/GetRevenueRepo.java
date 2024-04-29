@@ -104,28 +104,26 @@ public class GetRevenueRepo extends HttpServlet {
         return total;
     }
 
-    public int getTotalTicketRevenue(){
+    public int getTotalTicketRevenue() {
         Connection connection = DBConnection.getConnection();
-        GetRevenue getRevenue = new GetRevenue();
         int total = 0;
 
-        String query = "SELECT SUM(totalPrice) AS totalTicketsum FROM booking;\n";
-        try(PreparedStatement statement = connection.prepareStatement(query)){
+        // Updated query to get sum of totalPrice where date is in the current month and year
+        String query = "SELECT SUM(totalPrice) AS totalTicketsum FROM booking WHERE YEAR(date) = YEAR(CURDATE()) AND MONTH(date) = MONTH(CURDATE());";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 total = resultSet.getInt("totalTicketsum");
             }
-
-
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         return total;
-
     }
+
 
 
 }
