@@ -209,7 +209,7 @@ public class EmailService {
                 "<body>\n" +
                 "    <h2>Parcel Delivery Notification</h2>\n" +
                 "    <p>Dear"+parcelReceiving.getReceiverName()+",</p>\n" +
-                "    <p>We are pleased to inform you that a parcel has arrived at \"+stationName+\" Railway station. Below are the details of your delivery:</p>\n" +
+                "    <p>We are pleased to inform you that a parcel has arrived at "+stationName+" Railway station. Below are the details of your delivery:</p>\n" +
                 "    <ul>\n" +
                 "        <li><strong>Booking ID:</strong> "+parcelReceiving.getBookingId()+"</li>\n" +
                 "        <li><strong>Item:</strong> "+parcelReceiving.getItem()+"</li>\n" +
