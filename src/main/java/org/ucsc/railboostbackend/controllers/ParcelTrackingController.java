@@ -18,22 +18,51 @@ import java.util.List;
 
 public class ParcelTrackingController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        PrintWriter writer = resp.getWriter();
-        Gson gson = new Gson();
-        ParcelTrackingRepo parcelTrackingRepo = new ParcelTrackingRepo();
-        StaffRepo staffRepo = new StaffRepo();
-        List<ParcelTracking> parcelTrackingList;
+        String viewParam = req.getParameter("view");
+        String recoveringStation = req.getParameter("recoveringStation");
+        if (viewParam != null && viewParam.equals("2")) {
+
+            PrintWriter writer = resp.getWriter();
+            Gson gson = new Gson();
+            ParcelTrackingRepo parcelTrackingRepo = new ParcelTrackingRepo();
+            StaffRepo staffRepo = new StaffRepo();
+            List<ParcelTracking> parcelTrackingList;
+
+            Claims jwt = (Claims)  req.getAttribute("jwt");
+            try{
+                int userId = jwt.get("userId",Integer.class);
+                Staff staff = staffRepo.getStaffByUserId(userId);
+                String station = staff.getStation();
+                parcelTrackingList = parcelTrackingRepo.getTrackingParcelsByStationCode(station,recoveringStation);
+                writer.write(gson.toJson(parcelTrackingList));
+
+                writer.flush();
+                writer.close();
 
 
-        Claims jwt = (Claims) req.getAttribute("jwt");
-        try {
-            int userId = jwt.get("userId", Integer.class);
-            Staff staff = staffRepo.getStaffByUserId(userId);
-            String station = staff.getStation();
-            parcelTrackingList = parcelTrackingRepo.getTrackingParcelsByID(station);
-            writer.write(gson.toJson(parcelTrackingList));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+
+        }else{
+            PrintWriter writer = resp.getWriter();
+            Gson gson = new Gson();
+            ParcelTrackingRepo parcelTrackingRepo = new ParcelTrackingRepo();
+            StaffRepo staffRepo = new StaffRepo();
+            List<ParcelTracking> parcelTrackingList;
+
+            Claims jwt = (Claims) req.getAttribute("jwt");
+            try {
+                int userId = jwt.get("userId", Integer.class);
+                Staff staff = staffRepo.getStaffByUserId(userId);
+                String station = staff.getStation();
+                parcelTrackingList = parcelTrackingRepo.getTrackingParcelsByID(station);
+                writer.write(gson.toJson(parcelTrackingList));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
         }
 
     }
