@@ -2,6 +2,7 @@ package org.ucsc.railboostbackend.repositories;
 
 import org.ucsc.railboostbackend.models.CheckOTP;
 import org.ucsc.railboostbackend.models.ResponseType;
+import org.ucsc.railboostbackend.services.EmailService;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
 import javax.servlet.http.HttpServlet;
@@ -18,6 +19,26 @@ public class CheckOTPRepo extends HttpServlet {
             statement.setInt(1,checkOTP.getBookingId());
             statement.executeUpdate();
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        try{
+            String userEmailQuery = "SELECT u.email FROM users u INNER JOIN parcelbooking p " +
+                    "ON u.userId=p.userId WHERE p.bookingId=?";
+            try (PreparedStatement statement = connection.prepareStatement(userEmailQuery)){
+                statement.setInt(1,checkOTP.getBookingId());
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()){
+                    String subject = "RailBoost Parcel Delivery";
+                    String toEmail = resultSet.getString("email");
+                    EmailService emailService = new EmailService();
+                    String body = emailService.createParcelCollectHTML();
+                    emailService.sendEmail(toEmail, subject, body);
+                }
+
+            } catch (SQLException e) {
+            }
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

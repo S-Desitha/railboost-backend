@@ -226,6 +226,33 @@ public class EmailService {
                 "</html>\n";
     }
 
+    public String createParcelCollectHTML(){
+
+        return "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                "    <title>Parcel Received Confirmation</title>\n" +
+                "\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <div class=\"container\">\n" +
+                "        <h1>Parcel Received Confirmation</h1>\n" +
+                "        <p>Dear Sender,</p>\n" +
+                "        <p>We are pleased to inform you that your parcel has been successfully received by the intended recipient.</p>\n" +
+                "        <p>If you have any further inquiries or need assistance, please feel free to contact us.</p>\n" +
+                "        <p>Thank you for choosing our service!</p>\n" +
+                "        <p>Best regards,</p>\n" +
+                "        <p>RailBoost Team</p>\n" +
+                "        \n" +
+                "    </div>\n" +
+                "</body>\n" +
+                "</html>\n";
+    }
+
+
+
 
 
 }
