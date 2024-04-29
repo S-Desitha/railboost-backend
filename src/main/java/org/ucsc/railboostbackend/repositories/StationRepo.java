@@ -1,5 +1,6 @@
 package org.ucsc.railboostbackend.repositories;
 
+import org.apache.poi.hssf.record.StyleRecord;
 import org.ucsc.railboostbackend.models.ResponseType;
 import org.ucsc.railboostbackend.models.Station;
 import org.ucsc.railboostbackend.utilities.DBConnection;
@@ -321,8 +322,6 @@ public class StationRepo {
         return downJunctions;
     }
 
-
-
     public List<String> getJunctionStations() {
         List<String> junctions = new ArrayList<>();
         Connection connection = DBConnection.getConnection();
@@ -338,6 +337,66 @@ public class StationRepo {
         }
 
         return junctions;
+    }
+
+    public List<String> getIndexStations() {
+        Connection connection = DBConnection.getConnection();
+        List<String> stationList = new ArrayList<>();
+        String query = "SELECT s.stationCode " +
+                "FROM station s " +
+                "LEFT JOIN station prev ON s.prevStation = prev.stationCode " +
+                "WHERE s.line != prev.line OR prev.stationCode IS NULL ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                stationList.add(resultSet.getString(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error in station table. StationRepo: getIndexStations()");
+            System.out.println(e.getMessage());
+        }
+
+        return stationList;
+    }
+
+    public List<String> getTerminalStations() {
+        Connection connection = DBConnection.getConnection();
+        List<String> stationList = new ArrayList<>();
+        String query = "SELECT stationCode FROM station WHERE nextStation IS NULL ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                stationList.add(resultSet.getString(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error in station table. StationRepo: getTerminalStations()");
+            System.out.println(e.getMessage());
+        }
+
+        return stationList;
+    }
+
+    public String getIndexStation(String line) {
+        Connection connection = DBConnection.getConnection();
+        String station = "";
+        String query = "SELECT s.stationCode " +
+                "FROM station s " +
+                "         LEFT JOIN station prev ON s.prevStation = prev.stationCode " +
+                "WHERE s.line = ? AND (prev.line != s.line OR prev.stationCode IS NULL) ";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, line);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next())
+                station = resultSet.getString(1);
+        } catch (SQLException e) {
+            System.out.println("SQL error in station table. StationRepo: getIndexStation()");
+            System.out.println(e.getMessage());
+        }
+
+        return station;
     }
 
 }

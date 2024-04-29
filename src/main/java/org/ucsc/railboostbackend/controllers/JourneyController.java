@@ -33,6 +33,9 @@ public class JourneyController extends HttpServlet {
         Claims jwt = (Claims) req.getAttribute("jwt");
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalTime.class, new LocalTimeDeserializer())
+                .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
                 .create();
 
         JourneyStation journeyStation = gson.fromJson(req.getReader(), JourneyStation.class);

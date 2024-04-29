@@ -1,5 +1,6 @@
 package org.ucsc.railboostbackend.repositories;
 
+import org.ucsc.railboostbackend.models.Booking;
 import org.ucsc.railboostbackend.models.Role;
 import org.ucsc.railboostbackend.models.Staff;
 import org.ucsc.railboostbackend.models.User;
@@ -130,6 +131,30 @@ public class StaffRepo {
         return staffList;
     }
 
+    public Staff getStationOfSM(String sid){
+        Staff staff = new Staff();
+        Connection  connection = DBConnection.getConnection();
+
+        String query = "SELECT s.stationCode, s1.name AS stationName "+
+                "FROM staff s "+
+                "INNER JOIN station s1 ON s.stationCode = s1.stationCode "+
+                "WHERE userId=?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, sid);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                staff.setStation(resultSet.getString("stationCode"));
+                staff.setStationName(resultSet.getString("stationName"));
+
+
+            }
+        } catch (SQLException e){
+            System.out.println("Error in select query for staff table: \n" + e.getMessage());
+        }
+        return staff;
+    }
 
     public void updateStaff(Staff staff) {
         Connection connection = DBConnection.getConnection();

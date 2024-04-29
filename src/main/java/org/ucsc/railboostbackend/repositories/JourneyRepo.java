@@ -103,6 +103,9 @@ public class JourneyRepo {
             statement.setShort(2, scheduleId);
 
             resultSet = statement.executeQuery();
+            if (!resultSet.isBeforeFirst())
+                return null;
+
             for (int i=0; resultSet.next(); i++) {
                 String station = resultSet.getString("station");
                 if (i==0){
@@ -136,6 +139,7 @@ public class JourneyRepo {
         Connection connection = DBConnection.getConnection();
         List<Journey> journeyList = new ArrayList<>();
         short scheduleId;
+        Journey journey;
         String query = "SELECT ts.scheduleId FROM schedule ts " +
                 "INNER JOIN schedule_stations ss ON ts.scheduleId = ss.scheduleId " +
                 "WHERE ss.station = ?";
@@ -147,7 +151,9 @@ public class JourneyRepo {
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 scheduleId = resultSet.getShort(1);
-                journeyList.add(getJourney(date, scheduleId));
+                journey = getJourney(date, scheduleId);
+                if (journey!=null)
+                    journeyList.add(journey);
             }
 
         } catch (SQLException e) {

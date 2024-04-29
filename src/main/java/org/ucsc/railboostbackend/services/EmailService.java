@@ -209,13 +209,14 @@ public class EmailService {
                 "<body>\n" +
                 "    <h2>Parcel Delivery Notification</h2>\n" +
                 "    <p>Dear"+parcelReceiving.getReceiverName()+",</p>\n" +
-                "    <p>We are pleased to inform you that a parcel has arrived at our recovering station. Below are the details of your delivery:</p>\n" +
+                "    <p>We are pleased to inform you that a parcel has arrived at \"+stationName+\" Railway station. Below are the details of your delivery:</p>\n" +
                 "    <ul>\n" +
                 "        <li><strong>Booking ID:</strong> "+parcelReceiving.getBookingId()+"</li>\n" +
                 "        <li><strong>Item:</strong> "+parcelReceiving.getItem()+"</li>\n" +
                 "        <li><strong>NIC No:</strong> "+parcelReceiving.getReceiverNIC()+"</li>\n" +
                 "        <li><strong>Recovering Station:"+stationName+"</li>\n" +
                 "        <li><strong>OTP:</strong> "+OTP+"</li>\n" +
+
                 "    </ul>\n" +
                 "    <p>Please note that you are required to bring your ID and OTP within 7 days to collect your parcel.</p>\n" +
                 "    <p>If you have any questions or need further assistance, please feel free to contact our customer support team.</p>\n" +

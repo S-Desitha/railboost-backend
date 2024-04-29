@@ -1,5 +1,6 @@
 package org.ucsc.railboostbackend.repositories;
 
+import org.ucsc.railboostbackend.models.JourneyStation;
 import org.ucsc.railboostbackend.models.ParcelReceiving;
 import org.ucsc.railboostbackend.models.Season;
 import org.ucsc.railboostbackend.models.Station;
@@ -7,6 +8,7 @@ import org.ucsc.railboostbackend.services.EmailService;
 import org.ucsc.railboostbackend.utilities.DBConnection;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,7 +31,26 @@ public class ParcelReceivingRepo {
     public List<ParcelReceiving> GetParcelDetails(Object userId,String sheduleId){
         Connection connection= DBConnection.getConnection();
         String scode = StationCodeById(userId);
+        LocalDate currentDate = LocalDate.now();
         List<ParcelReceiving> parcelReceivingList = new ArrayList<>();
+        JourneyStation journeyStation = new JourneyStation();
+        String query1 = "SELECT arrivalTime FROM journey_stations WHERE date = ? AND station = ? AND scheduleId =?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query1)) {
+            statement.setObject(1,currentDate);
+            statement.setString(2, scode);
+            statement.setString(3,sheduleId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                journeyStation.setArrivalTime(resultSet.getTime("arrivalTime").toLocalTime());
+            }
+        } catch (SQLException e){
+            System.out.println("Error in select query for getting parcel details: \n"+e.getMessage());
+        }
+
+        if (journeyStation.getArrivalTime() != null){
+
+
         String query = "SELECT * FROM parcelbooking WHERE deliver_status = 'Sent' AND recoveringStation = ? AND scheduleId =?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -54,6 +75,7 @@ public class ParcelReceivingRepo {
             }
         } catch (SQLException e){
             System.out.println("Error in select query for getting parcel details: \n"+e.getMessage());
+        }
         }
         return parcelReceivingList;
     }
