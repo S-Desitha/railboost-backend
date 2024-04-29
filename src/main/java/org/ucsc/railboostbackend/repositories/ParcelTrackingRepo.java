@@ -32,6 +32,31 @@ public class ParcelTrackingRepo {
         }
 
     }
+    public List<ParcelTracking> getTrackingParcelsByStationCode(String startingStation,String recoveringStation){
+        Connection connection = DBConnection.getConnection();
+        List<ParcelTracking> parcelTrackingList = new ArrayList<>();
+
+        String query = "SELECT bookingId, item FROM parcelbooking WHERE " +
+                "status=\"Approved\" AND deliver_status=\"Pending\" AND " +
+                "recoveringStation=? AND sendingStation=?";
+        try(PreparedStatement statement = connection.prepareStatement(query)){
+            statement.setString(1,recoveringStation);
+            statement.setString(2,startingStation);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                ParcelTracking parcelTracking = new ParcelTracking();
+                parcelTracking.setBookingId(resultSet.getInt("bookingId"));
+                parcelTracking.setItem(resultSet.getString("item"));
+
+                parcelTrackingList.add(parcelTracking);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return parcelTrackingList;
+    }
 
     public List<ParcelTracking> getTrackingParcelsByID(String station){
         Connection connection = DBConnection.getConnection();
