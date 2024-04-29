@@ -37,7 +37,7 @@ public class LineRepo {
         StationRepo stationRepo = new StationRepo();
 
         String query = "SELECT * FROM line";
-        String stationQuery = "SELECT nextStation FROM station WHERE line = ? AND stationCode = ?";
+        String stationQuery = "SELECT nextStation, name FROM station WHERE line = ? AND stationCode = ?";
 
         try(
                 PreparedStatement statement = connection.prepareStatement(query);
@@ -52,13 +52,11 @@ public class LineRepo {
                 stationStatement.setString(1, lineName);
                 stationStatement.setString(2, indexStation);
 
-                stationList.add(indexStation);
-
                 while (true) {
                     ResultSet stationResultSet = stationStatement.executeQuery();
                     if (stationResultSet.next()) {
+                        stationList.add(stationResultSet.getString(2));
                         String currentStation = stationResultSet.getString(1);
-                        stationList.add(currentStation);
 
                         stationStatement.setString(2, currentStation);
                     }
