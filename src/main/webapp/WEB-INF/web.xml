@@ -249,6 +249,23 @@
     <url-pattern>/getRevenue</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>CheckOTP</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.CheckOTPController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CheckOTP</servlet-name>
+    <url-pattern>/checkOTP</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>VerifyParcel</servlet-name>
+    <servlet-class>org.ucsc.railboostbackend.controllers.VerifyParcelController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>VerifyParcel</servlet-name>
+    <url-pattern>/verifyParcel</url-pattern>
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>User</servlet-name>

@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -76,6 +77,7 @@ public class ParcelReceivingController extends HttpServlet {
 
             ParcelReceiving parcelReceiving;
             parcelReceiving = gson.fromJson(req.getReader(), ParcelReceiving.class);
+            Integer bookingId = Integer.valueOf(parcelReceiving.getBookingId());
 
             if (parcelReceiving.getDeliverStatus().equals("Received")) {
 
@@ -93,12 +95,16 @@ public class ParcelReceivingController extends HttpServlet {
                 // Add the notification to the repository
                 NotificationRepo.addNotification(notification);
             }
+            parcelReceivingRepo.generateOTP(bookingId);
             parcelReceivingRepo.updateDeliveryStatus(parcelReceiving);
+
         }
         catch (IllegalStateException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.setContentType("text/html");
             writer.write("File size exceeds. Request body is greater than 10 MB or file size is greater than 5 MB");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
 

@@ -21,6 +21,15 @@ public class ParcelReceiving {
     private  Integer category;
     private Float weight;
     private String deliverStatus;
+    private Integer OTP;
+
+    public Integer getOTP() {
+        return OTP;
+    }
+
+    public void setOTP(Integer OTP) {
+        this.OTP = OTP;
+    }
 
     public void setDeliverStatus(String deliverStatus){this.deliverStatus = deliverStatus;}
     public Float getWeight() {
