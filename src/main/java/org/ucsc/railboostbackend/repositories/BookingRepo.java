@@ -58,7 +58,7 @@ public class BookingRepo {
         }
     }
       private byte[] generateAndSaveQRCode(int bookingId){
-        String data = "Booking ID: " + bookingId;
+        String data = "ticketid" + bookingId;
         return QRCodeGenerator.generateQRCode(data);
     }
 //

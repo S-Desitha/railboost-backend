@@ -183,7 +183,7 @@ public class SeasonRepo {
         return mail;
     }
     private byte[] generateAndSaveQRCode(int seasonId){
-        String data = "Season ID: " + seasonId;
+        String data = "seasonid;" + seasonId;
         return QRCodeGenerator.generateQRCode(data);
     }
     private static String StationCodeById(Object userId) {
