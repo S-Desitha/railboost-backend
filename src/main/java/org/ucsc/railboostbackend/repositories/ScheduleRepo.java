@@ -147,7 +147,8 @@ public class ScheduleRepo {
 
             resultSet = pst.executeQuery();
             while (resultSet.next()) {
-                schedules.add(getScheduleById(resultSet.getShort("scheduleId")));
+                if (!isScheduleCancelled(resultSet.getShort("scheduleId")))
+                    schedules.add(getScheduleById(resultSet.getShort("scheduleId")));
             }
 
         } catch (SQLException e) {
@@ -185,7 +186,8 @@ public class ScheduleRepo {
 
             resultSet = pst.executeQuery();
             while (resultSet.next()) {
-                schedules.add(getScheduleById(resultSet.getShort("scheduleId")));
+                if (!isScheduleCancelled(resultSet.getShort("scheduleId")))
+                    schedules.add(getScheduleById(resultSet.getShort("scheduleId")));
             }
 
         } catch (SQLException e) {
